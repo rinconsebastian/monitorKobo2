@@ -1,0 +1,623 @@
+﻿@model App_consulta.Models.FormalizacionPostModel
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "Formalización";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Formalization original = ViewBag.Formalizacion;
+
+    var permisoEditar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Editar" && c.Value == "1"));
+    var permisoAdmin = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Administrar" && c.Value == "1"));
+    var permisoImprimir = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Imprimir" && c.Value == "1"));
+
+    var permisoCancelar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Cancelar" && c.Value == "1"));
+
+
+    var permisoSolicitud = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear" && c.Value == "1"));
+
+    var permisoImagen = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Imagen.Cambiar" && c.Value == "1"));
+    var permisoRestablecer = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Imagen.Restablecer" && c.Value == "1"));
+
+
+    var title = permisoEditar ? "Editar" : "Validar";
+
+    var listaCoordinacion = (SelectList)ViewBag.Coordinaciones;
+    var listaEstados = (SelectList)ViewBag.Estados;
+
+}
+@Html.Hidden("IdFormalizacion", Model.Id)
+@Html.Hidden("IdKobo", original.IdKobo)
+@Html.Hidden("PathStorage", @Url.Action("ViewImage", "Formalizacion"))
+<div class="card w-75 mt-4 mx-auto d-print-none">
+    <div class="card-body">
+        <h4 class="my-2">
+            @title formalización @original.NumeroRegistro
+            @switch (Model.Estado)
+            {
+                case Formalization.ESTADO_BORRADOR:
+                    <span class="badge bg-warning text-dark float-right">Borrador</span>
+                    break;
+                case Formalization.ESTADO_COMPLETO:
+                    <span class="badge bg-success text-white float-right">Completo</span>
+                    break;
+                case Formalization.ESTADO_CANCELADO:
+                    <span class="badge bg-danger text-white float-right">Cancelado</span>
+                    break;
+                case Formalization.ESTADO_IMPRESO:
+                    <span class="badge bg-info text-white float-right">Impreso</span>
+                    break;
+                case Formalization.ESTADO_CARNET_VIGENTE:
+                    <span class="badge bg-danger text-white float-right">Carnet vigente</span>
+                    break;
+            }
+        </h4>
+        <hr />
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#tab-1" role="tab" aria-controls="tab1" aria-selected="true">General</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#tab-5" role="tab" aria-controls="tab5" aria-selected="false">Pescador</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#tab-4" role="tab" aria-controls="tab4" aria-selected="false">Cédula</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-2" role="tab" aria-controls="tab2" aria-selected="false"> Solicitud</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#tab-3" role="tab" aria-controls="tab3" aria-selected="false">Certificación</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="final-tab" data-toggle="tab" href="#tab-6" role="tab" aria-controls="tab6" aria-selected="false">Finalizar</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="tab-1" role="tabpanel" aria-labelledby="tab-1">
+
+                <div class="row">
+                    <div class="col-12 col-lg-8 offset-lg-2 p-4">
+                        @if (ViewBag.error != null)
+                        {
+                            <div class="alert alert-warning" role="alert">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                @ViewBag.error
+                            </div>
+                        }
+                        @if (permisoEditar)
+                        {
+                            <form asp-action="Edit" method="post">
+                                @Html.AntiForgeryToken()
+                                <input asp-for="Id" type="hidden" />
+                                <div asp-validation-summary="All" class="small text-danger"></div>
+                                <div class="form-group row">
+                                    <label asp-for="Cedula" class="col-md-4 col-form-label"></label>
+                                    <div class="col-md-8">
+                                        <input asp-for="Cedula" class="form-control" required />
+                                        <span asp-validation-for="Cedula" class="form-text small text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label asp-for="Name" class="col-md-4 col-form-label"></label>
+                                    <div class="col-md-8">
+                                        <input asp-for="Name" class="form-control" required />
+                                        <span asp-validation-for="Name" class="form-text small text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label asp-for="NombreAsociacion" class="col-md-4 col-form-label"></label>
+                                    <div class="col-md-8">
+                                        <input asp-for="NombreAsociacion" class="form-control" />
+                                        <span asp-validation-for="NombreAsociacion" class="form-text small text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-md-4 col-form-label">Departamento</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control-plaintext font-weight-light" value="@original.Departamento" readonly />
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-md-4 col-form-label">Municipio</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control-plaintext font-weight-light" value="@original.Municipio" readonly />
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label asp-for="AreaPesca" class="col-md-4 col-form-label"></label>
+                                    <div class="col-md-8">
+                                        <input asp-for="AreaPesca" class="form-control" required />
+                                        <span asp-validation-for="AreaPesca" class="form-text small text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label asp-for="ArtesPesca" class="col-md-4 col-form-label"></label>
+                                    <div class="col-md-8">
+                                        <input asp-for="ArtesPesca" class="form-control" required />
+                                        <span asp-validation-for="ArtesPesca" class="form-text small text-danger"></span>
+                                    </div>
+                                </div>
+                                @if (permisoCancelar)
+                                {
+                                    <div class="form-group row">
+                                        <label asp-for="Estado" class="col-md-4 col-form-label"></label>
+                                        <div class="col-md-8">
+                                            <select asp-for="Estado" asp-items="@listaEstados" class="form-control" required>
+                                                <option value="">Seleccione una opción</option>
+                                            </select>
+                                            <span asp-validation-for="Estado" class="form-text small text-danger"></span>
+                                        </div>
+                                    </div>
+                                }
+                                @if (permisoAdmin)
+                                {
+                                    <hr />
+                                    <div class="form-group row">
+                                        <label asp-for="IdResponsable" class="col-md-4 col-form-label"></label>
+                                        <div class="col-md-8">
+                                            <select asp-for="IdResponsable" asp-items="@listaCoordinacion" class="form-control" required>
+                                                <option value="">Seleccione una opción</option>
+                                            </select>
+                                            <span asp-validation-for="IdResponsable" class="form-text small text-danger"></span>
+                                        </div>
+                                    </div>
+                                }
+                                <hr />
+                                <div class="form-group row">
+                                    <div class="col-sm-4 offset-lg-4">
+                                        <input type="submit" value="Guardar" class="btn btn-outline-primary btn-block" />
+                                    </div>
+                                </div>
+                            </form>
+
+                        }
+                        else
+                        {
+                            <div class="form-group row">
+                                <label asp-for="Cedula" class="col-md-4 col-form-label"></label>
+                                <div class="col-md-8">
+                                    <input asp-for="Cedula" class="form-control-plaintext font-weight-light" readonly />
+
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label asp-for="Name" class="col-md-4 col-form-label"></label>
+                                <div class="col-md-8">
+                                    <input asp-for="Name" class="form-control-plaintext font-weight-light" readonly />
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label asp-for="NombreAsociacion" class="col-md-4 col-form-label"></label>
+                                <div class="col-md-8">
+                                    <input asp-for="NombreAsociacion" class="form-control-plaintext font-weight-light" readonly />
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-md-4 col-form-label">Municipio</label>
+                                <div class="col-md-8">
+                                    <p class="form-control-plaintext font-weight-light">
+                                        @original.Municipio -
+                                        @original.Departamento
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label asp-for="AreaPesca" class="col-md-4 col-form-label"></label>
+                                <div class="col-md-8">
+                                    <input asp-for="AreaPesca" class="form-control-plaintext font-weight-light" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label asp-for="ArtesPesca" class="col-md-4 col-form-label"></label>
+                                <div class="col-md-8">
+                                    <input asp-for="ArtesPesca" class="form-control-plaintext font-weight-light" readonly />
+                                </div>
+                            </div>
+
+
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-5" role="tabpanel" aria-labelledby="tab-5">
+                <div class="text-center py-4 px-1">
+                    @await Component.InvokeAsync("Image", new { file = original.ImgPescador, text = "Foto pescador", css = "img-detail-large", id = "img-pescador" })
+                    @if (original.ImgPescador != null && original.ImgPescador != "")
+                    {
+                        <br />
+                        <button class="btn btn-outline-warning mt-3 showEditModal" data-img="img-pescador"
+                                data-filename="@original.ImgPescador">
+                            <i class="fas fa-photo-video"></i> Editar
+                        </button>
+                        if (permisoImagen)
+                        {
+                            <button class="btn btn-outline-success mt-3 ml-4 btn-image-load"
+                                    data-filename="@original.ImgPescador"
+                                    data-name="Foto pescador"
+                                    data-image="img-pescador">
+                                <i class="fas fa-upload"></i> Cargar
+                            </button>
+                        }
+                        if (permisoRestablecer)
+                        {
+                            <button class="btn btn-outline-danger mt-3 ml-4 btn-image-reset"
+                                    data-filename="@original.ImgPescador"
+                                    data-name="Foto pescador"
+                                    data-image="img-pescador">
+                                <i class="far fa-window-restore"></i> Restablecer
+                            </button>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-2" role="tabpanel" aria-labelledby="tab-2">
+                <div class="text-center py-4 px-1">
+                    @await Component.InvokeAsync("Image", new { file = original.ImgSolicitudCarnet, text = "Foto solicitud", css = "img-detail-large", id = "img-solicitud" })
+                    @if (original.ImgSolicitudCarnet != null && original.ImgSolicitudCarnet != "")
+                    {
+                        <br />
+                        <button class="btn btn-outline-warning mt-3 showEditModal" data-img="img-solicitud"
+                                data-filename="@original.ImgSolicitudCarnet">
+                            <i class="fas fa-photo-video"></i> Editar
+                        </button>
+                        if (permisoImagen)
+                        {
+                            <button class="btn btn-outline-success mt-3 ml-4 btn-image-load"
+                                    data-filename="@original.ImgSolicitudCarnet"
+                                    data-name="Foto solicitud"
+                                    data-image="img-solicitud">
+                                <i class="fas fa-upload"></i> Cargar
+                            </button>
+                        }
+                        if (permisoRestablecer)
+                        {
+                            <button class="btn btn-outline-danger mt-3 ml-4 btn-image-reset"
+                                    data-filename="@original.ImgSolicitudCarnet"
+                                    data-name="Foto solicitud"
+                                    data-image="img-solicitud">
+                                <i class="far fa-window-restore"></i> Restablecer
+                            </button>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-3" role="tabpanel" aria-labelledby="tab-3">
+                <div class="text-center py-4 px-1">
+                    @await Component.InvokeAsync("Image", new { file = original.ImgCertificacion, text = "Foto certificación", css = "img-detail-large", id = "img-certificado" })
+                    @if (original.ImgCertificacion != null && original.ImgCertificacion != "")
+                    {
+                        <br />
+                        <button class="btn btn-outline-warning mt-3 showEditModal" data-img="img-certificado"
+                                data-filename="@original.ImgCertificacion">
+                            <i class="fas fa-photo-video"></i> Editar
+                        </button>
+                        if (permisoImagen)
+                        {
+                            <button class="btn btn-outline-success mt-3 ml-4 btn-image-load"
+                                    data-filename="@original.ImgCertificacion"
+                                    data-name="Foto certificación"
+                                    data-image="img-certificado">
+                                <i class="fas fa-upload"></i> Cargar
+                            </button>
+                        }
+                        if (permisoRestablecer)
+                        {
+                            <button class="btn btn-outline-danger mt-3 ml-4 btn-image-reset"
+                                    data-filename="@original.ImgCertificacion"
+                                    data-name="Foto certificación"
+                                    data-image="img-certificado">
+                                <i class="far fa-window-restore"></i> Restablecer
+                            </button>
+                        }
+                    }
+
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-4" role="tabpanel" aria-labelledby="tab-4">
+                <div class="row">
+                    <div class="col-12 col-sm-6 text-center py-4 px-1">
+                        @await Component.InvokeAsync("Image", new { file = original.ImgCedulaAnverso, text = "Foto cédula", css = "img-detail-large", id = "img-cedula-a" })
+                        @if (original.ImgCedulaAnverso != null && original.ImgCedulaAnverso != "")
+                        {
+                            <br />
+                            <button class="btn btn-outline-warning mt-3 showEditModal" data-img="img-cedula-a"
+                                    data-filename="@original.ImgCedulaAnverso">
+                                <i class="fas fa-photo-video"></i> Editar
+                            </button>
+                            if (permisoImagen)
+                            {
+                                <button class="btn btn-outline-success mt-3 ml-4 btn-image-load"
+                                        data-filename="@original.ImgCedulaAnverso"
+                                        data-name="Foto cédula"
+                                        data-image="img-cedula-a">
+                                    <i class="fas fa-upload"></i> Cargar
+                                </button>
+                            }
+                            if (permisoRestablecer)
+                            {
+                                <button class="btn btn-outline-danger mt-3 ml-4 btn-image-reset"
+                                        data-filename="@original.ImgCedulaAnverso"
+                                        data-name="Foto cédula"
+                                        data-image="img-cedula-a">
+                                    <i class="far fa-window-restore"></i> Restablecer
+                                </button>
+                            }
+                        }
+                    </div>
+                    <div class="col-12 col-sm-6 text-center py-4 px-1">
+                        @await Component.InvokeAsync("Image", new { file = original.ImgCedulaReverso, text = "Foto cédula reverso", css = "img-detail-large", id = "img-cedula-r" })
+                        @if (original.ImgCedulaReverso != null && original.ImgCedulaReverso != "")
+                        {
+                            <br />
+                            <button class="btn btn-outline-warning mt-3 showEditModal" data-img="img-cedula-r"
+                                    data-filename="@original.ImgCedulaReverso">
+                                <i class="fas fa-photo-video"></i> Editar
+                            </button>
+                            if (permisoImagen)
+                            {
+                                <button class="btn btn-outline-success mt-3 ml-4 btn-image-load"
+                                        data-filename="@original.ImgCedulaReverso"
+                                        data-name="Foto cédula reverso"
+                                        data-image="img-cedula-r">
+                                    <i class="fas fa-upload"></i> Cargar
+                                </button>
+                            }
+                            if (permisoRestablecer)
+                            {
+                                <button class="btn btn-outline-danger mt-3 ml-4 btn-image-reset"
+                                        data-filename="@original.ImgCedulaReverso"
+                                        data-name="Foto cédula reverso"
+                                        data-image="img-cedula-r">
+                                    <i class="far fa-window-restore"></i> Restablecer
+                                </button>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-6" role="tabpanel" aria-labelledby="tab-6">
+                <div class="row py-4 px-1">
+                    <div class="col-12 col-md-4 mb-1">
+                        <button class="btn btn-outline-success btn-lg btn-block btn-finalizar" data-accion="finalizar">Finalizar <i class="fas"></i></u></button>
+                    </div>
+                    @if (permisoImprimir)
+                    {
+                        <div class="col-12 col-md-4 mb-1">
+                            <button class="btn btn-outline-info btn-lg btn-block btn-finalizar" data-accion="imprimir" data-link="@Url.Action("Print","Formalizacion", new { ids = Model.Id })">Finalizar e imprimir <i class="fas"></i></button>
+                        </div>
+                    }
+                    <div class="col-12 col-md-4 mb-1">
+                        <button class="btn btn-outline-danger btn-lg btn-block" data-toggle="modal" data-target="#modalConfirm">No valida</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="row">
+                    <div class="col-lg">
+                        <button onclick="goBack()" class="btn btn btn-outline-dark btn-block mb-2">Volver</button>
+                    </div>
+                    @if (permisoSolicitud)
+                    {
+                        <div class="col-lg">
+                            <a asp-controller="Solicitud" asp-action="Create" asp-route-id="@Model.Id"
+                               class="btn btn btn-outline-success btn-block" target="_blank">Solicitar cambio</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="modalEditImage" class="modal fade  d-print-none" tabindex="-1" role="dialog"
+     aria-labelledby="modalEditImageLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <img class="img-edit" src="" alt="Picture" id="image">
+                        <div class="my-4">
+
+
+                        </div>
+
+                    </div>
+                    <div class="col-12 col-sm-6 px-5 text-center">
+                        <div class="card">
+                            <div class="card-body">
+                                <canvas style="display:none"></canvas>
+                                <div id="result" style="min-height: 60vh">
+                                    <div class="preview">VISTA PREVIA</div>
+                                    <img id="imgResult" class="img-edit" />
+                                </div>
+                            </div>
+                            <div id="uploadingInfo" class="small"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-5">
+                        <div class="row">
+                            <div class="col-12 col-sm-4 d-flex range-image" title="Brillo">
+                                <label for="formControlRange" class="text-warning"><i class="fas fa-sun"></i></label>
+                                <input type="range" class="form-control-range filter-color" min="1" max="500" value="100" id="brightness">
+                            </div>
+                            <div class="col-12 col-sm-4 d-flex range-image" title="Contraste">
+                                <label for="formControlRange" class="text-dark"><i class="fas fa-adjust"></i></label>
+                                <input type="range" class="form-control-range filter-color" min="1" max="500" value="100" id="contrast">
+                            </div>
+                            <div class="col-12 col-sm-4 d-flex range-image" title="Saturación">
+                                <label for="formControlRange" class="text-info"><i class="fas fa-tint"></i></label>
+                                <input type="range" class="form-control-range filter-color" min="1" max="500" value="100" id="saturate">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class=" col-12  d-flex range-image" title="Rotar">
+                                <label for="formControlRange" class="text-dark"><i class="fas fa-sync-alt"></i></label>
+                                <input type="range" class="form-control-range " min="-360" max="360" value="0" id="angle">
+                                <span id="dataRotate" class="small ml-2 mt-2">0°</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-3">
+                        <div class="row mb-3">
+                            <div class="col-12 text-center">
+                                <button type="button" class="btn btn-outline-dark btn-rotar btn-img" data-option="-90" title="Rotar 90° a la izquierda" disabled>
+                                    <i class="fa fa-undo-alt"></i> 90
+                                </button>
+                                <button type="button" class="btn btn-outline-dark btn-rotar btn-img" data-option="90" title="Rotar 90° a la derecha" disabled>
+                                    90  <i class="fa fa-redo-alt"></i>
+                                </button>
+
+                                <button type="button" class="btn btn-outline-success btn-recortar btn-img" title="Aplicar" disabled>
+                                    <i class="fa fa-check"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-reset btn-img" title="Limpiar" disabled>
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12 text-center">
+                                <button type="button" class="btn btn-outline-dark btn-rotar btn-img" data-option="-10" title="Rotar 10° a la izquierda" disabled>
+                                    <i class="fa fa-undo-alt"></i> 10
+                                </button>
+                                <button type="button" class="btn btn-outline-dark btn-rotar btn-img" data-option="10" title="Rotar 10° a  la derecha" disabled>
+                                    10 <i class="fa fa-redo-alt"></i>
+                                </button>
+
+                                <button type="button" class="btn btn-outline-info btn-zoom btn-img" data-option="1" title="Zoom -" disabled>
+                                    <i class="fas fa-search-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-info btn-zoom btn-img" data-option="-1" title="Zoom +" disabled>
+                                    <i class="fas fa-search-plus"></i>
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-2 ">
+                        <form id="formUpload" asp-action="UpdateImage" asp-controller="Formalizacion" enctype="multipart/form-data" method="post">
+                            @Html.Hidden("filename", "", new { id = "inputFilename" })
+                            <button type="submit" class="btn btn-outline-info btn-save btn-block" title="Guardar cambios" disabled>
+                                <i class="fa fa-upload"></i> Guardar
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-6 col-sm-2">
+                        <button type="button" class="btn btn-outline-danger btn-block" data-dismiss="modal">Salir</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalConfirm" class="modal fade  d-print-none" tabindex="-1" role="dialog"
+     aria-labelledby="modalConfirmLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="alert alert-danger text-lg-center">
+                    ¿Realmente desea marcar esta formalización como
+                    <br /> "NO VALIDA"?
+                </p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-finalizar" data-accion="cancelar">Confirmar  <i class="fas"></i></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalConfirmReset" class="modal fade  d-print-none" tabindex="-1" role="dialog"
+     aria-labelledby="modalConfirmResetLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="text-lg-center">
+                    ¿Realmente desea restablecer la imagen
+                    "<b id="img-reset-name" class="text-uppercase"></b>"?
+                </p>
+                <div id="resetInfo"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="BtnConfirmReset" type="button" class="btn btn-danger btn-modal-reset">Restablecer  <i class="fas"></i></button>
+                <button type="button" class="btn btn-secondary btn-modal-reset" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalUploadImage" class="modal fade  d-print-none" tabindex="-1" role="dialog"
+     aria-labelledby="modalUploadImageLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="text-uppercase">Cargar imagen </h5>                
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p> Imagen:  "<b id="img-load-name" class="text-uppercase"></b>"</p>
+                <br />
+                <form id="formLoad" asp-action="LoadImage" asp-controller="Formalizacion" enctype="multipart/form-data" method="post">
+                    @Html.Hidden("filename", "", new { id = "inputFilenameLoad" })
+                    @Html.Hidden("name", "", new { id = "inputNameLoad" })
+                    @Html.Hidden("formalizacion", Model.Id)
+                    <div class="custom-file">
+                        <input id="fileLoad" name="file" type="file" required class="custom-file-input"
+                               accept="image/png, image/gif, image/jpeg" lang="es">
+                        <label class="custom-file-label" for="fileLoad" data-browse="Elegir">Seleccionar Archivo</label>
+                    </div>
+                </form>
+                <div id="loadInfo"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="BtnConfirmLoad" type="submit" form="formLoad" class="btn btn-success btn-modal-load"> Cargar  <i class="fas"></i></button>
+                <button type="button" class="btn btn-secondary btn-modal-load" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles{
+    <link rel="stylesheet" href="~/lib/cropper/cropper.css" />
+}
+@section Scripts{
+    <script type="text/javascript" src="~/lib/cropper/cropper.js"></script>
+    <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
+    <script type="text/javascript" src="~/js/tables/EditImageScript.js?v=1.0"></script>
+    <script type="text/javascript" src="~/js/tables/ValidarFormalizacionScript.js?v=1.0"></script>
+    <script>
+        function goBack() {
+            if ('referrer' in document) {
+                window.location = document.referrer;
+            } else {
+                window.history.back();
+            }
+        }
+    </script>
+}

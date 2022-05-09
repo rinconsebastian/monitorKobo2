@@ -1,0 +1,89 @@
+﻿@using Microsoft.EntityFrameworkCore;
+
+@inject App_consulta.Data.ApplicationDbContext db
+
+@{
+    var color = "#333333";
+    var colorPrincipal = "#333333";
+    var colorTextoPrincipal = "#ffffff";
+
+    var conf = await db.Configuracion.FirstOrDefaultAsync();
+    if (conf != null)
+    {
+
+        color = conf.colorTextoHeader != null && conf.colorTextoHeader != "" ? conf.colorTextoHeader: color;
+
+
+        colorPrincipal = conf.colorPrincipal != null && conf.colorPrincipal != "" ? conf.colorPrincipal : colorPrincipal;
+
+        colorTextoPrincipal = conf.colorTextoPrincipal != "" && conf.colorTextoPrincipal != null ? conf.colorTextoPrincipal : colorTextoPrincipal;
+
+    }
+}
+
+
+<style>
+    .navbar .nav-item > a, a.navbar-brand {
+        color: @color !important;
+        webkit-transition: 0.15s ease-in-out;
+        -moz-transition: 0.15s ease-in-out;
+        -o-transition: 0.15s ease-in-out;
+        transition: 0.15s ease-in-out;
+    }
+
+        .navbar .nav-item > a:hover, a.navbar-brand:hover {
+            color: @color !important;
+            -webkit-text-shadow: 0px 0px 5px rgba(0,0,0, 0.8);
+            text-shadow: 0px 0px 5px rgba(0,0,0, 0.8);
+            ;
+        }
+
+
+    .navbar i {
+        color: @color !important;
+        webkit-transition: 0.15s ease-in-out;
+        -moz-transition: 0.15s ease-in-out;
+        -o-transition: 0.15s ease-in-out;
+        transition: 0.15s ease-in-out;
+    }
+
+        .navbar i:hover {
+            color: @color !important;
+            -webkit-text-shadow: 0px 0px 5px rgba(0,0,0, 0.8);
+            text-shadow: 0px 0px 5px rgba(0,0,0, 0.8);
+        }
+
+        .navbar button {
+        color: @color !important;
+        webkit-transition: 0.15s ease-in-out;
+        -moz-transition: 0.15s ease-in-out;
+        -o-transition: 0.15s ease-in-out;
+        transition: 0.15s ease-in-out;
+    }
+
+        .navbar button:hover {
+            color: @color !important;
+            -webkit-text-shadow: 0px 0px 5px rgba(0,0,0, 0.8);
+            text-shadow: 0px 0px 5px rgba(0,0,0, 0.8);
+        }
+
+
+    .olrutas, .color-ruta, .titulo-principal {
+        background-color: @colorPrincipal !important;
+        color: @colorTextoPrincipal !important;
+    }
+
+
+    .btn-outline-primary {
+        color: @colorPrincipal !important;
+        border-color: @colorPrincipal !important;
+    }
+
+    .btn-outline-primary:hover {
+        color: @colorTextoPrincipal !important;
+        background-color:  @colorPrincipal !important;
+        border-color:  @colorPrincipal !important;
+    }
+</style>
+
+

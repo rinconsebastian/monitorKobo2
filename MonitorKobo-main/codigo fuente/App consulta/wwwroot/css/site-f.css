@@ -1,0 +1,76 @@
+﻿@page {
+    size: letter;
+    margin: 1cm;
+}
+
+p {
+    font: 120% sans-serif;
+}
+
+/* Imagenes */
+.img-formalizacion {
+    max-height: 120px;
+    max-width: 120px;
+}
+
+.img-large {
+    max-height: 90vh;
+    max-width: 100%;
+}
+
+.img-small {
+    max-height: 60vh;
+    max-width: 100%;
+}
+
+.img-mini {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+
+@media print {
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-f {
+        background-color: white;
+        page-break-after: always;
+        padding: 0;
+        margin: 0;
+    }
+
+    .img-large {
+        max-height: 9in;
+        object-fit: contain;
+        max-width: 100%;
+    }
+
+    .img-small {
+        max-height: 5in;
+        object-fit: contain;
+        max-width: 100%;
+    }
+
+    /* Tablas */
+    .table-formalz {
+        table-layout: fixed;
+    }
+
+    .table-bordered td, .table-bordered th {
+        border: 1px solid black!important;
+    }
+
+    .table tbody + tbody {
+        border-top: none;
+    }
+}
+
+
+
+

@@ -1,0 +1,6 @@
+﻿@model IEnumerable<App_consulta.Models.ApplicationUser>
+@foreach (var item in Model)
+{
+    <a asp-controller="Users" asp-action="Details" asp-route-id="@item.Id">@item.Nombre @item.Apellido</a>
+    <br />
+}

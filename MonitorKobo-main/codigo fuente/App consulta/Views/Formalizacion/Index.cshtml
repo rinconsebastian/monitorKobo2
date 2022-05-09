@@ -1,0 +1,39 @@
+﻿@model IEnumerable<App_consulta.Models.Formalization>
+
+@{
+    ViewData["Title"] = "Informe formalización";
+    ViewData["Subtitle"] = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var permisoValidar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Validar" && c.Value == "1"));
+    var permisoExportar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado" && c.Value == "1"));
+    var permisoImprimir = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Imprimir" && c.Value == "1"));
+}
+@Html.Hidden("ShowValidate", (permisoValidar ? 1 : 0))
+@Html.Hidden("showExport", (permisoExportar ? 1 : 0))
+@Html.Hidden("showPrint", (permisoImprimir ? 1 : 0))
+@Html.Hidden("urlPrint", Url.Action("Print", "Formalizacion"))
+
+<div class="card mt-4 mx-auto">
+    <div class="card-body">
+        <h3 class="text-center text-uppercase">Informe formalización</h3>
+        @if (ViewBag.error != null)
+        {
+            <div class="alert alert-warning" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                @ViewBag.error
+            </div>
+        }
+
+        <div id="gridContainer" class="row-lm marginTop10 aux-selection"></div>
+
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript" src="~/lib/jquery/moment.js"></script>
+
+    <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
+    <script type="text/javascript" src="~/js/tables/FormalizacionListadoScript.js?v=1.1"></script>
+}
+

@@ -1,0 +1,40 @@
+﻿
+@{
+    ViewData["Title"] = "Informe encuestadores";
+    ViewData["Subtitle"] = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var verFormalizacion = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Ver" && c.Value == "1"));
+    var validarFormalizacion = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Validar" && c.Value == "1"));
+
+    var permisoExportar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado" && c.Value == "1"));
+}
+@Html.Hidden("code", "")
+@Html.Hidden("showExport", (permisoExportar ? 1 : 0))
+
+<div class="row mt-4">
+    <div class="col-12 ">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="text-center text-uppercase">Informe de caracterizaciones</h3>
+                <div id="gridContainer" class="row-lm aux-selection">
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <p class="font-weight-light mb-0 small">
+                    Actualizado el <i>@ViewBag.DataTime</i>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript" src="~/lib/jquery/moment.js"></script>
+    <script>
+        var myShowValidation = @(verFormalizacion ? "true": "false");
+        var myLoadValidation =@(validarFormalizacion ? "true": "false");
+        var myShowDni = true;
+    </script>
+    <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
+    <script type="text/javascript" src="~/js/tables/EncuestaListadoScript.js?v=1.1"></script>
+}

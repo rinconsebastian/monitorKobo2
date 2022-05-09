@@ -1,0 +1,24 @@
+﻿@using Microsoft.EntityFrameworkCore;
+
+@inject App_consulta.Data.ApplicationDbContext db
+
+@{
+    var style = "";
+
+    var conf = await db.Configuracion.FirstOrDefaultAsync();
+    if (conf != null)
+    {
+        var imagenFondo = conf.ImgHeader;
+        var colorFondo = conf.colorPrincipal;
+        if (imagenFondo != null && imagenFondo != "")
+        {
+            style += "background-image: url("+ imagenFondo + "); ";
+        }
+        else if (colorFondo != null && colorFondo != "")
+        {
+            style += "background-color: " + colorFondo + "!important; ";
+            style += "background-image: linear-gradient(to right, rgba(0,0,0,.6), rgba(0,0,0,0), rgba(0,0,0,.6)); ";
+        }
+    }
+}
+style= '@style'

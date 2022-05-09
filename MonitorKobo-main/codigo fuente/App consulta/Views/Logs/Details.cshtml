@@ -1,0 +1,52 @@
+﻿@model App_consulta.Models.LogModel
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "Registro de actividad";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var oldValue = ViewBag.Old;
+    var newValue = ViewBag.New;
+}
+<h4>Detalles registro</h4>
+<div class="form-group row">
+    <label asp-for="Usuario" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Usuario)</p>
+    </div>
+</div>
+<div class="form-group row">
+    <label asp-for="Accion" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Accion)</p>
+    </div>
+</div>
+<div class="form-group row">
+    <label asp-for="Modelo" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Modelo)</p>
+    </div>
+</div>
+<div class="form-group row">
+    <label asp-for="Fecha" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Fecha)</p>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-6">
+        <b><label asp-for="ValAnterior" class="col-form-label"></label></b>
+        <pre>@Html.Raw(oldValue)</pre>
+    </div>
+    <div class="col-6">
+        <b><label asp-for="ValNuevo" class="col-form-label"></label></b>
+        <pre>@Html.Raw(newValue)</pre>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-sm-3 offset-3">
+        <a asp-action="Index" class="btn btn btn-outline-dark btn-block">Volver</a>
+    </div>
+</div>

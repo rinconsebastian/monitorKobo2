@@ -1,0 +1,63 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>@ViewData["Title"] - AppConsulta</title>
+
+    <partial name="_faviconPartial" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/devexpress/dx.common.css" />
+    <link rel="stylesheet" href="~/css/devexpress/dx.light.css" />
+
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    @await RenderSectionAsync("Styles", required: false)
+
+
+   
+
+    <partial name="_colorMenuPartial" />
+</head>
+<body>
+    <nav class="navbar sticky-top navbar-light bg-light navbar-expand-lg  box-shadow mb-3"
+        <partial name="_imagenNavegacionPartial" /> >
+        <div class="container">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">  <partial name="_LogoPartial" /></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <partial name="_MenuHeaderPartial" />
+        </div>
+    </nav>
+
+    <div class="container bodyccs  @(ViewBag.ClaseContainer) ">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <div id="toastGenerico"></div>
+    <div id="toastGenericoReload"></div>
+    @Html.Hidden("Root", Url.Content("~/"))
+
+    <partial name="_footerPartial" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="~/js/devexpress/jszip.min.js"></script>
+    <script src="~/js/devexpress/dx.all.js"></script>
+    <script src="~/js/devexpress/dx.messages.es.js"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>
+
+
+

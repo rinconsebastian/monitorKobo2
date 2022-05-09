@@ -1,0 +1,129 @@
+﻿@model App_consulta.Models.RequestUserDataForm
+
+@{
+    ViewData["Title"] = "Solicitudes";
+    ViewData["Subtitle"] = "Validar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    RequestUser solicitud = ViewBag.Solicitud;
+
+    Formalization formalizacion = ViewBag.Formalizacion;
+    var numeroRegistro = formalizacion != null ? formalizacion.NumeroRegistro : "";
+
+    ApplicationUser user = ViewBag.User;
+    var listaEstados = (SelectList)ViewBag.Estados;
+
+}
+<div class="row mt-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="text-right text-uppercase">
+                    @switch (Model.State)
+                    {
+                        case RequestUser.ESTADO_NUEVA:
+                            <span class="badge bg-warning text-dark">Nuevo</span>
+                            break;
+                        case RequestUser.ESTADO_SOLUCIONADA:
+                            <span class="badge bg-success text-white">Terminado</span>
+                            break;
+                        case RequestUser.ESTADO_CANCELADA:
+                            <span class="badge bg-danger text-white">Cancelado</span>
+                            break;
+                        case RequestUser.ESTADO_EN_PROCESO:
+                            <span class="badge bg-info text-white">En proceso</span>
+                            break;
+                    }
+                </h5>
+                <h5 class="text-left text-uppercase">
+                    @solicitud.Request
+                </h5>
+                <hr />
+                <h6>Solicitud</h6>
+                <p class="text-justify">@solicitud.Message</p>
+
+                @if (solicitud.FormalizationId > 0)
+                {
+                    <h6>No. Formalización</h6>
+                    <p>
+                        <a asp-controller="Formalizacion" asp-action="Edit" asp-route-id="@solicitud.FormalizationId" class="btn btn-link btn-sm text-left" target="_blank">
+                            @numeroRegistro
+                        </a>
+                    </p>
+                }
+                @if (solicitud.File != null && solicitud.File != "")
+                {
+                    <h6>Adjunto</h6>
+                    <p>
+                        <a class="btn btn-link btn-sm text-left" target="_blank" href=" @Url.Action("ViewAdjunto", "Solicitud", new { filename = solicitud.File })">@solicitud.File</a>
+                    </p>
+                }
+                @if (user != null)
+                {
+                    <h6>Usuario</h6>
+                    <p>
+                        <i class="font-weight-lighter">Nombre:</i> @user.Nombre  @user.Apellido <br />
+                        <i class="font-weight-lighter">Email:</i> @user.Email <br />
+                        <i class="font-weight-lighter">Teléfono:</i> @user.PhoneNumber <br />
+                    </p>
+                }
+
+            </div>
+            <div class="card-footer">
+                <p class="font-weight-light mb-0 small">
+                    Fecha creación: <i>@solicitud.CreateDate.ToString("f")</i>
+                </p>
+                <p class="font-weight-light mb-0 small">
+                    Fecha validación: <i>@solicitud.ValidationDate.ToString("f")</i>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="my-2">Validar solicitud</h4>
+                <hr />
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <div asp-validation-summary="All" class="small text-danger"></div>
+                    <div class="form-group row">
+                        <label asp-for="Response" class="col-md-3 col-form-label"></label>
+                        <div class="col-md-9">
+                            <textarea asp-for="Response" class="form-control" required rows="6"></textarea>
+                            <span asp-validation-for="Response" class="form-text small text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label asp-for="State" class="col-md-3 col-form-label"></label>
+                        <div class="col-md-9">
+                            <select asp-for="State" asp-items="@listaEstados" class="form-control" required>
+                                <option value="">Seleccione una opción</option>
+                            </select>
+                            <span asp-validation-for="State" class="form-text small text-danger"></span>
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="form-group row">
+                        <div class="col-sm-3 offset-lg-3">
+                            <input type="submit" value="Guardar" class="btn btn-outline-primary btn-block mb-2" />
+                        </div>
+                        <div class="col-sm-3">
+                            <a asp-action="IndexAdmin" class="btn btn btn-outline-dark btn-block">Volver</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+           
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
+}
+
+

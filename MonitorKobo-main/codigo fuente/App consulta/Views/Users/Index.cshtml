@@ -1,0 +1,71 @@
+﻿@model IEnumerable<App_consulta.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<h4>Usuarios</h4>
+@if (ViewBag.error != null)
+{
+    <div class="alert alert-warning" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        @ViewBag.error
+    </div>
+}
+<p>
+    @Html.ActionLink("Nuevo usuario", "Create")
+</p>
+<table class="table font-smaller">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Apellido)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IDDependencia)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmailConfirmed)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Apellido)
+            </td>
+            <td>
+                @await Component.InvokeAsync("DependenciaNombre", new { id = item.IDDependencia })
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td class="text-center">
+                @(item.EmailConfirmed ? "Si" : "No")
+            </td>
+            <td>
+                <span class="button-inline small-button">
+                    <a href='@Url.Action("Details", new { id=item.Id })' class="btn btn-default btn-sm" title="Detalles"><i class="fas fa-file-alt"></i></a>
+                    <a href='@Url.Action("Edit", new { id=item.Id })' class="btn btn-default btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
+                    <a href='@Url.Action("Delete", new { id=item.Id })' class="btn btn-default btn-sm" title="Borrar"><i class="fas fa-trash"></i></a>
+                </span>
+
+            </td>
+        </tr>
+    }
+
+</table>
+
+

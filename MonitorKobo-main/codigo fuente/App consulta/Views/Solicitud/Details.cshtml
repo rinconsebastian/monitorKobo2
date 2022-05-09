@@ -1,0 +1,86 @@
+﻿@model App_consulta.Models.RequestUser
+
+@{
+    ViewData["Title"] = "Solicitudes";
+    ViewData["Subtitle"] = "Detalles";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Formalization formalizacion = ViewBag.Formalizacion;
+    var numeroRegistro = formalizacion != null ? formalizacion.NumeroRegistro : "";
+}
+<div class="row mt-5">
+    <div class="col-12 col-sm-5 mx-auto">
+        <div class="card  border-info ">
+            <div class="card-body">
+                <h5 class="text-right text-uppercase">
+                    @switch (Model.State)
+                    {
+                        case RequestUser.ESTADO_NUEVA:
+                            <span class="badge bg-warning text-dark">Nuevo</span>
+                            break;
+                        case RequestUser.ESTADO_SOLUCIONADA:
+                            <span class="badge bg-success text-white">Terminado</span>
+                            break;
+                        case RequestUser.ESTADO_CANCELADA:
+                            <span class="badge bg-danger text-white">Cancelado</span>
+                            break;
+                        case RequestUser.ESTADO_EN_PROCESO:
+                            <span class="badge bg-info text-white">En proceso</span>
+                            break;
+                    }
+                </h5>
+                <h5 class="text-left text-uppercase">
+                    @Model.Request
+                </h5>
+                <hr />
+                <h6>Solicitud</h6>
+                <p class="text-justify">@Model.Message</p>
+
+                @if (Model.FormalizationId > 0)
+                {
+                    <h6>No. Formalización</h6>
+                    <p>
+                        <a asp-controller="Formalizacion" asp-action="Edit" asp-route-id="@Model.FormalizationId" class="btn btn-link btn-sm text-left" target="_blank">
+                            @numeroRegistro
+                        </a>
+                    </p>
+                }
+                @if (Model.File != null && Model.File != "")
+                {
+                    <h6>Adjunto</h6>
+                    <p>
+                        <a class="btn btn-link btn-sm text-left" target="_blank" href=" @Url.Action("ViewAdjunto", "Solicitud", new { filename = Model.File })">@Model.File</a>
+                    </p>
+                }
+
+                @if (Model.Response != null && Model.Response != "")
+                {
+                    <hr />
+                    <h6>Respuesta</h6>
+                    <p class="text-justify">@Model.Response</p>
+                }
+                <hr />
+                <div class="form-group row">
+                    <div class="col-sm-4 offset-lg-4">
+                        <a asp-action="Index" class="btn btn btn-outline-dark mb-2 btn-block">Volver</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <p class="font-weight-light mb-0 small">
+                    Fecha creación: <i>@Model.CreateDate.ToString("f")</i>
+                </p>
+                @if (@Model.ValidationDate.Year > 1000)
+                {
+                    <p class="font-weight-light mb-0 small">
+                        Fecha validación: <i>@Model.ValidationDate.ToString("f")</i>
+                    </p>
+                }
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

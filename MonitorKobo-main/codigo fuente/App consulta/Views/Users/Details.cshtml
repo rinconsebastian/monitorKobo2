@@ -1,0 +1,98 @@
+﻿@model App_consulta.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "Usuarios";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<h4>Detalles usuario</h4>
+<div class="form-group row">
+    <label asp-for="Nombre" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Nombre)</p>
+    </div>
+</div>
+<div class="form-group row">
+    <label asp-for="Apellido" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Apellido)</p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="IDDependencia" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">
+            @await Component.InvokeAsync("DependenciaNombre", new { id = Model.IDDependencia })
+        </p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="Email" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Email)</p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="EmailConfirmed" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">
+            @(Model.EmailConfirmed ? "Si" : "No")
+        </p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="PhoneNumber" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.PhoneNumber)</p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="LockoutEnabled" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">
+            @(Model.LockoutEnabled ? "Si" : "No")
+        </p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="AccessFailedCount" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.AccessFailedCount)</p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="UserName" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.UserName)</p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label">Roles</label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">
+            @foreach (ApplicationRole rol in ViewBag.Roles)
+            {
+                <a asp-controller="Rol" asp-action="Details" asp-route-id="@rol.Id">@rol.Name</a><br />
+            }
+        </p>
+    </div>
+</div>
+
+
+
+<div class="form-group row">
+    <div class="col-sm-3 offset-3">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-block">Editar</a>
+    </div>
+    <div class="col-sm-3">
+        <a asp-action="Index" class="btn btn btn-outline-dark btn-block">Volver</a>
+    </div>
+</div>

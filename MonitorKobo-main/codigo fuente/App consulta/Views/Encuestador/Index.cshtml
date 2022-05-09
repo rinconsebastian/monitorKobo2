@@ -1,0 +1,43 @@
+﻿
+
+@{
+    ViewData["Title"] = "Encuestadores";
+    ViewData["Subtitle"] = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var permisoEditar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Editar" && c.Value == "1"));
+    var permisoAdmin = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Administrar" && c.Value == "1"));
+
+    var permisoExportar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado" && c.Value == "1"));
+}
+@Html.Hidden("ShowDelete", (permisoAdmin ? 1 : 0))
+@Html.Hidden("ShowEdit", (permisoEditar ? 1 : 0))
+@Html.Hidden("showExport", (permisoExportar ? 1 : 0))
+
+<div class="card mt-4 mx-auto">
+    <div class="card-body">
+        <h4>Encuestadores</h4>
+        @if (ViewBag.error != null)
+        {
+            <div class="alert alert-warning" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                @ViewBag.error
+            </div>
+        }
+        @if (permisoEditar)
+        {
+            <p>
+                @Html.ActionLink("Nuevo encuestador", "Create")
+            </p>
+        }
+
+        <div id="gridContainer" class="row-lm marginTop10 aux-selection"></div>
+
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript" src="~/lib/jquery/moment.js"></script>
+    <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
+    <script type="text/javascript" src="~/js/tables/EncuestadorListadoScript.js?v=1.1"></script>
+}

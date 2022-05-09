@@ -1,0 +1,60 @@
+﻿@model IEnumerable<App_consulta.Models.FormalizationVariable>
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<h4>Variables de formalizacion</h4>
+@if (ViewBag.error != null)
+{
+    <div class="alert alert-warning" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        @ViewBag.error
+    </div>
+}
+<table class="table font-smaller">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Group)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Key)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Value)
+        </th>
+
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Group)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Key)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value)
+            </td>
+
+            <td>
+                <span class="button-inline small-button">
+                    <a href='@Url.Action("Edit", new { id=item.Id })' class="btn btn-default btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
+                </span>
+            </td>
+        </tr>
+    }
+
+</table>
+

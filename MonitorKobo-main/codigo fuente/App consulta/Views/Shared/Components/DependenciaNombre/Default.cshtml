@@ -1,0 +1,7 @@
+﻿
+@model App_consulta.Models.Responsable
+@if(Model != null)
+{
+    <a asp-controller="Responsables" asp-action="Details" asp-route-id="@Model.Id">@Model.Nombre</a>
+}
+

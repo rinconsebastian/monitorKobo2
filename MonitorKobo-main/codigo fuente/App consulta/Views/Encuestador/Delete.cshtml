@@ -1,0 +1,92 @@
+﻿@model App_consulta.Models.Pollster
+
+@{
+    ViewData["Title"] = "Encuestadores | Borrar";
+    ViewData["Subtitle"] = "Encuestadores";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card w-50 mt-4 mx-auto">
+    <div class="card-body">
+        <h4 class="text-center text-uppercase">Borrar encuestador</h4>
+        <hr />
+
+        <div class="form-group row">
+            <label asp-for="DNI" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-9">
+                <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.DNI)</p>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label asp-for="Name" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-9">
+                <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Name)</p>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label asp-for="IdResponsable" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-9">
+                @if (Model.Responsable != null)
+                {
+                    <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Responsable.Nombre)</p>
+                }
+            </div>
+        </div>
+
+
+
+
+        <div class="form-group row">
+            <label asp-for="PhoneNumber" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-9">
+                <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.PhoneNumber)</p>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label asp-for="Email" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-9">
+                <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Email)</p>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label asp-for="IdLocationParent" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-9">
+                @if (Model.Location != null && Model.Location.LocationParent != null)
+                {
+                    <p class="form-control-plaintext font-weight-light">
+                        @Html.DisplayFor(model => model.Location.LocationParent.Name)
+                    </p>
+                }
+            </div>
+        </div>
+        <div class="form-group row">
+            <label asp-for="IdLocation" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-9">
+                @if (Model.Location != null)
+                {
+                    <p class="form-control-plaintext font-weight-light">
+                        @Html.DisplayFor(model => model.Location.Name)
+                    </p>
+                }
+            </div>
+        </div>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group row">
+                <div class="col-sm-3 offset-lg-3">
+                    <input type="submit" value="Borrar" class="btn btn-outline-danger btn-block mb-2" />
+                </div>
+                <div class="col-sm-3">
+                    <a asp-action="Index" class="btn btn btn-outline-dark btn-block">Volver</a>
+                </div>
+            </div>
+        }
+    </div>
+
+
+</div>

@@ -1,0 +1,54 @@
+﻿@model App_consulta.Models.Responsable
+
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "Dependencias";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var listaJefes = (SelectList)ViewBag.Responsables;
+}
+<h4>Editar dependencia</h4>
+<form id="formIndicador" asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="small text-danger"></div>
+    <input asp-for="Id" type="hidden" />
+    <div class="form-group row">
+        <label asp-for="IdJefe" class="col-md-3 col-form-label"></label>
+        <div class="col-md-9">
+            <select asp-for="IdJefe" asp-items="@listaJefes" class="form-control">
+                <option value="">Seleccione una opción</option>
+            </select>
+            <span asp-validation-for="IdJefe" class="form-text small text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="Nombre" class="col-md-3 col-form-label"></label>
+        <div class="col-md-9">
+            <input asp-for="Nombre" class="form-control" />
+            <span asp-validation-for="Nombre" class="form-text small text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <div class="col-sm-9 offset-3">
+            <div class="custom-control custom-switch">
+                <input class="custom-control-input" asp-for="Editar" />
+                <label asp-for="Editar" class="custom-control-label"></label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-3 offset-3">
+            <input type="submit" value="Guardar" class="btn btn-outline-primary btn-block" />
+        </div>
+        <div class="col-sm-3">
+            <a asp-action="Index2" class="btn btn btn-outline-dark btn-block">Volver</a>
+        </div>
+    </div>
+
+</form>
+
+

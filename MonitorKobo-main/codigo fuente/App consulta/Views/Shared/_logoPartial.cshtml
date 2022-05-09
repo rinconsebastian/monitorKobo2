@@ -1,0 +1,19 @@
+﻿@using Microsoft.EntityFrameworkCore;
+
+@inject  App_consulta.Data.ApplicationDbContext db
+
+@{
+    var logo = "";
+    var entidad = "";
+    var titulo = "App";
+    var conf = await db.Configuracion.FirstOrDefaultAsync();
+    if (conf != null)
+    {
+        logo = conf.Logo;
+        titulo = conf.NombrePlan;
+        entidad = conf.Entidad;
+    }
+}
+
+<img src="@logo" class="logo-plan"/>
+<h1 class="nombre-plan ml-2">@entidad <br /><small>@titulo</small></h1>

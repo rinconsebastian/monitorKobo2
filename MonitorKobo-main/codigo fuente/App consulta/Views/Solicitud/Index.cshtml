@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Mis solicitudes";
+    ViewData["Subtitle"] = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="card mt-4 mx-auto">
+    <div class="card-body">
+        <h4>Mis solicitudes</h4>
+        @if (ViewBag.error != null)
+        {
+            <div class="alert alert-warning" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                @ViewBag.error
+            </div>
+        }
+        <p>
+            @Html.ActionLink("Nueva solicitud", "Create")
+        </p>
+
+        <div id="gridContainer" class="row-lm marginTop10 aux-selection"></div>
+
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript" src="~/lib/jquery/moment.js"></script>
+    <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
+    <script type="text/javascript" src="~/js/request/SolicitudListadoScript.js?v=1.1"></script>
+}

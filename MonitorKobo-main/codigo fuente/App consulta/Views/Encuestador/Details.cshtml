@@ -1,0 +1,170 @@
+﻿@model App_consulta.Models.Pollster
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "Encuestadores";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var code = Model.DNI.ToString();
+
+    var permisoEditar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Editar" && c.Value == "1"));
+    var permisoAdministrar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Administrar" && c.Value == "1"));
+
+    var verEncuestas = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Usuario" && c.Value == "1"));
+
+    var verFormalizacion = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Ver" && c.Value == "1"));
+    var validarFormalizacion = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Validar" && c.Value == "1"));
+
+    var permisoExportar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado" && c.Value == "1"));
+}
+@Html.Hidden("code", code)
+@Html.Hidden("showExport", (permisoExportar ? 1 : 0))
+
+<div class="row mt-4">
+    <div class="col-12 col-sm-5 @(verEncuestas ? "" : "mx-auto")">
+        <div class="card  border-info ">
+            <div class="card-body">
+                <h4 class="text-center text-uppercase">@Model.Name</h4>
+                <h5 class="text-center text-uppercase">@Model.DNI</h5>
+                <hr />
+                <div class="alert alert-success text-center" role="alert">
+                    Clave del usuario: <span class="text-lg font-weight-bold">@Model.Code</span>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="IdResponsable" class="col-sm-5 col-form-label"></label>
+                    <div class="col-sm-7">
+                        @if (Model.Responsable != null)
+                        {
+                            <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Responsable.Nombre)</p>
+                        }
+                    </div>
+                </div>
+                <hr />
+
+
+                <div class="form-group row">
+                    <label asp-for="PhoneNumber" class="col-sm-5 col-form-label"></label>
+                    <div class="col-sm-7">
+                        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.PhoneNumber)</p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="Email" class="col-sm-5 col-form-label"></label>
+                    <div class="col-sm-7">
+                        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Email)</p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="IdLocationParent" class="col-sm-5 col-form-label"></label>
+                    <div class="col-sm-7">
+                        @if (Model.Location != null && Model.Location.LocationParent != null)
+                        {
+                            <p class="form-control-plaintext font-weight-light">
+                                @Html.DisplayFor(model => model.Location.LocationParent.Name)
+                            </p>
+                        }
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="IdLocation" class="col-sm-5 col-form-label"></label>
+                    <div class="col-sm-7">
+                        @if (Model.Location != null)
+                        {
+                            <p class="form-control-plaintext font-weight-light">
+                                @Html.DisplayFor(model => model.Location.Name)
+                            </p>
+                        }
+                    </div>
+                </div>
+
+                <hr />
+                <div class="form-group row">
+
+                    @if (permisoEditar)
+                    {
+                        <div class="col-sm-3 offset-lg-3">
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-block mb-2">Editar</a>
+                        </div>
+                        <div class="col-sm-3 ">
+                            <a asp-action="Index" class="btn btn btn-outline-dark btn-block">Volver</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-sm-4 offset-lg-4">
+                            <a asp-action="Index" class="btn btn btn-outline-dark btn-block">Volver</a>
+                        </div>
+                    }
+                </div>
+            </div>
+            @if (permisoAdministrar)
+            {
+                <div class="card-footer">
+                    @if (Model.User != null)
+                    {
+                        <p class="font-weight-light mb-0 small">
+                            Registrado por: <b>@Model.User.Nombre @Model.User.Apellido</b>
+                        </p>
+                    }
+                    <p class="font-weight-light mb-0 small">
+                        Fecha creación: <i>@Model.CreationDate.ToString("f")</i>
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+    @if (verEncuestas)
+    {
+        <div class="col-12 col-sm-7">
+            <div class="card">
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#tab-1" role="tab" aria-controls="tab1" aria-selected="true">Caracterizaciones</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-2" role="tab" aria-controls="tab2" aria-selected="false"> Asociaciones</a>
+                        </li>
+
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="tab-1" role="tabpanel" aria-labelledby="tab-1">
+                            <div id="gridContainer" class="row-lm aux-selection"></div>
+                            <div class="card-footer text-center">
+                                <p class="font-weight-light mb-0 small">
+                                    Actualizado el <i>@ViewBag.DataTime</i>
+                                </p>
+
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="tab-2" role="tabpanel" aria-labelledby="tab-2">
+                            <div id="gridContainerAsoc" class="row-lm aux-selection"></div>
+                            <div class="card-footer text-center">
+                                <p class="font-weight-light mb-0 small">
+                                    Actualizado el <i>@ViewBag.DataTimeAssoc</i>
+                                </p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>
+@section Scripts {
+    @if (verEncuestas)
+    {
+        <script type="text/javascript" src="~/lib/jquery/moment.js"></script>
+        <script>
+        var myShowValidation =@(verFormalizacion ? "true" : "false");
+        var myLoadValidation =@(validarFormalizacion ? "true" : "false");
+        </script>
+
+        <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
+        <script type="text/javascript" src="~/js/tables/EncuestaListadoScript.js?v=1.1"></script>
+        <script type="text/javascript" src="~/js/tables/AsociacionListadoScript.js?v=1.1"></script>
+    }
+}

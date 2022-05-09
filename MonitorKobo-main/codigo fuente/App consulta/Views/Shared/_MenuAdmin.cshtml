@@ -1,0 +1,70 @@
+﻿
+@{
+
+    var permisoResponsable = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Responsable.Editar" && c.Value == "1"));
+    var permisoConfGeneral = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.General" && c.Value == "1"));
+    var permisoRol = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Rol.Editar" && c.Value == "1"));
+    var permisoUsuario = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Usuario.Editar" && c.Value == "1"));
+    var permisoLogs = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.Logs" && c.Value == "1"));
+    var permisoSolicitudes = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar" && c.Value == "1"));
+    var actualizarDatos = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Actualizar" && c.Value == "1"));
+}
+<ul class="nav nav-pills flex-column">
+    <li class="nav-item">
+        <a id="Configuracions-Index" asp-controller="Configuracions" asp-action="Index" class="nav-link">Inicio</a>
+    </li>
+
+    @if (permisoConfGeneral == true)
+    {
+        <li class="nav-item">
+            <a id="Configuracions-Index2" asp-controller="Configuracions" asp-action="Index2" class="nav-link">General</a>
+        </li>
+        <li class="nav-item">
+            <a id="FormalizacionConfig-Index" asp-controller="FormalizacionConfig" asp-action="Index" class="nav-link">Formalización</a>
+        </li>
+        <li class="nav-item">
+            <a id="FormalizacionVariable-Index" asp-controller="FormalizacionVariable" asp-action="Index" class="nav-link">Variables</a>
+        </li>
+    }
+    @if (permisoSolicitudes == true)
+    {
+        <li class="nav-item">
+            <a id="Solicitud-IndexAdmin" asp-controller="Solicitud" asp-action="IndexAdmin" class="nav-link">Solicitudes</a>
+        </li>
+    }
+    @if (permisoResponsable == true)
+    {
+        <li class="nav-item">
+            <a id="Responsables-Index2" asp-controller="Responsables" asp-action="Index2" class="nav-link">Dependencias</a>
+        </li>
+    }
+
+
+    @if (permisoRol == true)
+    {
+        <li class="nav-item">
+            <a id="Rol-Index" asp-controller="Rol" asp-action="Index" class="nav-link">Roles</a>
+        </li>
+    }
+    @if (permisoUsuario == true)
+    {
+        <li class="nav-item">
+            <a id="Users-Index" asp-controller="Users" asp-action="Index" class="nav-link">Usuarios</a>
+        </li>
+    }
+    @if (permisoLogs == true)
+    {
+        <li><hr class="dropdown-divider"></li>
+        <li class="nav-item">
+            <a id="Logs-Index" asp-controller="Logs" asp-action="Index" class="nav-link">Registro de actividad</a>
+        </li>
+    }
+    @if (actualizarDatos == true)
+    {
+        <li><hr class="dropdown-divider"></li>
+        <li class="nav-item">
+            <a id="Kobo-ActualizarManual" asp-controller="Kobo" asp-action="ActualizarManual" class="nav-link">Actualizar datos Kobo</a>
+        </li>
+    }
+
+</ul>

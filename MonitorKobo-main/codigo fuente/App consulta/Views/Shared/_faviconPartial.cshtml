@@ -1,0 +1,15 @@
+﻿@using Microsoft.EntityFrameworkCore;
+
+@inject  App_consulta.Data.ApplicationDbContext db
+
+@{
+    var favicon = "";
+
+    var conf = await db.Configuracion.FirstOrDefaultAsync();
+    if (conf != null)
+    {
+        favicon = conf.Favicon;
+    }
+}
+
+<link rel="icon" href="@Url.Content(favicon)">

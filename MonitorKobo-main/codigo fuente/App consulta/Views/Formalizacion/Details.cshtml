@@ -1,0 +1,223 @@
+﻿@model App_consulta.Models.Formalization
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "Formalización";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var permisoValidar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Validar" && c.Value == "1"));
+    var permisoEditar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Editar" && c.Value == "1"));
+    var permisoImprimir = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Imprimir" && c.Value == "1"));
+    var permisoAdmin = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Administrar" && c.Value == "1"));
+
+    var permisoSolicitud = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear" && c.Value == "1"));
+    var permisoCancelar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Cancelar" && c.Value == "1"));
+
+
+    var btnEditar = permisoEditar ? "Editar" : "Validar";
+
+}
+<div class="row my-4  d-print-none">
+    <div class="col-12 col-lg-10 mx-auto">
+        <div class="card  border-dark ">
+            <div class="card-body">
+                <h4 class="my-2">
+                    Detalles formalización @Model.NumeroRegistro
+                    @switch (Model.Estado)
+                    {
+                        case Formalization.ESTADO_BORRADOR:
+                            <span class="badge bg-warning text-dark float-right">Borrador</span>
+                            break;
+                        case Formalization.ESTADO_COMPLETO:
+                            <span class="badge bg-success text-white float-right">Completo</span>
+                            break;
+                        case Formalization.ESTADO_CANCELADO:
+                            <span class="badge bg-danger text-white float-right">Cancelado</span>
+                            break;
+                        case Formalization.ESTADO_IMPRESO:
+                            <span class="badge bg-info text-white float-right">Impreso</span>
+                            break;
+                        case Formalization.ESTADO_CARNET_VIGENTE:
+                            <span class="badge bg-danger text-white float-right">Carnet vigente</span>
+                            break;
+                    }
+
+                </h4>
+                <hr />
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#tab-1" role="tab" aria-controls="home" aria-selected="true">General</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#tab-4" role="tab" aria-controls="contact" aria-selected="false">Cédula</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-2" role="tab" aria-controls="profile" aria-selected="false"> Solicitud</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#tab-3" role="tab" aria-controls="contact" aria-selected="false">Certificación</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="tab-1" role="tabpanel" aria-labelledby="tab-1">
+
+                        <div class="row">
+                            <div class="col-12 col-lg-8  order-2 order-lg-1  p-4">
+                                @if (ViewBag.error != null)
+                                {
+                                    <div class="alert alert-warning" role="alert">
+                                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                        @ViewBag.error
+                                    </div>
+                                }
+                                <div class="form-group row">
+                                    <label asp-for="Cedula" class="col-sm-4 col-form-label"></label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext font-weight-light text-uppercase">@Html.DisplayFor(model => model.Cedula)</p>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="Name" class="col-sm-4 col-form-label"></label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext font-weight-light text-uppercase">@Html.DisplayFor(model => model.Name)</p>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="Municipio" class="col-sm-4 col-form-label"></label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext font-weight-light">
+                                            @Html.DisplayFor(model => model.Municipio) -
+                                            @Html.DisplayFor(model => model.Departamento)
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="NombreAsociacion" class="col-sm-4 col-form-label"></label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.NombreAsociacion)</p>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="AreaPesca" class="col-sm-4 col-form-label"></label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.AreaPesca)</p>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="ArtesPesca" class="col-sm-4 col-form-label"></label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.ArtesPesca)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-4 text-center order-1 order-lg-2">
+                                @await Component.InvokeAsync("Image", new { file = Model.ImgPescador, text = "Foto pescador", css = "img-detail-formlz mt-4" })
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-2" role="tabpanel" aria-labelledby="tab-2">
+                        <div class="text-center py-4 px-1">
+                            @await Component.InvokeAsync("Image", new { file = Model.ImgSolicitudCarnet, text = "Foto solicitud", css = "img-detail-large" })
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-3" role="tabpanel" aria-labelledby="tab-3">
+                        <div class="text-center py-4 px-1">
+                            @await Component.InvokeAsync("Image", new { file = Model.ImgCertificacion, text = "Foto certificación", css = "img-detail-large" })
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-4" role="tabpanel" aria-labelledby="tab-4">
+                        <div class="row">
+                            <div class="col-12 col-sm-6 text-center py-4 px-1">
+                                @await Component.InvokeAsync("Image", new { file = Model.ImgCedulaAnverso, text = "Foto cédula", css = "img-detail-large" })
+                            </div>
+                            <div class="col-12 col-sm-6 text-center py-4 px-1">
+                                @await Component.InvokeAsync("Image", new { file = Model.ImgCedulaReverso, text = "Foto cédula reverso", css = "img-detail-large" })
+                            </div>
+                        </div>
+                        <div class="">
+
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="w-75 mx-auto">
+                    <div class="form-group row">
+                        @if (permisoValidar && Model.Estado == Formalization.ESTADO_BORRADOR || permisoCancelar)
+                        {
+                            <div class="col-md text-center mb-2">
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-block">@btnEditar</a>
+                            </div>
+                        }
+                        @if (permisoImprimir && (Model.Estado == Formalization.ESTADO_COMPLETO || Model.Estado == Formalization.ESTADO_IMPRESO))
+                        {
+                            <div class="col-md text-center mb-2">
+                                <button data-link="@Url.Action("Print","Formalizacion", new { ids = Model.Id })" class="btn btn-outline-success btn-block btn-print-formlz">Imprimir</button>
+                            </div>
+                        }
+                        <div class="col-md text-center mb-2">
+                            <button onclick="goBack()" class="btn btn btn-outline-dark btn-block">Volver</button>
+                        </div>
+                        @if (permisoSolicitud)
+                        {
+                            <div class="col-md text-center mb-2">
+                                <a asp-controller="Solicitud" asp-action="Create" asp-route-id="@Model.Id"
+                                   class="btn btn btn-outline-success btn-block" target="_blank">Solicitar cambio</a>
+                            </div>
+                        }
+                    </div>
+
+                </div>
+            </div>
+            @if (permisoAdmin)
+            {
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-12 col-sm-4">
+                            @if (Model.Responsable != null)
+                            {
+                                <p class="font-weight-light mb-sm-0 small">
+                                    Coordinación:  <br class="d-none d-sm-block" /> <b>@Model.Responsable.Nombre</b>
+                                </p>
+                            }
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            @if (Model.CreateByUser != null)
+                            {
+                                <p class="font-weight-light mb-sm-0 small">
+                                    Cargado por: <br class="d-none d-sm-block" /> <b>@Model.CreateByUser.Nombre @Model.CreateByUser.Apellido</b>
+                                    <br />
+                                    <small><i>@Model.CreateDate.ToString("f")</i></small>
+                                </p>
+                            }
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            @if (Model.LastEditByUser != null)
+                            {
+                                <p class="font-weight-light mb-0 small">
+                                    Última modificación por:  <br class="d-none d-sm-block" /> <b>@Model.LastEditByUser.Nombre @Model.LastEditByUser.Apellido</b>
+                                    <br />
+                                    <small><i>@Model.LastEditDate.ToString("f")</i></small>
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
+    <script type="text/javascript" src="~/js/tables/ValidarFormalizacionScript.js?v=1.0"></script>
+    <script>
+        function goBack() {
+            if ('referrer' in document) {
+                window.location = document.referrer;
+            } else {
+                window.history.back();
+            }
+        }
+    </script>
+}

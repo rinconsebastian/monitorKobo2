@@ -1,0 +1,53 @@
+﻿@model App_consulta.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "Usuarios";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h4>Borrar usuario</h4>
+<div class="alert alert-warning" role="alert">
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    <span>¿Está seguro que desea eliminar el usuario?</span>
+</div>
+<div class="form-group row">
+    <label asp-for="Nombre" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Nombre)</p>
+    </div>
+</div>
+<div class="form-group row">
+    <label asp-for="Apellido" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Apellido)</p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="Email" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.Email)</p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="UserName" class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <p class="form-control-plaintext font-weight-light">@Html.DisplayFor(model => model.UserName)</p>
+    </div>
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group row">
+        <div class="col-sm-3 offset-3">
+            <input type="submit" value="Borrar" class="btn btn-outline-danger btn-block" />
+        </div>
+        <div class="col-sm-3">
+            <a asp-action="Index" class="btn btn btn-outline-dark btn-block">Volver</a>
+        </div>
+    </div>
+}

@@ -1,0 +1,88 @@
+﻿@model App_consulta.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "Usuarios";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var listaResponsables = (SelectList)ViewBag.Responsables;
+    var listaRoles = (SelectList)ViewBag.Roles;
+}
+<h4>Nuevo usuario</h4>
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="small text-danger"></div>
+
+    <div class="form-group row">
+        <label asp-for="Nombre" class="col-md-3 col-form-label"></label>
+        <div class="col-md-9">
+            <input asp-for="Nombre" class="form-control" />
+            <span asp-validation-for="Nombre" class="form-text small text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="Apellido" class="col-md-3 col-form-label"></label>
+        <div class="col-md-9">
+            <input asp-for="Apellido" class="form-control" />
+            <span asp-validation-for="Apellido" class="form-text small text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="Email" class="col-md-3 col-form-label"></label>
+        <div class="col-md-9">
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="form-text small text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="Dependencias" class="col-md-3 col-form-label"></label>
+        <div class="col-md-9">
+            <select asp-for="Dependencias" asp-items="@listaResponsables" class="form-control">
+                <option value="">Seleccione una opción</option>
+            </select>
+            <span asp-validation-for="Dependencias" class="form-text small text-danger"></span>
+        </div>
+    </div>
+
+
+    <div class="form-group row">
+        <label asp-for="UserRoles" class="col-md-3 col-form-label"></label>
+        <div class="col-md-9">
+            <select asp-for="UserRoles" multiple asp-items="@listaRoles" class="form-control"></select>
+            <span asp-validation-for="UserRoles" class="form-text small text-danger"></span>
+        </div>
+    </div>
+
+
+    <div class="form-group row">
+        <label asp-for="Password" class="col-md-3 col-form-label"></label>
+        <div class="col-md-9">
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="form-text small text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="ConfirmPassword" class="col-md-3 col-form-label"></label>
+        <div class="col-md-9">
+            <input asp-for="ConfirmPassword" class="form-control" />
+            <span asp-validation-for="ConfirmPassword" class="form-text small text-danger"></span>
+        </div>
+    </div>
+
+
+    <div class="form-group row">
+        <div class="col-sm-3 offset-3">
+            <input type="submit" value="Guardar" class="btn btn-outline-primary btn-block" />
+        </div>
+        <div class="col-sm-3">
+            <a asp-action="Index" class="btn btn btn-outline-dark btn-block">Volver</a>
+        </div>
+    </div>
+</form>
+
+
+

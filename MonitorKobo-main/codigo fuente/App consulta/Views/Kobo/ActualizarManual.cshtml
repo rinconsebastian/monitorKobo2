@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "Actualización manual";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var error = ViewBag.Error;
+    var accion = ViewBag.Accion;
+}
+<h4>Actualización manual encuestadores</h4>
+<br />
+@if (error == "")
+{
+    <div class="alert alert-success" role="alert">
+        @Html.Raw(accion)
+    </div>
+}
+else
+{
+<div class="alert alert-danger" role="alert">
+    @Html.Raw(accion)
+    <br />
+    Error: @Html.Raw(error)
+</div>
+}

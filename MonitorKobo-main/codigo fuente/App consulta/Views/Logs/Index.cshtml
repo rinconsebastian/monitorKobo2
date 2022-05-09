@@ -1,0 +1,35 @@
+﻿@model IEnumerable<App_consulta.Models.LogModel>
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<h4>Registro de actividad</h4>
+@if (ViewBag.error != null)
+{
+    <div class="alert alert-warning" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        @ViewBag.error
+    </div>
+}
+
+<div class="card mt-4 mx-auto">
+    <div class="card-body">
+        <div id="gridContainer" class="row-lm marginTop10 aux-selection"></div>
+    </div>
+</div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/devexpress/dx.common.css" />
+    <link rel="stylesheet" href="~/css/devexpress/dx.light.css" />
+}
+
+@section Scripts {
+    <script src="~/js/devexpress/dx.all.js"></script>
+    <script type="text/javascript" src="~/lib/jquery/moment.js"></script>
+
+    <script type="text/javascript" src="~/js/tables/LogsListadoScript.js?v=1.1"></script>
+}
+
+
