@@ -23,7 +23,7 @@
         }
         @{
             var infoEncuestas = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Listado" && c.Value == "1"));
-            var infoFormalizacion = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Listado" && c.Value == "1"));
+            var infoFormalizacion = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado" && c.Value == "1"));
             
             if (infoEncuestas || infoFormalizacion)
             {

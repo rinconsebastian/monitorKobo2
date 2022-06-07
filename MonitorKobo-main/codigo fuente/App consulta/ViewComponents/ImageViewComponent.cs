@@ -14,7 +14,7 @@ namespace App_consulta.ViewComponents
     public class ImageViewComponent : ViewComponent
     {
 
-        private readonly ApplicationDbContext db;
+        
         private readonly IWebHostEnvironment _env;
 
         public ImageViewComponent(IWebHostEnvironment env)
@@ -22,7 +22,7 @@ namespace App_consulta.ViewComponents
             _env = env;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string file, string text = "", string css = "", string id = "")
+        public IViewComponentResult InvokeAsync(string file, string text = "", string css = "", string id = "")
         {
             var time = "";
             try
