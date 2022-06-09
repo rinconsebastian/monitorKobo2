@@ -1,4 +1,24 @@
-﻿<div class="collapse navbar-collapse justify-content-between">
+﻿@using Microsoft.EntityFrameworkCore;
+
+@inject App_consulta.Data.ApplicationDbContext db
+
+@{
+    var encuestas = await db.KoProject.Select(n => new
+    {
+        n.Id,
+        n.Name
+    }).ToDictionaryAsync(n => n.Id, n => n.Name);
+
+    var registros = await db.KoProject.Where(n => n.Validable)
+        .Select(n => new
+        {
+            n.Id,
+            Name = n.ValidationName
+        }).ToDictionaryAsync(n => n.Id, n => n.Name);
+
+}
+
+<div class="collapse navbar-collapse justify-content-between">
     <ul class="navbar-nav flex-grow-1">
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
@@ -15,31 +35,37 @@
                 <a class="nav-link text-dark" asp-area="" asp-controller="Configuracions" asp-action="Index">Configuracion</a>
             </li>
         }
-        @if (User.HasClaim(c =>(c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Ver" && c.Value == "1")))
+        @if (User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Ver" && c.Value == "1")))
         {
             <li class="nav-item">
                 <a class="nav-link text-dark" asp-area="" asp-controller="Encuestador" asp-action="Index">Encuestadores</a>
             </li>
         }
         @{
-            var infoEncuestas = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Listado" && c.Value == "1"));
-            var infoFormalizacion = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado" && c.Value == "1"));
-            
-            if (infoEncuestas || infoFormalizacion)
+            var permisoEncuestas = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Listado" && c.Value == "1"));
+            var permisoRegistros = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado" && c.Value == "1"));
+
+            if (permisoEncuestas || permisoRegistros)
             {
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Informes
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        @if (infoEncuestas)
+                        @if (permisoEncuestas)
                         {
-                            <a class="dropdown-item" asp-area="" asp-controller="Informes" asp-action="Encuestados">Caracterizaciones</a>
-                            <a class="dropdown-item" asp-area="" asp-controller="Informes" asp-action="Asociaciones">Asociaciones</a>
+                            @foreach (KeyValuePair<int, string> item in encuestas)
+                            {
+                                <a class="dropdown-item" asp-controller="Informes" asp-action="Listado" asp-route-id="@item.Key">@item.Value</a>
+                            }
                         }
-                        @if (infoFormalizacion)
+                        @if (permisoRegistros)
                         {
-                            <a class="dropdown-item" asp-area="" asp-controller="Formalizacion" asp-action="index">Formalización</a>
+                            <div class="dropdown-divider"></div>
+                            @foreach (KeyValuePair<int, string> item in registros)
+                            {
+                                <a class="dropdown-item" asp-controller="Informes" asp-action="Listado" asp-route-id="@item.Key" asp-route-validable="@true">@item.Value</a>
+                            }
                         }
                     </div>
                 </li>

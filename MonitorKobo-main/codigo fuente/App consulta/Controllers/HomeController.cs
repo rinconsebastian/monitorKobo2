@@ -26,6 +26,24 @@ namespace App_consulta.Controllers
         {
             var config = await db.Configuracion.FirstOrDefaultAsync();
             ViewBag.config = config;
+
+            var encuestas = await db.KoProject.Select(n => new
+            {
+                n.Id,
+                n.Name
+            }).ToDictionaryAsync(n => n.Id, n => n.Name);
+            ViewBag.encuestas = encuestas;
+
+            var registros = await db.KoProject.Where(n => n.Validable)
+                .Select(n => new
+                {
+                    n.Id,
+                    Name = n.ValidationName
+                }).ToDictionaryAsync(n => n.Id, n => n.Name);
+
+            ViewBag.registros = registros;
+
+
             return View();
         }
 

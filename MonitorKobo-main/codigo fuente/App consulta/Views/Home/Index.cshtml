@@ -1,6 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
     Configuracion conf = ViewBag.config;
+
+    Dictionary<int, string> encuestas = ViewBag.encuestas;
+    Dictionary<int, string> registros = ViewBag.registros;
 }
 
 <div class="text-center mt-4">
@@ -18,18 +21,21 @@
         }
         @if (User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Listado" && c.Value == "1")))
         {
-            <div class="col-12 col-md-3 mb-1">
-                <a class="btn btn-outline-primary btn-lg btn-block" asp-area="" asp-controller="Informes" asp-action="Encuestados">Caracterizaciones</a>
-            </div>
-            <div class="col-12 col-md-3 mb-1">
-                <a class="btn btn-outline-primary btn-lg btn-block" asp-area="" asp-controller="Informes" asp-action="Asociaciones">Asociaciones</a>
-            </div>
+            @foreach (KeyValuePair<int, string> item in encuestas)
+            {
+                <div class="col-12 col-md-3 mb-1">
+                    <a class="btn btn-outline-primary btn-lg btn-block" asp-controller="Informes" asp-action="Listado" asp-route-id="@item.Key">@item.Value</a>
+                </div>
+            }
         }
         @if (User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado" && c.Value == "1")))
         {
-            <div class="col-12 col-md-3 mb-1">
-                <a class="btn btn-outline-primary btn-lg btn-block" asp-area="" asp-controller="Formalizacion" asp-action="index">Formalizaciones</a>
-            </div>
+            @foreach (KeyValuePair<int, string> item in registros)
+            {
+                <div class="col-12 col-md-3 mb-1">
+                    <a class="btn btn-outline-primary btn-lg btn-block" asp-controller="Informes" asp-action="Listado" asp-route-id="@item.Key" asp-route-validable="@true">@item.Value</a>
+                </div>
+            }
         }
     </div>
 
