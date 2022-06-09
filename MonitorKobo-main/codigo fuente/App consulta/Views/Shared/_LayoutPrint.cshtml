@@ -1,10 +1,22 @@
-﻿
+﻿@using Microsoft.EntityFrameworkCore;
+
+@inject App_consulta.Data.ApplicationDbContext db
+
+@{
+    var appName = "App Consulta";
+
+    var conf = await db.Configuracion.FirstOrDefaultAsync();
+    if (conf != null)
+    {
+        appName = conf.NombreApp;
+    }
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>@ViewData["Title"] - AppConsulta</title>
+    <title>@ViewData["Title"] - @appName</title>
 
     <partial name="_faviconPartial" />
 
@@ -16,7 +28,7 @@
 
 </head>
 <body>
-    
+
 
     <div class="container bodyccs  @(ViewBag.ClaseContainer) ">
         <main role="main" class="pb-3">
@@ -27,7 +39,7 @@
     <div id="toastGenericoReload"></div>
     @Html.Hidden("Root", Url.Content("~/"))
 
-   
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

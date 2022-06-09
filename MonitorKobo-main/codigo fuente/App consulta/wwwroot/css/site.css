@@ -1048,29 +1048,6 @@ input, select, textarea {
 }
 
 
-.rutaCategoria {
-    font-size: small;
-    font-stretch: ultra-condensed;
-}
-
-.color-ruta {
-}
-
-.olrutas {
-    margin-bottom: 0px;
-    /*font-style: italic;*/
-}
-
-    .olrutas a {
-        color: white
-    }
-
-        .olrutas a:hover {
-            color: white;
-            font-weight: bold;
-        }
-
-
 .widgetInfoHead {
     background-color: #555555;
     color: white;

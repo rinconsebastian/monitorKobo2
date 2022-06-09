@@ -15,7 +15,6 @@ namespace App_consulta.Data
         {
         }
 
-
         public DbSet<Responsable> Responsable { get; set; }
 
         public DbSet<Policy> Policy { get; set; }
@@ -32,10 +31,10 @@ namespace App_consulta.Data
 
         public DbSet<RequestUser> RequestUser { get; set; }
 
-        public DbSet<FormalizationConfig> FormalizationConfig { get; set; }
-        public DbSet<FormalizationVariable> FormalizationVariable { get; set; }
-
-        public DbSet<Formalization> Formalization { get; set; }
+        public DbSet<KoProject> KoProject { get; set; }
+        public DbSet<KoField> KoField { get; set; }
+        public DbSet<KoVariable> KoVariable { get; set; }
+        public DbSet<KoState> KoDataState { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -61,16 +60,16 @@ namespace App_consulta.Data
                 new Policy() { id = 16, nombre = "Ver encuestas por usuario", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Usuario", group = 4 },
 
 
-                new Policy() { id = 12, nombre = "Ver formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Ver", group = 5  },
-                new Policy() { id = 13, nombre = "Editar formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Editar", group = 5  },
-                new Policy() { id = 14, nombre = "Validar formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Validar", group = 5  },
-                new Policy() { id = 15, nombre = "Informe formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Listado", group = 5  },
-                new Policy() { id = 17, nombre = "Imprimir formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Imprimir", group = 5  },
+                new Policy() { id = 12, nombre = "Ver formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver", group = 5  },
+                new Policy() { id = 13, nombre = "Editar formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Editar", group = 5  },
+                new Policy() { id = 14, nombre = "Validar formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar", group = 5  },
+                new Policy() { id = 15, nombre = "Informe formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado", group = 5  },
+                new Policy() { id = 17, nombre = "Imprimir formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir", group = 5  },
 
                 new Policy() { id = 18, nombre = "Exportar listados", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado", group = 6  },
 
-                new Policy() { id = 19, nombre = "Cambiar imagenes formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Imagen.Cambiar", group = 5  },
-                new Policy() { id = 20, nombre = "Restablecer imagenes formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Imagen.Restablecer", group = 5  },
+                new Policy() { id = 19, nombre = "Cambiar imagenes formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar", group = 5  },
+                new Policy() { id = 20, nombre = "Restablecer imagenes formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer", group = 5  },
 
                 new Policy() { id = 21, nombre = "Crear solicitudes", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear", group = 7  },
                 new Policy() { id = 22, nombre = "Administrar solicitudes", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", group = 7  },
@@ -84,15 +83,28 @@ namespace App_consulta.Data
             //Permisos rol administrador
             var policiesRol = new List<IdentityRoleClaim<string>>
             {
-                new IdentityRoleClaim<string>() { Id =1, RoleId = "1", ClaimType="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.General", ClaimValue = "1"},
-                new IdentityRoleClaim<string>() { Id =2, RoleId = "1", ClaimType="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.Responsable", ClaimValue = "1"},
-                new IdentityRoleClaim<string>() { Id =3, RoleId = "1", ClaimType="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Responsable.Editar", ClaimValue = "1"},
-                new IdentityRoleClaim<string>() { Id =4, RoleId = "1", ClaimType="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Rol.Editar", ClaimValue = "1"},
-                new IdentityRoleClaim<string>() { Id =5, RoleId = "1", ClaimType="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Usuario.Editar", ClaimValue = "1"},
-                new IdentityRoleClaim<string>() { Id =6, RoleId = "1", ClaimType="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.Logs", ClaimValue = "1"},
-                new IdentityRoleClaim<string>() { Id =7, RoleId = "1", ClaimType="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Editar", ClaimValue = "1"},
-                new IdentityRoleClaim<string>() { Id =8, RoleId = "1", ClaimType="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Ver", ClaimValue = "1"},
-                new IdentityRoleClaim<string>() { Id =9, RoleId = "1", ClaimType="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Administrar", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =1, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.General", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =2, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.Responsable", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =3, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Responsable.Editar", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =4, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Rol.Editar", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =5, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Usuario.Editar", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =6, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.Logs", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =7, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Ver", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =8, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Editar", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =9, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Administrar", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =10, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Actualizar", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =11, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Listado", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =12, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Usuario", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =13, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =14, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Editar", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =15, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =16, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =17, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =18, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =19, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =20, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =21, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =22, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", ClaimValue = "1"}
                 };
             modelBuilder.Entity<IdentityRoleClaim<string>>().HasData(policiesRol);
 
@@ -128,13 +140,13 @@ namespace App_consulta.Data
             var config = new Configuracion()
             {
                 id = 1,
-
-                Logo = "/images/SIE.png",
+                Logo = "/images/favicon1.png",
                 contacto = "rinconsebastian@gmail.com",
-                activo = true,
-                Entidad = "Entidad",
-                NombrePlan = "Plan",
-                libre = true,
+                Favicon = "/images/favicon.png",
+                Entidad = "PNUD-AUNAP",
+                NombreApp="App Consulta",
+                DescripcionApp = "Acuerdo AUNAP - PNUD 2022",
+                NombrePlan = "Coordinación",
                 colorPrincipal = "#52a3a1",
                 colorTextoHeader = "#ffffff",
                 colorTextoPrincipal = "#00000"
@@ -143,63 +155,47 @@ namespace App_consulta.Data
 
             modelBuilder.Entity<Pollster>().HasIndex(u => u.DNI).IsUnique();
 
-            //Permisos rol administrador
-            var formalizacionConfigs = new List<FormalizationConfig>
+            //Estados datos
+            var dataStates = new List<KoState>
             {
-                new FormalizationConfig() { Id = 1, Name="Id Kobo", Field = "IdKobo", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id = 2, Name="Número registro", Field = "NumeroRegistro", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id = 3, Name="Nombre y apellidos", Field = "Name", Value = "", Group = 1},
-                new FormalizationConfig() { Id = 4, Name="Fecha solicitud", Field = "FechaSolicitud", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id = 5, Name="Cédula pescador" ,Field = "Cedula", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id = 6, Name="Departamento", Field = "Departamento", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id = 7, Name="Municipio", Field = "Municipio", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id = 8, Name="Área de pesca", Field = "AreaPesca", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id = 9, Name="Artes de pesca", Field = "ArtesPesca", Value = "_id"},
-                new FormalizationConfig() { Id =10, Name="Nombre asociación", Field = "NombreAsociacion", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id =11, Name="Foto pescador", Field = "ImgPescador", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id =12, Name="Foto solicitud carnet", Field = "ImgSolicitudCarnet", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id =13, Name="Foto certificación", Field = "ImgCertificacion", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id =14, Name="Foto cédula (anverso)", Field = "ImgCedulaAnverso", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id =15, Name="Foto cédula (reverso)", Field = "ImgCedulaReverso", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id =16, Name="Firma digital", Field = "ImgFirmaDigital", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id =17, Name="Cedula Encuestador", Field = "Encuestador", Value = "_id", Group = 1},
-                new FormalizationConfig() { Id =18, Name="Zona pesca (Tipo)", Field = "zonaTipo", Value = "_id", Group = 2},
-                new FormalizationConfig() { Id =19, Name="Zona pesca (Nombre)", Field = "zonaNombre", Value = "_id", Group = 2},
-                new FormalizationConfig() { Id =20, Name="Zona pesca (Otro)", Field = "zonaOtro", Value = "_id", Group = 2},
+                new KoState() { Id = 1, Name="ESTADO_BORRADOR", Label = "Borrador"},
+                new KoState() { Id = 2, Name="ESTADO_COMPLETO", Label = "Completo"},
+                new KoState() { Id = 3, Name="ESTADO_CANCELADO", Label = "Cancelado"},
+                new KoState() { Id = 4, Name="ESTADO_IMPRESO", Label = "Impreso"},
+                new KoState() { Id = 5, Name="ESTADO_CARNET_VIGENTE", Label = "Carné vigente"},
                 };
-            modelBuilder.Entity<FormalizationConfig>().HasData(formalizacionConfigs);
-
+            modelBuilder.Entity<KoState>().HasData(dataStates);
 
             //Variables de formalización: zonas y artes de pesca
-            var variables = new List<FormalizationVariable>
+            var variables = new List<KoVariable>
             {
-                new FormalizationVariable() { Id = 1, Key="1", Value = "Arroyo", Group = "Zona"},
-                new FormalizationVariable() { Id = 2, Key="2", Value = "Canal", Group = "Zona"},
-                new FormalizationVariable() { Id = 3, Key="3", Value = "Ciénaga", Group = "Zona"},
-                new FormalizationVariable() { Id = 4, Key="4", Value = "Estanque", Group = "Zona"},
-                new FormalizationVariable() { Id = 5, Key="5", Value = "Laguna", Group = "Zona"},
-                new FormalizationVariable() { Id = 6, Key="6", Value = "Lago", Group = "Zona"},
-                new FormalizationVariable() { Id = 7, Key="7", Value = "Presa", Group = "Zona"},
-                new FormalizationVariable() { Id = 8, Key="8", Value = "Quebrada", Group = "Zona"},
-                new FormalizationVariable() { Id = 9, Key="9", Value = "Riachuelo", Group = "Zona"},
-                new FormalizationVariable() { Id = 10, Key="10", Value = "Río", Group = "Zona"},
-                new FormalizationVariable() { Id = 11, Key="11", Value = "Sector de río", Group = "Zona"},
-                new FormalizationVariable() { Id = 12, Key="14", Value = "Embalse", Group = "Zona"},
+                new KoVariable() { Id = 1, Key="1", Value = "Arroyo", Group = "Zona"},
+                new KoVariable() { Id = 2, Key="2", Value = "Canal", Group = "Zona"},
+                new KoVariable() { Id = 3, Key="3", Value = "Ciénaga", Group = "Zona"},
+                new KoVariable() { Id = 4, Key="4", Value = "Estanque", Group = "Zona"},
+                new KoVariable() { Id = 5, Key="5", Value = "Laguna", Group = "Zona"},
+                new KoVariable() { Id = 6, Key="6", Value = "Lago", Group = "Zona"},
+                new KoVariable() { Id = 7, Key="7", Value = "Presa", Group = "Zona"},
+                new KoVariable() { Id = 8, Key="8", Value = "Quebrada", Group = "Zona"},
+                new KoVariable() { Id = 9, Key="9", Value = "Riachuelo", Group = "Zona"},
+                new KoVariable() { Id = 10, Key="10", Value = "Río", Group = "Zona"},
+                new KoVariable() { Id = 11, Key="11", Value = "Sector de río", Group = "Zona"},
+                new KoVariable() { Id = 12, Key="14", Value = "Embalse", Group = "Zona"},
 
-                new FormalizationVariable() { Id = 13, Key="1", Value = "Arpón", Group = "Arte"},
-                new FormalizationVariable() { Id = 14, Key="2", Value = "Atarraya", Group = "Arte"},
-                new FormalizationVariable() { Id = 15, Key="3", Value = "Boliche", Group = "Arte"},
-                new FormalizationVariable() { Id = 16, Key="4", Value = "Chinchorra", Group = "Arte"},
-                new FormalizationVariable() { Id = 17, Key="5", Value = "Chinchorro", Group = "Arte"},
-                new FormalizationVariable() { Id = 18, Key="6", Value = "Cóngolo / canasta", Group = "Arte"},
-                new FormalizationVariable() { Id = 19, Key="7", Value = "Línea de mano", Group = "Arte"},
-                new FormalizationVariable() { Id = 20, Key="8", Value = "Palangre", Group = "Arte"},
-                new FormalizationVariable() { Id = 21, Key="9", Value = "Redes de enmalle", Group = "Arte"},
-                new FormalizationVariable() { Id = 22, Key="10", Value = "Trampas/nasas", Group = "Arte"},
-                new FormalizationVariable() { Id = 23, Key="11", Value = "Trasmallo", Group = "Arte"},
-                new FormalizationVariable() { Id = 24, Key="12", Value = "Otro", Group = "Arte"},
+                new KoVariable() { Id = 13, Key="1", Value = "Arpón", Group = "Arte"},
+                new KoVariable() { Id = 14, Key="2", Value = "Atarraya", Group = "Arte"},
+                new KoVariable() { Id = 15, Key="3", Value = "Boliche", Group = "Arte"},
+                new KoVariable() { Id = 16, Key="4", Value = "Chinchorra", Group = "Arte"},
+                new KoVariable() { Id = 17, Key="5", Value = "Chinchorro", Group = "Arte"},
+                new KoVariable() { Id = 18, Key="6", Value = "Cóngolo / canasta", Group = "Arte"},
+                new KoVariable() { Id = 19, Key="7", Value = "Línea de mano", Group = "Arte"},
+                new KoVariable() { Id = 20, Key="8", Value = "Palangre", Group = "Arte"},
+                new KoVariable() { Id = 21, Key="9", Value = "Redes de enmalle", Group = "Arte"},
+                new KoVariable() { Id = 22, Key="10", Value = "Trampas/nasas", Group = "Arte"},
+                new KoVariable() { Id = 23, Key="11", Value = "Trasmallo", Group = "Arte"},
+                new KoVariable() { Id = 24, Key="12", Value = "Otro", Group = "Arte"},
                 };
-            modelBuilder.Entity<FormalizationVariable>().HasData(variables);
+            modelBuilder.Entity<KoVariable>().HasData(variables);
 
         }
 

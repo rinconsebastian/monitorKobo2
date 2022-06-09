@@ -12,6 +12,8 @@ using System;
 using App_consulta.Models;
 using App_consulta.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Options;
+using BooksApi.Models;
 
 namespace App_consulta
 {
@@ -43,6 +45,16 @@ namespace App_consulta
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
+            // Conexión MongoDB
+            // requires using Microsoft.Extensions.Options
+            services.Configure<MongoDatabaseSettings>(
+                Configuration.GetSection(nameof(MongoDatabaseSettings)));
+
+            services.AddSingleton<IMongoDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<MongoDatabaseSettings>>().Value);
+
+            services.AddSingleton<MongoDatabaseService>();
+
             //services.AddDbContext<ApplicationDbContext>(options =>
             //options.UseSqlServer(
             //    Configuration.GetConnectionString("DefaultConnection")));
@@ -51,7 +63,7 @@ namespace App_consulta
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                  .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            
+
             services.AddControllersWithViews();
 
 
@@ -86,24 +98,24 @@ namespace App_consulta
                 options.AddPolicy("Encuestas.Usuario", policy =>
                                 policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Usuario", "1"));
 
-                options.AddPolicy("Formalizacion.Ver", policy =>
-                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Ver", "1"));
-                options.AddPolicy("Formalizacion.Editar", policy =>
-                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Editar", "1"));
-                options.AddPolicy("Formalizacion.Validar", policy =>
-                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Validar", "1"));
-                options.AddPolicy("Formalizacion.Listado", policy =>
-                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Listado", "1"));
-                options.AddPolicy("Formalizacion.Imprimir", policy =>
-                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Imprimir", "1"));
+                options.AddPolicy("Registro.Ver", policy =>
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver", "1"));
+                options.AddPolicy("Registro.Editar", policy =>
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Editar", "1"));
+                options.AddPolicy("Registro.Validar", policy =>
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar", "1"));
+                options.AddPolicy("Registro.Listado", policy =>
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado", "1"));
+                options.AddPolicy("Registro.Imprimir", policy =>
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir", "1"));
                 
-                options.AddPolicy("Formalizacion.Cancelar", policy =>
-                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Cancelar", "1"));
+                options.AddPolicy("Registro.Cancelar", policy =>
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Cancelar", "1"));
 
-                options.AddPolicy("Formalizacion.Imagen.Cambiar", policy =>
-                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Imagen.Cambiar", "1"));
-                options.AddPolicy("Formalizacion.Imagen.Restablecer", policy =>
-                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Formalizacion.Imagen.Restablecer", "1"));
+                options.AddPolicy("Registro.Imagen.Cambiar", policy =>
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar", "1"));
+                options.AddPolicy("Registro.Imagen.Restablecer", policy =>
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer", "1"));
 
                 options.AddPolicy("Exportar.Listado", policy =>
                                 policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado", "1"));

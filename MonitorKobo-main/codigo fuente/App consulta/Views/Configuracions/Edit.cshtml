@@ -11,6 +11,37 @@
     <input type="hidden" asp-for="id" />
 
     <div class="form-group row">
+        <label asp-for="NombreApp" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input asp-for="NombreApp" class="form-control" />
+            <span asp-validation-for="NombreApp" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="DescripcionApp" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input asp-for="DescripcionApp" class="form-control" />
+            <span asp-validation-for="DescripcionApp" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Entidad" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input asp-for="Entidad" class="form-control" />
+            <span asp-validation-for="Entidad" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="NombrePlan" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input asp-for="NombrePlan" class="form-control" />
+            <span asp-validation-for="NombrePlan" class="text-danger"></span>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="form-group row">
         <label asp-for="Logo" class="col-sm-3 col-form-label"></label>
         <div class="col-sm-9">
             <input asp-for="Logo" class="form-control" />
@@ -31,20 +62,14 @@
             <span asp-validation-for="Favicon" class="text-danger"></span>
         </div>
     </div>
+
+    <hr />
+
     <div class="form-group row">
         <label asp-for="colorTextoHeader" class="col-sm-3 col-form-label"></label>
         <div class="col-sm-9">
             <input asp-for="colorTextoHeader" class="form-control" />
             <span asp-validation-for="colorTextoHeader" class="text-danger"></span>
-        </div>
-    </div>
-
-
-    <div class="form-group row">
-        <label asp-for="ImgBackgroud" class="col-sm-3 col-form-label"></label>
-        <div class="col-sm-9">
-            <input asp-for="ImgBackgroud" class="form-control" />
-            <span asp-validation-for="ImgBackgroud" class="text-danger"></span>
         </div>
     </div>
 
@@ -64,6 +89,7 @@
         </div>
     </div>
 
+    <hr />
 
     <div class="form-group row">
         <label asp-for="contacto" class="col-sm-3 col-form-label"></label>
@@ -72,45 +98,14 @@
             <span asp-validation-for="contacto" class="text-danger"></span>
         </div>
     </div>
-    <div class="form-group row">
-        <label asp-for="Entidad" class="col-sm-3 col-form-label"></label>
-        <div class="col-sm-9">
-            <input asp-for="Entidad" class="form-control" />
-            <span asp-validation-for="Entidad" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label asp-for="NombrePlan" class="col-sm-3 col-form-label"></label>
-        <div class="col-sm-9">
-            <input asp-for="NombrePlan" class="form-control" />
-            <span asp-validation-for="NombrePlan" class="text-danger"></span>
-        </div>
-    </div>
 
     </hr>
+
     <div class="form-group row">
         <label asp-for="CodeEncuestador" class="col-sm-3 col-form-label"></label>
         <div class="col-sm-9">
             <input asp-for="CodeEncuestador" class="form-control" />
             <span asp-validation-for="CodeEncuestador" class="text-danger"></span>
-        </div>
-    </div>
-
-    <hr />
-    <div class="form-group row row">
-        <div class="col-sm-9 offset-3">
-            <div class="custom-control custom-switch">
-                <input class="custom-control-input" asp-for="activo" />
-                <label asp-for="activo" class="custom-control-label"></label>
-            </div>
-        </div>
-    </div>
-    <div class="form-group row row">
-        <div class="col-sm-9 offset-3">
-            <div class="custom-control custom-switch">
-                <input class="custom-control-input" asp-for="libre" />
-                <label asp-for="libre" class="custom-control-label"></label>
-            </div>
         </div>
     </div>
 

@@ -29,7 +29,7 @@ namespace App_consulta.Controllers
         }
 
         [Authorize(Policy = "Usuario.Editar")]
-        public async Task<ActionResult> Index(string resultado)
+        public async Task<ActionResult> Index()
         {
             string error = (string)HttpContext.Session.GetComplex<string>("error");
             if (error != "")
@@ -116,7 +116,7 @@ namespace App_consulta.Controllers
             var roles = await db.Roles.Where(n => idRoles.Contains(n.Id)).Select(n => n.Name).ToListAsync();
             ViewBag.Roles = new SelectList(await db.Roles.ToListAsync(), "Name", "Name");
 
-            EditViewModel Modelo = new EditViewModel()
+            var Modelo = new EditViewModel()
             {
                 Id = usuario.Id,
                 Email = usuario.Email,
@@ -227,7 +227,7 @@ namespace App_consulta.Controllers
         public async Task<ActionResult> DeleteConfirmedAsync(string Id)
         {
             string error = "";
-            ConfiguracionsController controlConfiguracion = new ConfiguracionsController(db);
+            var controlConfiguracion = new ConfiguracionsController(db);
 
             var user = await userManager.FindByIdAsync(Id);
 

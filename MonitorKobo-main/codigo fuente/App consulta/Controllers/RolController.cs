@@ -15,15 +15,14 @@ namespace App_consulta.Controllers
     {
         private readonly ApplicationDbContext db;
 
+        //private RoleManager<ApplicationRole> roleManager;
 
-        private RoleManager<ApplicationRole> roleManager;
-
-
-
-        public RolController(ApplicationDbContext context, RoleManager<ApplicationRole> roleMgr)
+        public RolController(ApplicationDbContext context)
+            
         {
             db = context;
-            roleManager = roleMgr;
+            //, RoleManager<ApplicationRole> roleMgr)
+            //roleManager = roleMgr;
         }
 
         [Authorize(Policy = "Rol.Editar")]
@@ -67,10 +66,12 @@ namespace App_consulta.Controllers
                 var claims = new List<IdentityRoleClaim<string>>();
                 foreach (var p in policies)
                 {
-                    var claim = new IdentityRoleClaim<string>();
-                    claim.RoleId = Rol.Id;
-                    claim.ClaimValue = "0";
-                    claim.ClaimType = p.claim;
+                    var claim = new IdentityRoleClaim<string>()
+                    {
+                        RoleId = Rol.Id,
+                        ClaimValue = "0",
+                        ClaimType = p.claim,
+                    };
                     claims.Add(claim);
 
                 }
@@ -146,10 +147,12 @@ namespace App_consulta.Controllers
                 {
                     var valor = HttpContext.Request.Form["n_" + p.id].ToString();
 
-                    var claim = new IdentityRoleClaim<string>();
-                    claim.RoleId = Rol.Id;
-                    claim.ClaimValue = valor != null && valor != "" ? valor : "0";
-                    claim.ClaimType = p.claim;
+                    var claim = new IdentityRoleClaim<string>() {
+                        RoleId = Rol.Id,
+                        ClaimValue = valor != null && valor != "" ? valor : "0",
+                        ClaimType = p.claim,
+                    };
+                  
                     newClaims.Add(claim);
 
                 }
@@ -198,7 +201,7 @@ namespace App_consulta.Controllers
         public async Task<ActionResult> DeleteConfirmed(string id)
         {
             string error = "";
-            ConfiguracionsController controlConfiguracion = new ConfiguracionsController(db);
+            var controlConfiguracion = new ConfiguracionsController(db);
 
             ApplicationRole Rol = await db.Roles.FindAsync(id);
             try

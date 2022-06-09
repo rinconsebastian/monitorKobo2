@@ -1,5 +1,7 @@
-﻿using App_consulta.Models;
+﻿using App_consulta.Data;
+using App_consulta.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,14 +14,18 @@ namespace App_consulta.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext db;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
+            db = context;
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var config = await db.Configuracion.FirstOrDefaultAsync();
+            ViewBag.config = config;
             return View();
         }
 

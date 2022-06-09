@@ -18,51 +18,37 @@ namespace App_consulta.Controllers
 
         private readonly ApplicationDbContext db;
        
-
-
-
         public ConfiguracionsController(ApplicationDbContext context)
         {
             db = context;
-           
         }
 
         public string SqlErrorHandler(Exception exception)
         {
 
             string mensaje = "";
-            DbUpdateConcurrencyException concurrencyEx = exception as DbUpdateConcurrencyException;
-            if (concurrencyEx != null)
+            if (exception is DbUpdateConcurrencyException )
             {
                 mensaje = "Error no identificado";
             }
 
-            DbUpdateException dbUpdateEx = exception as DbUpdateException;
-            if (dbUpdateEx != null)
+            if (exception is DbUpdateException dbUpdateEx)
             {
                 if (dbUpdateEx.InnerException != null
                         && dbUpdateEx.InnerException.InnerException != null)
                 {
-                    SqlException sqlException = dbUpdateEx.InnerException.InnerException as SqlException;
-                    if (sqlException != null)
+                    if (dbUpdateEx.InnerException.InnerException is SqlException sqlException)
                     {
-                        switch (sqlException.Number)
+                        mensaje = sqlException.Number switch
                         {
-                            case 2627:  // Unique constraint error
-                                mensaje = "Ya existe un elemento con el mismo identificador unico";
-                                break;
-                            case 547:   // Constraint check violation
-                                mensaje = "No se puede eliminar este item por que tiene elementos que dependen de el";
-                                break;
-                            case 2601:  // Duplicated key row error
-                                mensaje = "Ya existe un elemento con el mismo identificador unico";
-                                break;
-
-                            default:
-                                // A custom exception of yours for other DB issues
-                                mensaje = "Error en la base de datos";
-                                break;
-                        }
+                            // Unique constraint error
+                            2627 => "Ya existe un elemento con el mismo identificador unico",
+                            // Constraint check violation
+                            547 => "No se puede eliminar este item por que tiene elementos que dependen de el",
+                            // Duplicated key row error
+                            2601 => "Ya existe un elemento con el mismo identificador unico",
+                            _ => "Error en la base de datos",// A custom exception of yours for other DB issues
+                        };
                     }
                     else
                     {

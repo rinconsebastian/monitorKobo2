@@ -1,32 +1,34 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
+    Configuracion conf = ViewBag.config;
 }
 
 <div class="text-center mt-4">
-    <h1 class="display-4">Bienvenido</h1>
-    <p>Acuerdo AUNAP - PNUD 2021</p>
+    <h1 class="display-4 titulo-principal">Bienvenido</h1>
+    <h2 class="titulo-principal">@conf.NombreApp</h2>
+    <p>@conf.DescripcionApp</p>
     <hr />
     <div class="row">
 
         @if (User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Ver" && c.Value == "1")))
         {
             <div class="col-12 col-md-3 mb-1">
-                <a class="btn btn-outline-success btn-lg btn-block" asp-area="" asp-controller="Encuestador" asp-action="Index">Encuestadores</a>
+                <a class="btn btn-outline-primary btn-lg btn-block" asp-area="" asp-controller="Encuestador" asp-action="Index">Encuestadores</a>
             </div>
         }
         @if (User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Listado" && c.Value == "1")))
         {
             <div class="col-12 col-md-3 mb-1">
-                <a class="btn btn-outline-success btn-lg btn-block" asp-area="" asp-controller="Informes" asp-action="Encuestados">Caracterizaciones</a>
+                <a class="btn btn-outline-primary btn-lg btn-block" asp-area="" asp-controller="Informes" asp-action="Encuestados">Caracterizaciones</a>
             </div>
             <div class="col-12 col-md-3 mb-1">
-                <a class="btn btn-outline-success btn-lg btn-block" asp-area="" asp-controller="Informes" asp-action="Asociaciones">Asociaciones</a>
+                <a class="btn btn-outline-primary btn-lg btn-block" asp-area="" asp-controller="Informes" asp-action="Asociaciones">Asociaciones</a>
             </div>
         }
         @if (User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado" && c.Value == "1")))
         {
             <div class="col-12 col-md-3 mb-1">
-                <a class="btn btn-outline-success btn-lg btn-block" asp-area="" asp-controller="Formalizacion" asp-action="index">Formalizaciones</a>
+                <a class="btn btn-outline-primary btn-lg btn-block" asp-area="" asp-controller="Formalizacion" asp-action="index">Formalizaciones</a>
             </div>
         }
     </div>

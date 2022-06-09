@@ -9,7 +9,7 @@
     var listaJefes = (SelectList)ViewBag.Responsables;
 }
 <h4>Editar dependencia</h4>
-<form id="formIndicador" asp-action="Edit" method="post">
+<form asp-action="Edit" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="small text-danger"></div>
     <input asp-for="Id" type="hidden" />

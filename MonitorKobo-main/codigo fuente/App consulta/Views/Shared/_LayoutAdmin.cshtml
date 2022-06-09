@@ -1,9 +1,22 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.EntityFrameworkCore;
+
+@inject App_consulta.Data.ApplicationDbContext db
+
+@{
+    var appName = "App Consulta";
+
+    var conf = await db.Configuracion.FirstOrDefaultAsync();
+    if (conf != null)
+    {
+        appName = conf.NombreApp;
+    }
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>@ViewData["Title"] - AppConsulta</title>
+    <title>@ViewData["Title"] - @appName</title>
 
     <partial name="_faviconPartial" />
 
@@ -27,7 +40,7 @@
         </div>
     </nav>
     <div class="container">
-        <h2>@ViewData["Title"]</h2>
+        <h2 class="titulo-principal">@ViewData["Title"]</h2>
         <div>
             <h4>@ViewData["Subtitle"]</h4>
             <hr />

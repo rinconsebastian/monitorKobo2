@@ -22,7 +22,7 @@ namespace App_consulta.ViewComponents
             _env = env;
         }
 
-        public IViewComponentResult InvokeAsync(string file, string text = "", string css = "", string id = "")
+        public IViewComponentResult Invoke(string file, string text = "", string css = "", string id = "")
         {
             var time = "";
             try

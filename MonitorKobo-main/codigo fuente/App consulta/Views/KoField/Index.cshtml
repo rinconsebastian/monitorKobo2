@@ -1,0 +1,65 @@
+﻿@model IEnumerable<App_consulta.Models.KoField>
+
+@{
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    KoProject project = ViewBag.project;
+}
+<h4>Campos proyecto - @project.Name</h4>
+<p>
+    @Html.ActionLink("Nuevo campo", "Create", new { idProject = project.Id })
+</p>
+@if (ViewBag.error != null)
+{
+    <div class="alert alert-warning" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        @ViewBag.error
+    </div>
+}
+<table class="table font-smaller">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.Value)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Group)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+
+            <td class="td-formali-conf">
+                @Html.DisplayFor(modelItem => item.Value)
+            </td>
+            <td class="text-center">
+                @Html.DisplayFor(modelItem => item.Group)
+            </td>
+            <td>
+                <span class="button-inline small-button">
+                    <a href='@Url.Action("Edit", new { id=item.Id })' class="btn btn-default btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
+                    <a href='@Url.Action("Delete", new { id=item.Id })' class="btn btn-default btn-sm" title="Borrar"><i class="fas fa-trash"></i></a>
+                </span>
+            </td>
+        </tr>
+    }
+
+</table>
+<hr />
+<div class="form-group row">
+    <div class="col-sm-4 offset-md-4">
+        <a asp-action="Index" asp-controller="KoProject" class="btn btn btn-outline-dark btn-block">Volver</a>
+    </div>
+</div>
