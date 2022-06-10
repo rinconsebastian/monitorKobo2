@@ -19,10 +19,29 @@ namespace App_consulta.Services
             database = client.GetDatabase(settings.DatabaseName);
         }
 
-        public List<KoGenericData> Get(String collectionName)
+        public async Task<List<KoGenericData>> Get(String collectionName)
         {
             var collection = database.GetCollection<KoGenericData>(collectionName);
-            return collection.Find(n => true).ToList();
+            var list = await collection.Find(n => true).ToListAsync();
+            return list;
+        }
+
+        public  async Task<string> MaxIdKobo(String collectionName)
+        {
+            string max = null;
+            var collection = database.GetCollection<KoGenericData>(collectionName);
+            var result = await collection.Find(n => true).SortByDescending(n => n.IdKobo).Limit(1).FirstOrDefaultAsync();
+            if(result != null) { max = result.IdKobo; }
+            return max;
+        }
+
+        public async void InsertMany(String collectionName, List<KoGenericData> data)
+        {
+            if (data.Count > 0)
+            {
+                var collection = database.GetCollection<KoGenericData>(collectionName);
+                await collection.InsertManyAsync(data);
+            }
         }
         /*
 

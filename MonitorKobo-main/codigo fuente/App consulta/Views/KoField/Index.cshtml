@@ -20,16 +20,30 @@
     </div>
 }
 <table class="table font-smaller">
-    <tr>
+    <tr class="text-sm-center">
         <th>
             @Html.DisplayNameFor(model => model.Name)
         </th>
-
+        <th>
+            @Html.DisplayNameFor(model => model.Field)
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.Value)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Group)
+            @Html.DisplayNameFor(model => model.Type)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Validable)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ShowForm)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ShowTable)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ShowTableSummary)
         </th>
         <th></th>
     </tr>
@@ -40,12 +54,26 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
-
+            <td class="td-formali-conf">
+                @Html.DisplayFor(modelItem => item.Field)
+            </td>
             <td class="td-formali-conf">
                 @Html.DisplayFor(modelItem => item.Value)
             </td>
             <td class="text-center">
-                @Html.DisplayFor(modelItem => item.Group)
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td class="text-center">
+                @Html.DisplayFor(modelItem => item.Validable)
+            </td>
+            <td class="text-center">
+                @Html.DisplayFor(modelItem => item.ShowForm)
+            </td>
+            <td class="text-center">
+                @Html.DisplayFor(modelItem => item.ShowTable)
+            </td>
+            <td class="text-center">
+                @Html.DisplayFor(modelItem => item.ShowTableSummary)
             </td>
             <td>
                 <span class="button-inline small-button">
