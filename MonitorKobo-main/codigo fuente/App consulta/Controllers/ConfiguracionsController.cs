@@ -97,7 +97,7 @@ namespace App_consulta.Controllers
         {
             var log = new Logger(db);
 
-            var original = await db.Configuracion.AsNoTracking().Where(n => n.id == configuracion.id).FirstOrDefaultAsync();
+            var original = await db.Configuracion.AsNoTracking().Where(n => n.Id == configuracion.Id).FirstOrDefaultAsync();
 
             if (ModelState.IsValid)
             {

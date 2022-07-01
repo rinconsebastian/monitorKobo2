@@ -7,6 +7,8 @@ var showExport = false;
 var showEditar = false;
 var showDelete = false;
 
+var columns = [];
+var projects = [];
 //*********************************** funcLE ******************************************
 
 var funcLE = {
@@ -91,105 +93,7 @@ var funcLE = {
             headerFilter: {
                 visible: true
             },
-            columns: [
-
-                {
-                    dataField: "cedula",
-                    caption: "Cedula",
-                    alignment: "center",
-                    width: '100',
-                    dataType: "string",
-                    hidingPriority: 9
-                },
-                {
-                    dataField: "nombre",
-                    caption: "Nombre",
-                    alignment: "center",
-                    width: '220',
-                    hidingPriority: 8
-                },
-                {
-                    dataField: "municipio",
-                    caption: "Municipio",
-                    alignment: "center",
-                    width: '130',
-                    hidingPriority: 3
-
-                },
-                {
-                    dataField: "departamento",
-                    caption: "Departamento",
-                    alignment: "center",
-                    width: '100',
-                    hidingPriority: 4
-                },
-                {
-                    dataField: "coordinacion",
-                    caption: "Coordinación",
-                    alignment: "center",
-                    width: '150',
-                    hidingPriority: 5
-                },
-                {
-                    dataField: "telefono",
-                    caption: "Teléfono",
-                    alignment: "center",
-                    width: '120',
-                    hidingPriority: 2
-                },
-                {
-                    dataField: "email",
-                    caption: "Correo electrónico",
-                    alignment: "center",
-                    width: '120',
-                    hidingPriority: 1
-                },
-                {
-                    dataField: "numeroEncuestas",
-                    caption: "Nº\r\nCaracterizaciones",
-                    headerCellTemplate: function (header, info) {
-                        $("<div>").html(info.column.caption.replace(/\r\n/g, "<br/>")).appendTo(header);
-                    },
-                    alignment: "center",
-                    width: '100',
-                    hidingPriority: 6
-                },
-                {
-                    dataField: "numeroAsociaciones",
-                    caption: "Nº\r\nAsociaciones",
-                    headerCellTemplate: function (header, info) {
-                        $("<div>").html(info.column.caption.replace(/\r\n/g, "<br/>")).appendTo(header);
-                    },
-                    alignment: "center",
-                    width: '100',
-                    hidingPriority: 7
-                },
-                {
-                    dataField: "Opciones",
-                    hidingPriority: 10,
-                    caption: "Opciones",
-                    alignment: "left",
-                    allowHeaderFiltering: false,
-                    width: '80',
-                    cellTemplate: function (container, options) {
-
-                        var idEnc = options.data.id;
-                        var nombre = options.data.nombre;
-                        var contenido = '<a href="' + root + 'Encuestador/Details/' + idEnc + '" title="Detalles encuestador ' + nombre + '" class="btn btn-outline-info btn-xs ml-1" ><i class="fas fa-file-alt"></i></a>'
-                        if (showEditar) {
-                            contenido += '<a href="' + root + 'Encuestador/Edit/' + idEnc + '" title="Editar encuestador ' + nombre + '" class="btn btn-outline-success btn-xs ml-1" ><i class="fas fa-edit"></i></a>'
-                        }
-                        if (showDelete) {
-                            contenido += '<a href="' + root + 'Encuestador/Delete/' + idEnc + '" title="Borrar encuestador ' + nombre + '" class="btn btn-outline-danger btn-xs ml-1" ><i class="fas fa-trash"></i></a>'
-                        }
-
-                        $("<div class='preventSelection'>")
-                            .append(contenido)
-                            .appendTo(container);
-                    }
-
-                }
-            ],
+            columns: columns,
             summary: {
                 totalItems: [
                     {
@@ -241,6 +145,109 @@ var funcLE = {
         }).dxDataGrid('instance');
     },
 
+    getAdditionalColumns: function () {
+        var priorCount = 6;
+        columns = [
+            {
+                dataField: "cedula",
+                caption: "Cedula",
+                alignment: "center",
+                width: '100',
+                dataType: "string",
+                hidingPriority: 9
+            },
+            {
+                dataField: "nombre",
+                caption: "Nombre",
+                alignment: "center",
+                width: '220',
+                hidingPriority: 8
+            },
+            {
+                dataField: "municipio",
+                caption: "Municipio",
+                alignment: "center",
+                width: '130',
+                hidingPriority: 3
+
+            },
+            {
+                dataField: "departamento",
+                caption: "Departamento",
+                alignment: "center",
+                width: '100',
+                hidingPriority: 4
+            },
+            {
+                dataField: "coordinacion",
+                caption: "Coordinación",
+                alignment: "center",
+                width: '150',
+                hidingPriority: 5
+            },
+            {
+                dataField: "telefono",
+                caption: "Teléfono",
+                alignment: "center",
+                width: '120',
+                hidingPriority: 2
+            },
+            {
+                dataField: "email",
+                caption: "Correo electrónico",
+                alignment: "center",
+                width: '120',
+                hidingPriority: 1
+            }
+        ];
+
+        for (var i = 0; i < projects.length; i++) {
+            var nameProject = projects[i];
+            columns.push(
+                {
+                    dataField: "collections.numero" + nameProject,
+                    caption: "Nº\r\n" + nameProject,
+                    headerCellTemplate: function (header, info) {
+                        $("<div>").html(info.column.caption.replace(/\r\n/g, "<br/>")).appendTo(header);
+                    },
+                    alignment: "center",
+                    width: '100',
+                    hidingPriority: priorCount
+                }
+            );
+            priorCount++;
+        }
+
+        columns.push(
+            {
+                dataField: "Opciones",
+                hidingPriority: priorCount + 2,
+                caption: "Opciones",
+                alignment: "left",
+                allowHeaderFiltering: false,
+                width: '80',
+                cellTemplate: function (container, options) {
+
+                    var idEnc = options.data.id;
+                    var nombre = options.data.nombre;
+                    var contenido = '<a href="' + root + 'Encuestador/Details/' + idEnc + '" title="Detalles encuestador ' + nombre + '" class="btn btn-outline-info btn-xs ml-1" ><i class="fas fa-file-alt"></i></a>'
+                    if (showEditar) {
+                        contenido += '<a href="' + root + 'Encuestador/Edit/' + idEnc + '" title="Editar encuestador ' + nombre + '" class="btn btn-outline-success btn-xs ml-1" ><i class="fas fa-edit"></i></a>'
+                    }
+                    if (showDelete) {
+                        contenido += '<a href="' + root + 'Encuestador/Delete/' + idEnc + '" title="Borrar encuestador ' + nombre + '" class="btn btn-outline-danger btn-xs ml-1" ><i class="fas fa-trash"></i></a>'
+                    }
+
+                    $("<div class='preventSelection'>")
+                        .append(contenido)
+                        .appendTo(container);
+                }
+
+            }
+        );
+        
+    },
+
     init: function () {
         // Carga las variables de configuración.
         root = $('#Root').val();
@@ -250,6 +257,11 @@ var funcLE = {
         showEditar = $('#ShowEdit').val() == 1;
         showDelete = $('#ShowDelete').val() == 1;
 
+        if (typeof myProjects !== "undefined") {
+            projects = myProjects;
+        }
+
+        funcLE.getAdditionalColumns();
         funcLE.instanceDataGrid();
     }
 };

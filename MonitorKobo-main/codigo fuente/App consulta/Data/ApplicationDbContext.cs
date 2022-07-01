@@ -60,16 +60,17 @@ namespace App_consulta.Data
                 new Policy() { id = 16, nombre = "Ver encuestas por usuario", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Usuario", group = 4 },
 
 
-                new Policy() { id = 12, nombre = "Ver formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver", group = 5  },
-                new Policy() { id = 13, nombre = "Editar formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Editar", group = 5  },
-                new Policy() { id = 14, nombre = "Validar formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar", group = 5  },
-                new Policy() { id = 15, nombre = "Informe formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado", group = 5  },
-                new Policy() { id = 17, nombre = "Imprimir formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir", group = 5  },
+                new Policy() { id = 12, nombre = "Ver registro", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver", group = 5  },
+                new Policy() { id = 13, nombre = "Editar registro", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Editar", group = 5  },
+                new Policy() { id = 14, nombre = "Validar registro", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar", group = 5  },
+                new Policy() { id = 15, nombre = "Informe registro", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado", group = 5  },
+                new Policy() { id = 17, nombre = "Imprimir registro", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir", group = 5  },
+                new Policy() { id = 23, nombre = "Carcelar registro", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Cancelar", group = 5  },
 
                 new Policy() { id = 18, nombre = "Exportar listados", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado", group = 6  },
 
-                new Policy() { id = 19, nombre = "Cambiar imagenes formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar", group = 5  },
-                new Policy() { id = 20, nombre = "Restablecer imagenes formalización", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer", group = 5  },
+                new Policy() { id = 19, nombre = "Cambiar imagenes registro", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar", group = 5  },
+                new Policy() { id = 20, nombre = "Restablecer imagenes registro", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer", group = 5  },
 
                 new Policy() { id = 21, nombre = "Crear solicitudes", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear", group = 7  },
                 new Policy() { id = 22, nombre = "Administrar solicitudes", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", group = 7  },
@@ -104,13 +105,18 @@ namespace App_consulta.Data
                  new IdentityRoleClaim<string>() { Id =19, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar", ClaimValue = "1"},
                  new IdentityRoleClaim<string>() { Id =20, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer", ClaimValue = "1"},
                  new IdentityRoleClaim<string>() { Id =21, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear", ClaimValue = "1"},
-                 new IdentityRoleClaim<string>() { Id =22, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", ClaimValue = "1"}
+                 new IdentityRoleClaim<string>() { Id =22, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =23, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir", ClaimValue = "1"},
                 };
             modelBuilder.Entity<IdentityRoleClaim<string>>().HasData(policiesRol);
 
             //Entidad por defecto
-            var responsable = new Responsable() { Id = 1, Nombre = "Entidad", Editar = true };
-            modelBuilder.Entity<Responsable>().HasData(responsable);
+            var responsables = new List<Responsable>(){
+                new Responsable() { Id = 1, Nombre = "Entidad" },
+                new Responsable() { Id = 2, Nombre = "[CDR] Coordinación", IdJefe = 1 },
+            };
+
+            modelBuilder.Entity<Responsable>().HasData(responsables);
 
             //Usuario administrador
             var user = new ApplicationUser()
@@ -139,17 +145,17 @@ namespace App_consulta.Data
             //Configuración inicial
             var config = new Configuracion()
             {
-                id = 1,
+                Id = 1,
                 Logo = "/images/favicon1.png",
-                contacto = "rinconsebastian@gmail.com",
                 Favicon = "/images/favicon.png",
                 Entidad = "PNUD-AUNAP",
                 NombreApp="App Consulta",
                 DescripcionApp = "Acuerdo AUNAP - PNUD 2022",
                 NombrePlan = "Coordinación",
-                colorPrincipal = "#52a3a1",
-                colorTextoHeader = "#ffffff",
-                colorTextoPrincipal = "#00000"
+                ColorPrincipal = "#4287F5",
+                ColorTextoHeader = "#FFFFFF",
+                ColorTextoPrincipal = "#0448B5",
+                Contacto = "rinconsebastian@gmail.com",
             };
             modelBuilder.Entity<Configuracion>().HasData(config);
 
@@ -158,44 +164,23 @@ namespace App_consulta.Data
             //Estados datos
             var dataStates = new List<KoState>
             {
-                new KoState() { Id = 1, Name="ESTADO_BORRADOR", Label = "Borrador"},
-                new KoState() { Id = 2, Name="ESTADO_COMPLETO", Label = "Completo"},
-                new KoState() { Id = 3, Name="ESTADO_CANCELADO", Label = "Cancelado"},
-                new KoState() { Id = 4, Name="ESTADO_IMPRESO", Label = "Impreso"},
-                new KoState() { Id = 5, Name="ESTADO_CARNET_VIGENTE", Label = "Carné vigente"},
+                new KoState() { Id = 1, Class="", Label = "NO"},
+                new KoState() { Id = 2, Class="", Label = "Pendiente"},
+                new KoState() { Id = 3, Class="bg-warning", Label = "Borrador"},
+                new KoState() { Id = 4, Class="bg-success", Label = "Completo"},
+                new KoState() { Id = 5, Class="bg-danger", Label = "Cancelado"},
+                new KoState() { Id = 6, Class="bg-info", Label = "Impreso"},
+                new KoState() { Id = 7, Class="bg-danger", Label = "Carné vigente"},
+                new KoState() { Id = 8, Class="bg-danger", Label = "Duplicado"},
                 };
             modelBuilder.Entity<KoState>().HasData(dataStates);
 
-            //Variables de formalización: zonas y artes de pesca
-            var variables = new List<KoVariable>
+            //Variables de registro: zonas y artes de pesca
+            /*var variables = new List<KoVariable>
             {
                 new KoVariable() { Id = 1, Key="1", Value = "Arroyo", Group = "Zona"},
-                new KoVariable() { Id = 2, Key="2", Value = "Canal", Group = "Zona"},
-                new KoVariable() { Id = 3, Key="3", Value = "Ciénaga", Group = "Zona"},
-                new KoVariable() { Id = 4, Key="4", Value = "Estanque", Group = "Zona"},
-                new KoVariable() { Id = 5, Key="5", Value = "Laguna", Group = "Zona"},
-                new KoVariable() { Id = 6, Key="6", Value = "Lago", Group = "Zona"},
-                new KoVariable() { Id = 7, Key="7", Value = "Presa", Group = "Zona"},
-                new KoVariable() { Id = 8, Key="8", Value = "Quebrada", Group = "Zona"},
-                new KoVariable() { Id = 9, Key="9", Value = "Riachuelo", Group = "Zona"},
-                new KoVariable() { Id = 10, Key="10", Value = "Río", Group = "Zona"},
-                new KoVariable() { Id = 11, Key="11", Value = "Sector de río", Group = "Zona"},
-                new KoVariable() { Id = 12, Key="14", Value = "Embalse", Group = "Zona"},
-
-                new KoVariable() { Id = 13, Key="1", Value = "Arpón", Group = "Arte"},
-                new KoVariable() { Id = 14, Key="2", Value = "Atarraya", Group = "Arte"},
-                new KoVariable() { Id = 15, Key="3", Value = "Boliche", Group = "Arte"},
-                new KoVariable() { Id = 16, Key="4", Value = "Chinchorra", Group = "Arte"},
-                new KoVariable() { Id = 17, Key="5", Value = "Chinchorro", Group = "Arte"},
-                new KoVariable() { Id = 18, Key="6", Value = "Cóngolo / canasta", Group = "Arte"},
-                new KoVariable() { Id = 19, Key="7", Value = "Línea de mano", Group = "Arte"},
-                new KoVariable() { Id = 20, Key="8", Value = "Palangre", Group = "Arte"},
-                new KoVariable() { Id = 21, Key="9", Value = "Redes de enmalle", Group = "Arte"},
-                new KoVariable() { Id = 22, Key="10", Value = "Trampas/nasas", Group = "Arte"},
-                new KoVariable() { Id = 23, Key="11", Value = "Trasmallo", Group = "Arte"},
-                new KoVariable() { Id = 24, Key="12", Value = "Otro", Group = "Arte"},
                 };
-            modelBuilder.Entity<KoVariable>().HasData(variables);
+            modelBuilder.Entity<KoVariable>().HasData(variables);*/
 
         }
 

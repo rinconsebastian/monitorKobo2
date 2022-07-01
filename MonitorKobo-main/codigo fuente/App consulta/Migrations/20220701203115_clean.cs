@@ -54,15 +54,15 @@ namespace App_consulta.Migrations
                 name: "Configuracion",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Logo = table.Column<string>(type: "longtext", nullable: true),
                     Favicon = table.Column<string>(type: "longtext", nullable: true),
                     ImgHeader = table.Column<string>(type: "longtext", nullable: true),
-                    colorTextoHeader = table.Column<string>(type: "longtext", nullable: true),
-                    colorPrincipal = table.Column<string>(type: "longtext", nullable: true),
-                    colorTextoPrincipal = table.Column<string>(type: "longtext", nullable: true),
-                    contacto = table.Column<string>(type: "longtext", nullable: false),
+                    ColorTextoHeader = table.Column<string>(type: "longtext", nullable: true),
+                    ColorPrincipal = table.Column<string>(type: "longtext", nullable: true),
+                    ColorTextoPrincipal = table.Column<string>(type: "longtext", nullable: true),
+                    Contacto = table.Column<string>(type: "longtext", nullable: false),
                     Entidad = table.Column<string>(type: "longtext", nullable: false),
                     NombrePlan = table.Column<string>(type: "longtext", nullable: false),
                     CodeEncuestador = table.Column<int>(type: "int", nullable: false),
@@ -71,7 +71,7 @@ namespace App_consulta.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Configuracion", x => x.id);
+                    table.PrimaryKey("PK_Configuracion", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -80,7 +80,7 @@ namespace App_consulta.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    Class = table.Column<string>(type: "longtext", nullable: false),
                     Label = table.Column<string>(type: "longtext", nullable: false)
                 },
                 constraints: table =>
@@ -95,14 +95,17 @@ namespace App_consulta.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false),
-                    Field = table.Column<string>(type: "longtext", nullable: false),
+                    Collection = table.Column<string>(type: "longtext", nullable: false),
                     Validable = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     ValidationName = table.Column<string>(type: "longtext", nullable: true),
+                    ValidationField = table.Column<string>(type: "longtext", nullable: true),
+                    ValidationValue = table.Column<string>(type: "longtext", nullable: true),
                     KoboKpiUrl = table.Column<string>(type: "longtext", nullable: false),
                     KoboApiToken = table.Column<string>(type: "longtext", nullable: false),
                     KoboAssetUid = table.Column<string>(type: "longtext", nullable: false),
                     KoboAttachment = table.Column<string>(type: "longtext", nullable: false),
-                    KoboUsername = table.Column<string>(type: "longtext", nullable: false)
+                    KoboUsername = table.Column<string>(type: "longtext", nullable: false),
+                    LastUpdate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -201,8 +204,7 @@ namespace App_consulta.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     IdJefe = table.Column<int>(type: "int", nullable: true),
-                    Nombre = table.Column<string>(type: "longtext", nullable: false),
-                    Editar = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Nombre = table.Column<string>(type: "longtext", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -328,17 +330,28 @@ namespace App_consulta.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false),
-                    Value = table.Column<string>(type: "longtext", nullable: false),
-                    Field = table.Column<string>(type: "longtext", nullable: false),
-                    Label = table.Column<string>(type: "longtext", nullable: true),
-                    Group = table.Column<string>(type: "longtext", nullable: true),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    TitleTable = table.Column<string>(type: "longtext", nullable: false),
-                    TitleTableSummary = table.Column<string>(type: "longtext", nullable: false),
+                    NameKobo = table.Column<string>(type: "longtext", nullable: true),
+                    NameDB = table.Column<string>(type: "longtext", nullable: true),
                     Validable = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     ShowForm = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    ShowTable = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    ShowTableSummary = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Editable = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    FormLabel = table.Column<string>(type: "longtext", nullable: true),
+                    FormGroup = table.Column<string>(type: "longtext", nullable: true),
+                    FormOrder = table.Column<int>(type: "int", nullable: true),
+                    FormType = table.Column<int>(type: "int", nullable: false),
+                    FormGroupSelect = table.Column<string>(type: "longtext", nullable: true),
+                    ShowTableReport = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    ShowTableUser = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    ShowTableValidation = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    ShowPrint = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    PrintTitle = table.Column<string>(type: "longtext", nullable: true),
+                    WidthTableReport = table.Column<int>(type: "int", nullable: true),
+                    WidthTableUser = table.Column<int>(type: "int", nullable: true),
+                    WidthTableValidation = table.Column<int>(type: "int", nullable: true),
+                    TableTitle = table.Column<string>(type: "longtext", nullable: true),
+                    TableOrder = table.Column<int>(type: "int", nullable: true),
+                    TableType = table.Column<string>(type: "longtext", nullable: true),
+                    TablePriority = table.Column<int>(type: "int", nullable: true),
                     IdProject = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -390,7 +403,7 @@ namespace App_consulta.Migrations
                     Name = table.Column<string>(type: "longtext", nullable: false),
                     PhoneNumber = table.Column<string>(type: "longtext", nullable: true),
                     Email = table.Column<string>(type: "longtext", nullable: true),
-                    DNI = table.Column<int>(type: "int", nullable: false),
+                    DNI = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
                     Code = table.Column<string>(type: "longtext", nullable: true),
                     IdLocation = table.Column<int>(type: "int", nullable: false),
                     IdResponsable = table.Column<int>(type: "int", nullable: false),
@@ -432,50 +445,22 @@ namespace App_consulta.Migrations
 
             migrationBuilder.InsertData(
                 table: "Configuracion",
-                columns: new[] { "id", "CodeEncuestador", "DescripcionApp", "Entidad", "Favicon", "ImgHeader", "Logo", "NombreApp", "NombrePlan", "colorPrincipal", "colorTextoHeader", "colorTextoPrincipal", "contacto" },
-                values: new object[] { 1, 0, "Acuerdo AUNAP - PNUD 2022", "PNUD-AUNAP", "/images/favicon.png", null, "/images/favicon1.png", "App Consulta", "Coordinación", "#52a3a1", "#ffffff", "#00000", "rinconsebastian@gmail.com" });
+                columns: new[] { "Id", "CodeEncuestador", "ColorPrincipal", "ColorTextoHeader", "ColorTextoPrincipal", "Contacto", "DescripcionApp", "Entidad", "Favicon", "ImgHeader", "Logo", "NombreApp", "NombrePlan" },
+                values: new object[] { 1, 0, "#4287F5", "#FFFFFF", "#0448B5", "rinconsebastian@gmail.com", "Acuerdo AUNAP - PNUD 2022", "PNUD-AUNAP", "/images/favicon.png", null, "/images/favicon1.png", "App Consulta", "Coordinación" });
 
             migrationBuilder.InsertData(
                 table: "KoDataState",
-                columns: new[] { "Id", "Label", "Name" },
+                columns: new[] { "Id", "Class", "Label" },
                 values: new object[,]
                 {
-                    { 1, "Borrador", "ESTADO_BORRADOR" },
-                    { 2, "Completo", "ESTADO_COMPLETO" },
-                    { 3, "Cancelado", "ESTADO_CANCELADO" },
-                    { 4, "Impreso", "ESTADO_IMPRESO" },
-                    { 5, "Carné vigente", "ESTADO_CARNET_VIGENTE" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "KoVariable",
-                columns: new[] { "Id", "Group", "Key", "Value" },
-                values: new object[,]
-                {
-                    { 15, "Arte", "3", "Boliche" },
-                    { 16, "Arte", "4", "Chinchorra" },
-                    { 17, "Arte", "5", "Chinchorro" },
-                    { 18, "Arte", "6", "Cóngolo / canasta" },
-                    { 23, "Arte", "11", "Trasmallo" },
-                    { 21, "Arte", "9", "Redes de enmalle" },
-                    { 22, "Arte", "10", "Trampas/nasas" },
-                    { 14, "Arte", "2", "Atarraya" },
-                    { 24, "Arte", "12", "Otro" },
-                    { 19, "Arte", "7", "Línea de mano" },
-                    { 13, "Arte", "1", "Arpón" },
-                    { 20, "Arte", "8", "Palangre" },
-                    { 11, "Zona", "11", "Sector de río" },
-                    { 12, "Zona", "14", "Embalse" },
-                    { 1, "Zona", "1", "Arroyo" },
-                    { 3, "Zona", "3", "Ciénaga" },
-                    { 4, "Zona", "4", "Estanque" },
-                    { 5, "Zona", "5", "Laguna" },
-                    { 2, "Zona", "2", "Canal" },
-                    { 7, "Zona", "7", "Presa" },
-                    { 8, "Zona", "8", "Quebrada" },
-                    { 9, "Zona", "9", "Riachuelo" },
-                    { 10, "Zona", "10", "Río" },
-                    { 6, "Zona", "6", "Lago" }
+                    { 7, "bg-danger", "Carné vigente" },
+                    { 6, "bg-info", "Impreso" },
+                    { 5, "bg-danger", "Cancelado" },
+                    { 8, "bg-danger", "Duplicado" },
+                    { 3, "bg-warning", "Borrador" },
+                    { 2, "", "Pendiente" },
+                    { 1, "", "NO" },
+                    { 4, "bg-success", "Completo" }
                 });
 
             migrationBuilder.InsertData(
@@ -483,34 +468,35 @@ namespace App_consulta.Migrations
                 columns: new[] { "id", "claim", "group", "nombre" },
                 values: new object[,]
                 {
+                    { 12, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver", 5, "Ver registro" },
                     { 21, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear", 7, "Crear solicitudes" },
-                    { 12, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver", 5, "Ver formalización" },
-                    { 20, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer", 5, "Restablecer imagenes formalización" },
-                    { 19, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar", 5, "Cambiar imagenes formalización" },
+                    { 20, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer", 5, "Restablecer imagenes registro" },
+                    { 19, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar", 5, "Cambiar imagenes registro" },
                     { 18, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado", 6, "Exportar listados" },
-                    { 17, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir", 5, "Imprimir formalización" },
-                    { 15, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado", 5, "Informe formalización" },
-                    { 14, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar", 5, "Validar formalización" },
-                    { 13, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Editar", 5, "Editar formalización" },
+                    { 23, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Cancelar", 5, "Carcelar registro" },
+                    { 17, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir", 5, "Imprimir registro" },
+                    { 15, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado", 5, "Informe registro" },
+                    { 14, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar", 5, "Validar registro" },
+                    { 13, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Editar", 5, "Editar registro" },
                     { 16, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Usuario", 4, "Ver encuestas por usuario" },
-                    { 6, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.Logs", 2, "Ver registro actividad" },
+                    { 8, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Ver", 3, "Ver encuestador" },
                     { 10, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Actualizar", 4, "Actualizar encuestas" },
                     { 9, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Administrar", 3, "Administrar encuestador" },
                     { 7, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Editar", 3, "Editar encuestador" },
-                    { 8, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Ver", 3, "Ver encuestador" },
+                    { 22, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", 7, "Administrar solicitudes" },
+                    { 6, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.Logs", 2, "Ver registro actividad" },
                     { 5, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Usuario.Editar", 2, "Editar usuarios" },
                     { 4, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Rol.Editar", 2, "Editar roles" },
                     { 3, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Responsable.Editar", 2, "Editar dependencias" },
                     { 2, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.Responsable", 1, "Configuración dependencia" },
                     { 1, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.General", 1, "Ver Configuración general" },
-                    { 22, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", 7, "Administrar solicitudes" },
                     { 11, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Listado", 4, "Informe encuestas" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Responsable",
-                columns: new[] { "Id", "Editar", "IdJefe", "Nombre" },
-                values: new object[] { 1, true, null, "Entidad" });
+                columns: new[] { "Id", "IdJefe", "Nombre" },
+                values: new object[] { 1, null, "Entidad" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoleClaims",
@@ -518,6 +504,8 @@ namespace App_consulta.Migrations
                 values: new object[,]
                 {
                     { 1, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.General", "1", "1" },
+                    { 23, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir", "1", "1" },
+                    { 22, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", "1", "1" },
                     { 21, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear", "1", "1" },
                     { 20, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer", "1", "1" },
                     { 19, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar", "1", "1" },
@@ -527,8 +515,7 @@ namespace App_consulta.Migrations
                     { 15, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar", "1", "1" },
                     { 14, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Editar", "1", "1" },
                     { 13, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver", "1", "1" },
-                    { 22, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", "1", "1" },
-                    { 12, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Usuario", "1", "1" },
+                    { 11, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Listado", "1", "1" },
                     { 10, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Actualizar", "1", "1" },
                     { 9, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Administrar", "1", "1" },
                     { 8, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Editar", "1", "1" },
@@ -538,13 +525,18 @@ namespace App_consulta.Migrations
                     { 4, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Rol.Editar", "1", "1" },
                     { 3, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Responsable.Editar", "1", "1" },
                     { 2, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Configuracion.Responsable", "1", "1" },
-                    { 11, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Listado", "1", "1" }
+                    { 12, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Usuario", "1", "1" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[] { "1", "1" });
+
+            migrationBuilder.InsertData(
+                table: "Responsable",
+                columns: new[] { "Id", "IdJefe", "Nombre" },
+                values: new object[] { 2, 1, "[CDR] Coordinación" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
