@@ -23,8 +23,6 @@ namespace App_consulta.Models
         [Required]
         public string Nombre { get; set; }
 
-        [Required]
-        public bool Editar { get; set; }
 
         public virtual ICollection<Responsable> Hijos { get; set; }
     }

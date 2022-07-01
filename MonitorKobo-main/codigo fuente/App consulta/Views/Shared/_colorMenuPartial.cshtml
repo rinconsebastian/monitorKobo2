@@ -11,12 +11,12 @@
     if (conf != null)
     {
 
-        color = conf.colorTextoHeader != null && conf.colorTextoHeader != "" ? conf.colorTextoHeader: color;
+        color = conf.ColorTextoHeader != null && conf.ColorTextoHeader != "" ? conf.ColorTextoHeader: color;
 
 
-        colorPrincipal = conf.colorPrincipal != null && conf.colorPrincipal != "" ? conf.colorPrincipal : colorPrincipal;
+        colorPrincipal = conf.ColorPrincipal != null && conf.ColorPrincipal != "" ? conf.ColorPrincipal : colorPrincipal;
 
-        colorTextoPrincipal = conf.colorTextoPrincipal != "" && conf.colorTextoPrincipal != null ? conf.colorTextoPrincipal : colorTextoPrincipal;
+        colorTextoPrincipal = conf.ColorTextoPrincipal != "" && conf.ColorTextoPrincipal != null ? conf.ColorTextoPrincipal : colorTextoPrincipal;
 
     }
 }
@@ -67,6 +67,20 @@
             text-shadow: 0px 0px 5px rgba(0,0,0, 0.8);
         }
 
+    .btn-outline-primary.focus, .btn-outline-primary:focus,
+    .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
+    .btn-outline-primary:not(:disabled):not(.disabled):active:focus,
+    .show > .btn-outline-primary.dropdown-toggle:focus {
+        box-shadow: 0 0 0 0.2rem @(colorPrincipal.Substring(0,7))50;
+    }
+
+    .btn-outline-primary:not(:disabled):not(.disabled).active,
+    .btn-outline-primary:not(:disabled):not(.disabled):active,
+    .show > .btn-outline-primary.dropdown-toggle {
+        color: @color !important;
+        background-color: @(colorPrincipal.Substring(0,7))BB !important;
+        border-color: @(colorPrincipal.Substring(0,7)) !important;
+    }
 
     .titulo-principal {
         color: @colorTextoPrincipal !important;

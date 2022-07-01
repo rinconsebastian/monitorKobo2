@@ -1,0 +1,216 @@
+﻿@model App_consulta.Models.KoField
+
+<h5 class="mt-5">General</h5>
+<hr class="mt-0" />
+
+<div class="form-group row">
+    <label asp-for="Name" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="NameKobo" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <textarea asp-for="NameKobo" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="NameKobo" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="NameDB" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="NameDB" class="form-control" />
+        <span asp-validation-for="NameDB" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row row">
+    <div class="col-sm-9 offset-3">
+        <div class="custom-control custom-switch">
+            <input class="custom-control-input" asp-for="Validable" />
+            <label asp-for="Validable" class="custom-control-label"></label>
+        </div>
+    </div>
+</div>
+
+<h5 class="mt-5">Formulario</h5>
+<hr class="mt-0" />
+
+<div class="form-group row row">
+    <div class="col-sm-9 offset-3">
+        <div class="custom-control custom-switch">
+            <input class="custom-control-input" asp-for="ShowForm" />
+            <label asp-for="ShowForm" class="custom-control-label"></label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="FormLabel" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <textarea asp-for="FormLabel" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="FormLabel" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row row">
+    <div class="col-sm-9 offset-3">
+        <div class="custom-control custom-switch">
+            <input class="custom-control-input" asp-for="Editable" />
+            <label asp-for="Editable" class="custom-control-label"></label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="FormGroup" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="FormGroup" class="form-control" />
+        <span asp-validation-for="FormGroup" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="FormOrder" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="FormOrder" class="form-control" />
+        <span asp-validation-for="FormOrder" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="FormType" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <select asp-for="FormType" asp-items="@ViewBag.ItemTypes" class="form-control">
+            <option value="0">Seleccione una opción</option>
+        </select>
+        <span asp-validation-for="FormType" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="FormGroupSelect" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="FormGroupSelect" class="form-control" />
+        <span asp-validation-for="FormGroupSelect" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<h5 class="mt-5">Informe general</h5>
+<hr class="mt-0" />
+
+<div class="form-group row row">
+    <div class="col-sm-9 offset-3">
+        <div class="custom-control custom-switch">
+            <input class="custom-control-input" asp-for="ShowTableReport" />
+            <label asp-for="ShowTableReport" class="custom-control-label"></label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="WidthTableReport" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="WidthTableReport" class="form-control" />
+        <span asp-validation-for="WidthTableReport" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<h5 class="mt-5">Informe por usuario</h5>
+<hr class="mt-0" />
+
+<div class="form-group row row">
+    <div class="col-sm-9 offset-3">
+        <div class="custom-control custom-switch">
+            <input class="custom-control-input" asp-for="ShowTableUser" />
+            <label asp-for="ShowTableUser" class="custom-control-label"></label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="WidthTableUser" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="WidthTableUser" class="form-control" />
+        <span asp-validation-for="WidthTableUser" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<h5 class="mt-5">Informe validacion</h5>
+<hr class="mt-0" />
+
+<div class="form-group row row">
+    <div class="col-sm-9 offset-3">
+        <div class="custom-control custom-switch">
+            <input class="custom-control-input" asp-for="ShowTableValidation" />
+            <label asp-for="ShowTableValidation" class="custom-control-label"></label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="WidthTableValidation" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="WidthTableValidation" class="form-control" />
+        <span asp-validation-for="WidthTableValidation" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<h5 class="mt-5">Configuración tablas</h5>
+<hr class="mt-0" />
+
+<div class="form-group row">
+    <label asp-for="TableTitle" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="TableTitle" class="form-control" />
+        <span asp-validation-for="TableTitle" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="TableOrder" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="TableOrder" class="form-control" />
+        <span asp-validation-for="TableOrder" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="TablePriority" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="TablePriority" class="form-control" />
+        <span asp-validation-for="TablePriority" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="TableType" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="TableType" class="form-control" />
+        <span asp-validation-for="TableType" class="form-text small text-danger"></span>
+    </div>
+</div>
+
+<h5 class="mt-5">Configuración impresión</h5>
+<hr class="mt-0" />
+
+<div class="form-group row row">
+    <div class="col-sm-9 offset-3">
+        <div class="custom-control custom-switch">
+            <input class="custom-control-input" asp-for="ShowPrint" />
+            <label asp-for="ShowPrint" class="custom-control-label"></label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="PrintTitle" class="col-md-3 col-form-label"></label>
+    <div class="col-md-9">
+        <input asp-for="PrintTitle" class="form-control" />
+        <span asp-validation-for="PrintTitle" class="form-text small text-danger"></span>
+    </div>
+</div>
+

@@ -18,14 +18,19 @@ namespace App_consulta.Models
 
         [Display(Name = "Nombre DB")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
-        public string Field { get; set; }
+        public string Collection { get; set; }
 
         [Display(Name = "Validable")]
         public bool Validable { get; set; }
 
-        [Display(Name = "Informe validable")]
+        [Display(Name = "Informe")]
         public string ValidationName { get; set; }
 
+        [Display(Name = "Campo")]
+        public string ValidationField { get; set; }
+
+        [Display(Name = "Value")]
+        public string ValidationValue{ get; set; }
 
         [Display(Name = "KPI Url")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
@@ -46,5 +51,8 @@ namespace App_consulta.Models
         [Display(Name = "Attachment User")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
         public string KoboUsername { get; set; }
+
+        [Display(Name = "Última actualización")]
+        public DateTime LastUpdate { get; set; }
     }
 }

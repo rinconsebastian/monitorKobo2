@@ -26,7 +26,6 @@ var funcVali = {
         $('body').on('click', '.btn-finalizar', function (e) {
             var button = $(this);
             var accion = button.data('accion');
-            console.log(accion);
 
             var print = "";
             var estado = 0;

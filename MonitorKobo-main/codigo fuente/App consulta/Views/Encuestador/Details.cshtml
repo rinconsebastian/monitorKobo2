@@ -3,21 +3,25 @@
 @{
     ViewData["Title"] = "Panel de control";
     ViewData["Subtitle"] = "Encuestadores";
+    ViewData["Fluid"] = true;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var code = Model.DNI.ToString();
 
     var permisoEditar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Editar" && c.Value == "1"));
     var permisoAdministrar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Administrar" && c.Value == "1"));
 
     var verEncuestas = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Usuario" && c.Value == "1"));
 
-    var verFormalizacion = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver" && c.Value == "1"));
-    var validarFormalizacion = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar" && c.Value == "1"));
-
+    var permisoVer = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver" && c.Value == "1"));
+    var permisoValidar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar" && c.Value == "1"));
     var permisoExportar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado" && c.Value == "1"));
+
+    List<KoProject> projects = ViewBag.projects;
+    var active = true;
 }
-@Html.Hidden("code", code)
-@Html.Hidden("showExport", (permisoExportar ? 1 : 0))
+
+@Html.Hidden("allowExport", (permisoExportar ? 1 : 0))
+@Html.Hidden("allowLoadValidate", (permisoValidar ? 1 : 0))
+@Html.Hidden("allowSeeValidate", (permisoVer ? 1 : 0))
 
 <div class="row mt-4">
     <div class="col-12 col-sm-5 @(verEncuestas ? "" : "mx-auto")">
@@ -118,36 +122,32 @@
             <div class="card">
                 <div class="card-body">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#tab-1" role="tab" aria-controls="tab1" aria-selected="true">Caracterizaciones</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-2" role="tab" aria-controls="tab2" aria-selected="false"> Asociaciones</a>
-                        </li>
-
+                        @foreach (KoProject p in projects)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(active ? "active": "")" id="home-@p.Id" data-toggle="tab" href="#home_@p.Id" role="tab" aria-controls="home_@p.Id" aria-selected="true">
+                                    @p.Name
+                                </a>
+                            </li>
+                            active = false;
+                        }
                     </ul>
                     <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="tab-1" role="tabpanel" aria-labelledby="tab-1">
-                            <div id="gridContainer" class="row-lm aux-selection"></div>
-                            <div class="card-footer text-center">
-                                <p class="font-weight-light mb-0 small">
-                                    Actualizado el <i>@ViewBag.DataTime</i>
-                                </p>
-
+                        @{ active = true; }
+                        @foreach (KoProject p in projects)
+                        {
+                            <div class="tab-pane fade @(active ? "show active" : "")" id="home_@p.Id" role="tabpanel" aria-labelledby="home_@p.Id-tab">
+                                <div id="gridContainer_@p.Id" class="row-lm aux-selection"></div>
+                                <div class="card-footer text-center">
+                                    <p class="font-weight-light mb-0 small">
+                                        Actualizado el <i>@p.LastUpdate</i>
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="tab-pane fade" id="tab-2" role="tabpanel" aria-labelledby="tab-2">
-                            <div id="gridContainerAsoc" class="row-lm aux-selection"></div>
-                            <div class="card-footer text-center">
-                                <p class="font-weight-light mb-0 small">
-                                    Actualizado el <i>@ViewBag.DataTimeAssoc</i>
-                                </p>
-
-                            </div>
-                        </div>
+                            active = false;
+                        }
                     </div>
+
                 </div>
 
             </div>
@@ -159,12 +159,9 @@
     {
         <script type="text/javascript" src="~/lib/jquery/moment.js"></script>
         <script>
-        var myShowValidation =@(verFormalizacion ? "true" : "false");
-        var myLoadValidation =@(validarFormalizacion ? "true" : "false");
+            var myConfig = JSON.parse('@Html.Raw(ViewBag.config)');
         </script>
-
         <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
-        <script type="text/javascript" src="~/js/tables/EncuestaListadoScript.js?v=1.1"></script>
-        <script type="text/javascript" src="~/js/tables/AsociacionListadoScript.js?v=1.1"></script>
+        <script type="text/javascript" src="~/js/tables/ListadoScript.js?v=1.0"></script>
     }
 }

@@ -11,7 +11,7 @@ namespace App_consulta.Models
     {
         [Required]
         [Key]
-        public int id { get; set; }
+        public int Id { get; set; }
 
 
         [Display(Name = "Imagen logo")]
@@ -24,18 +24,18 @@ namespace App_consulta.Models
         public string ImgHeader { get; set; }
 
         [Display(Name = "Color Texto Cabecera")]
-        public string colorTextoHeader { get; set; }
+        public string ColorTextoHeader { get; set; }
 
         [Display(Name = "Color  Principal")]
-        public string colorPrincipal { get; set; }
+        public string ColorPrincipal { get; set; }
 
         [Display(Name = "Color Texto Principal")]
-        public string colorTextoPrincipal { get; set; }
+        public string ColorTextoPrincipal { get; set; }
 
 
         [Required]
         [Display(Name = "Email  contacto")]
-        public string contacto { get; set; }
+        public string Contacto { get; set; }
 
         [Required]
         [Display(Name = "Nombre entidad")]

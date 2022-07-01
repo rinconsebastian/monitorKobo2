@@ -9,7 +9,7 @@
     var permisoSolicitudes = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar" && c.Value == "1"));
     var actualizarDatos = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Actualizar" && c.Value == "1"));
 }
-<ul class="nav nav-pills flex-column">
+<ul class="nav nav-pills flex-column py-3">
     <li class="nav-item">
         <a id="Configuracions-Index" asp-controller="Configuracions" asp-action="Index" class="nav-link">Inicio</a>
     </li>
@@ -52,10 +52,10 @@
     {
         <li><hr class="dropdown-divider"></li>
         <li class="nav-item">
-            <a id="FormalizacionConfig-Index" asp-controller="KoProject" asp-action="Index" class="nav-link">Proyectos</a>
+            <a id="KoProject-Index" asp-controller="KoProject" asp-action="Index" class="nav-link">Proyectos</a>
         </li>
         <li class="nav-item">
-            <a id="FormalizacionVariable-Index" asp-controller="KoVariable" asp-action="Index" class="nav-link">Variables</a>
+            <a id="KoVariable-Index" asp-controller="KoVariable" asp-action="Index" class="nav-link">Variables</a>
         </li>
     }
 

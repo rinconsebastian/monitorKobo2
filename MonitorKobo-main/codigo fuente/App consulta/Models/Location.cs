@@ -39,4 +39,11 @@ namespace App_consulta.Models
         public virtual LocationLevel LocationLevel { get; set; }
 
     }
+
+    public class LocationViewModel
+    {
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string Parent { get; set; }
+    }
 }

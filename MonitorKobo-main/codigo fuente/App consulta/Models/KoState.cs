@@ -17,7 +17,7 @@ namespace App_consulta.Models
 
         [Display(Name = "Nombre")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
-        public String Name { get; set; }
+        public String Class { get; set; }
 
         [Display(Name = "Descripción")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]

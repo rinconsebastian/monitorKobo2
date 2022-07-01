@@ -13,119 +13,8 @@
     <div asp-validation-summary="All" class="small text-danger"></div>
     <input asp-for="IdProject" type="hidden" />
 
-    <div class="form-group row">
-        <label asp-for="Name" class="col-md-3 col-form-label"></label>
-        <div class="col-md-9">
-            <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="form-text small text-danger"></span>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label asp-for="Value" class="col-md-3 col-form-label"></label>
-        <div class="col-md-9">
-            <input asp-for="Value" class="form-control" />
-            <span asp-validation-for="Value" class="form-text small text-danger"></span>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label asp-for="Field" class="col-md-3 col-form-label"></label>
-        <div class="col-md-9">
-            <input asp-for="Field" class="form-control" />
-            <span asp-validation-for="Field" class="form-text small text-danger"></span>
-        </div>
-    </div>
+    @await Html.PartialAsync("_PartialForm")
     <hr />
-
-    <div class="form-group row row">
-        <div class="col-sm-9 offset-3">
-            <div class="custom-control custom-switch">
-                <input class="custom-control-input" asp-for="Validable" />
-                <label asp-for="Validable" class="custom-control-label"></label>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group row row">
-        <div class="col-sm-9 offset-3">
-            <div class="custom-control custom-switch">
-                <input class="custom-control-input" asp-for="ShowForm" />
-                <label asp-for="ShowForm" class="custom-control-label"></label>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group row row">
-        <div class="col-sm-9 offset-3">
-            <div class="custom-control custom-switch">
-                <input class="custom-control-input" asp-for="ShowTable" />
-                <label asp-for="ShowTable" class="custom-control-label"></label>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group row row">
-        <div class="col-sm-9 offset-3">
-            <div class="custom-control custom-switch">
-                <input class="custom-control-input" asp-for="ShowTableSummary" />
-                <label asp-for="ShowTableSummary" class="custom-control-label"></label>
-            </div>
-        </div>
-    </div>
-
-    <hr />
-
-    <div class="form-group row">
-        <label asp-for="Label" class="col-md-3 col-form-label"></label>
-        <div class="col-md-9">
-            <input asp-for="Label" class="form-control" />
-            <span asp-validation-for="Label" class="form-text small text-danger"></span>
-        </div>
-    </div>
-
-
-
-    <div class="form-group row">
-        <label asp-for="Group" class="col-md-3 col-form-label"></label>
-        <div class="col-md-9">
-            <input asp-for="Group" class="form-control" />
-            <span asp-validation-for="Group" class="form-text small text-danger"></span>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label asp-for="Type" class="col-md-3 col-form-label"></label>
-        <div class="col-md-9">
-            <select asp-for="Type" asp-items="@ViewBag.ItemTypes" class="form-control">
-                <option value="0">Seleccione una opción</option>
-            </select>
-            <span asp-validation-for="Type" class="form-text small text-danger"></span>
-        </div>
-    </div>
-
-    <hr />
-
-    <div class="form-group row">
-        <label asp-for="TitleTable" class="col-md-3 col-form-label"></label>
-        <div class="col-md-9">
-            <input asp-for="TitleTable" class="form-control" />
-            <span asp-validation-for="TitleTable" class="form-text small text-danger"></span>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label asp-for="TitleTableSummary" class="col-md-3 col-form-label"></label>
-        <div class="col-md-9">
-            <input asp-for="TitleTableSummary" class="form-control" />
-            <span asp-validation-for="TitleTableSummary" class="form-text small text-danger"></span>
-        </div>
-    </div>
-
-
-    <hr />
-
-
 
     <div class="form-group row">
         <div class="col-sm-3 offset-lg-3">
@@ -135,6 +24,5 @@
             <a asp-action="Index" asp-route-idProject="@project.Id" class="btn btn btn-outline-dark btn-block">Volver</a>
         </div>
     </div>
-
 
 </form>

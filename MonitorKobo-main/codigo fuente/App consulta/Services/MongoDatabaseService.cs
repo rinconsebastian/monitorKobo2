@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BooksApi.Models;
 using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace App_consulta.Services
 {
@@ -19,6 +20,18 @@ namespace App_consulta.Services
             database = client.GetDatabase(settings.DatabaseName);
         }
 
+        public async Task<KoGenericData> Find(String collectionName, String id)
+        {
+            var collection = database.GetCollection<KoGenericData>(collectionName);
+            return await collection.Find(n => n.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<KoExtendData> FindExt(String collectionName, String id)
+        {
+            var collection = database.GetCollection<KoExtendData>(collectionName);
+            return await collection.Find(n => n.Id == id).FirstOrDefaultAsync();
+        }
+
         public async Task<List<KoGenericData>> Get(String collectionName)
         {
             var collection = database.GetCollection<KoGenericData>(collectionName);
@@ -26,7 +39,37 @@ namespace App_consulta.Services
             return list;
         }
 
-        public  async Task<string> MaxIdKobo(String collectionName)
+        public async Task<List<BsonDocument>> GetWithFilter(String collectionName, List<string> fieldList,  FilterDefinition<BsonDocument> filter, bool ExcludeId = false)
+        {
+            var result = new List<BsonDocument>();
+
+            if(fieldList.Count == 0) { return result; }
+
+            var collection = database.GetCollection<BsonDocument>(collectionName);
+
+            var projection = Builders<BsonDocument>.Projection.Include(fieldList.First());
+            foreach (var field in fieldList.Skip(1))
+            {
+                projection = projection.Include(field);
+            }
+            if (ExcludeId) { projection = projection.Exclude("_id"); }
+            result = await collection.Find(filter).Project(projection).ToListAsync();
+            return result;
+        }
+
+        public async Task<List<BsonDocument>> CountByUser(String collectionName)
+        {
+            var collection = database.GetCollection<BsonDocument>(collectionName);
+            var result = await collection.Aggregate().Group(new BsonDocument
+              {
+                   { "_id", "$user" },
+                   {"count", new BsonDocument("$sum", 1)}
+              }
+            ).ToListAsync();
+            return result;
+        }
+
+        public async Task<string> MaxIdKobo(String collectionName)
         {
             string max = null;
             var collection = database.GetCollection<KoGenericData>(collectionName);
@@ -43,26 +86,15 @@ namespace App_consulta.Services
                 await collection.InsertManyAsync(data);
             }
         }
-        /*
 
-            public Book Get(string id) =>
-                _books.Find<Book>(book => book.Id == id).FirstOrDefault();
 
-            public Book Create(Book book)
-            {
-                _books.InsertOne(book);
-                return book;
-            }
+        public async Task<bool> Update(String collectionName,  KoExtendData dataIn)
+        {
+            var collection = database.GetCollection<KoExtendData>(collectionName);
+            var actionResult = await collection.ReplaceOneAsync(n => n.Id == dataIn.Id, dataIn);
+            return actionResult.IsAcknowledged && actionResult.ModifiedCount > 0;
+        }
 
-            public void Update(string id, Book bookIn) =>
-                _books.ReplaceOne(book => book.Id == id, bookIn);
 
-            public void Remove(Book bookIn) =>
-                _books.DeleteOne(book => book.Id == bookIn.Id);
-
-            public void Remove(string id) =>
-                _books.DeleteOne(book => book.Id == id);
-
-            */
     }
 }

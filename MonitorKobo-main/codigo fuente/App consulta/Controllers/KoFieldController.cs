@@ -66,7 +66,7 @@ namespace App_consulta.Controllers
 
 
         [Authorize(Policy = "Configuracion.General")]
-        public async Task<IActionResult> Index(int idProject = 0)
+        public async Task<IActionResult> Index(int idProject = 0, int order = 0)
         {
             var project = await db.KoProject.FindAsync(idProject);
             if (project == null) { return NotFound(); }
@@ -77,8 +77,26 @@ namespace App_consulta.Controllers
                 ViewBag.error = error;
                 HttpContext.Session.Remove("error");
             }
-            var items = await db.KoField.Where(n => n.IdProject == idProject).ToListAsync();
+
+            List<KoField> items = order switch
+            {
+                //formulario
+                1 => await db.KoField.Where(n => n.IdProject == idProject && n.ShowForm)
+                                        .OrderBy(n => n.FormOrder).ToListAsync(),
+                //reporte general
+                2 => await db.KoField.Where(n => n.IdProject == idProject && n.ShowTableReport)
+                                        .OrderBy(n => n.TableOrder).ToListAsync(),
+                //reporte usuario
+                3 => await db.KoField.Where(n => n.IdProject == idProject && n.ShowTableUser)
+                                        .OrderBy(n => n.TableOrder).ToListAsync(),
+                //reporte validacion
+                4 => await db.KoField.Where(n => n.IdProject == idProject && n.ShowTableValidation)
+                                        .OrderBy(n => n.TableOrder).ToListAsync(),
+                //all
+                _ => await db.KoField.Where(n => n.IdProject == idProject).ToListAsync(),
+            };
             ViewBag.project = project;
+            ViewBag.Order = order;
             return View(items);
         }
 
@@ -88,13 +106,7 @@ namespace App_consulta.Controllers
             var project = await db.KoProject.FindAsync(idProject);
             if (project == null) { return NotFound(); }
 
-            var types = new List<SelectListItem>() {
-                new SelectListItem() { Text = "Texto", Value = KoField.TYPE_TEXT },
-                new SelectListItem() { Text = "Imagen", Value = KoField.TYPE_IMG },
-                new SelectListItem() { Text = "Solo lectura", Value = KoField.TYPE_LABEL }
-            };
-            ViewBag.ItemTypes = types;
-
+            ViewBag.ItemTypes = GetOptions();
             ViewBag.project = project;
             return View();
         }
@@ -115,13 +127,7 @@ namespace App_consulta.Controllers
                 return RedirectToAction("Index", new { idProject });
             }
 
-            var types = new List<SelectListItem>() {
-                new SelectListItem() { Text = "Texto", Value = KoField.TYPE_TEXT },
-                new SelectListItem() { Text = "Imagen", Value = KoField.TYPE_IMG },
-                new SelectListItem() { Text = "Solo lectura", Value = KoField.TYPE_LABEL }
-            };
-            ViewBag.ItemTypes = types;
-
+            ViewBag.ItemTypes = GetOptions();
             ViewBag.project = project;
 
             return View(koField);
@@ -134,13 +140,8 @@ namespace App_consulta.Controllers
             KoField field = await db.KoField.FindAsync(id);
             if (field == null) { return NotFound(); }
 
-            var types = new List<SelectListItem>() {
-                new SelectListItem() { Text = "Texto", Value = KoField.TYPE_TEXT },
-                new SelectListItem() { Text = "Imagen", Value = KoField.TYPE_IMG },
-                new SelectListItem() { Text = "Solo lectura", Value = KoField.TYPE_LABEL }
-            };
-            ViewBag.ItemTypes = types;
-
+            ViewBag.ItemTypes = GetOptions();
+            ViewBag.project = field.Project;
             return View(field);
         }
 
@@ -149,6 +150,8 @@ namespace App_consulta.Controllers
         [Authorize(Policy = "Configuracion.General")]
         public async Task<ActionResult> Edit(KoField koField)
         {
+            var project = await db.KoProject.FindAsync(koField.IdProject);
+            if (project == null) { return NotFound(); }
 
             if (ModelState.IsValid)
             {
@@ -158,13 +161,8 @@ namespace App_consulta.Controllers
                 return RedirectToAction("Index", new { idProject = koField.IdProject });
             }
 
-            var types = new List<SelectListItem>() {
-                new SelectListItem() { Text = "Texto", Value = KoField.TYPE_TEXT },
-                new SelectListItem() { Text = "Imagen", Value = KoField.TYPE_IMG },
-                new SelectListItem() { Text = "Solo lectura", Value = KoField.TYPE_LABEL }
-            };
-            ViewBag.ItemTypes = types;
-
+            ViewBag.ItemTypes = GetOptions();
+            ViewBag.project = project;
             return View(koField);
         }
 
@@ -198,6 +196,35 @@ namespace App_consulta.Controllers
             }
 
             return RedirectToAction("Index", new { idProject = item.IdProject });
+        }
+
+        private static List<SelectListItem> GetOptions() {
+            var types = new List<SelectListItem>() {
+                new SelectListItem() { Text = "Texto", Value = KoField.TYPE_TEXT.ToString() },
+                new SelectListItem() { Text = "Imagen", Value = KoField.TYPE_IMG.ToString() },
+                new SelectListItem() { Text = "PDF / Archivo", Value = KoField.TYPE_FILE.ToString() },
+                new SelectListItem() { Text = "Selección", Value = KoField.TYPE_SELECT_ONE.ToString() },
+                new SelectListItem() { Text = "Multiple", Value = KoField.TYPE_SELECT_MULTIPLE.ToString() },
+                new SelectListItem() { Text = "Multiple Especial", Value = KoField.TYPE_SELECT_EXTRA.ToString() },
+            };
+
+            return types;
+        }
+
+        [NonAction]
+        public static string OptionToLabel(int option)
+        {
+            var label = option switch
+            {
+                KoField.TYPE_TEXT => "Texto",
+                KoField.TYPE_IMG => "Imagen",
+                KoField.TYPE_FILE => "PDF / Archivo",
+                KoField.TYPE_SELECT_ONE => "Selección",
+                KoField.TYPE_SELECT_MULTIPLE => "Multiple",
+                KoField.TYPE_SELECT_EXTRA => "Especial",
+                _ => "-",
+            };
+            return label;
         }
     }
 }

@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace App_consulta.ViewComponents
 {
-    public class ImageViewComponent : ViewComponent
+    public class FileViewComponent : ViewComponent
     {
 
         
         private readonly IWebHostEnvironment _env;
 
-        public ImageViewComponent(IWebHostEnvironment env)
+        public FileViewComponent(IWebHostEnvironment env)
         {
             _env = env;
         }
 
-        public IViewComponentResult Invoke(string file, string text = "", string css = "", string id = "")
+        public IViewComponentResult Invoke(string file, string text = "", string css = "", string id = "", string key = "")
         {
             var time = "";
             try
@@ -38,6 +38,8 @@ namespace App_consulta.ViewComponents
             ViewBag.Css = css;
             ViewBag.Time = time;
             ViewBag.Id = id;
+            ViewBag.Key = key;
+            ViewBag.Extension = file != null ? Path.GetExtension(file).ToLower() : "";
 
             return View();
         }

@@ -1,5 +1,6 @@
 ﻿using App_consulta.Data;
 using App_consulta.Models;
+using App_consulta.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,18 +21,25 @@ namespace App_consulta.Controllers
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IWebHostEnvironment _env;
+        private readonly MongoDatabaseService mdb;
 
 
-        public EncuestadorController(ApplicationDbContext context,UserManager<ApplicationUser> _userManager, IWebHostEnvironment env)
+        public EncuestadorController(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> _userManager, 
+            IWebHostEnvironment env,
+            MongoDatabaseService mongoService
+            )
         {
             db = context;
             userManager = _userManager;
             _env = env;
+            mdb = mongoService;
         }
 
         // GET: EncuestadorController
         [Authorize(Policy = "Encuestador.Ver")]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             string error = (string)HttpContext.Session.GetComplex<string>("error");
             if (error != "")
@@ -38,6 +47,9 @@ namespace App_consulta.Controllers
                 ViewBag.error = error;
                 HttpContext.Session.Remove("error");
             }
+
+            var projects = await db.KoProject.Select(n => n.Name).ToListAsync();
+            ViewBag.projects = JsonConvert.SerializeObject(projects);
             return View();
         }
 
@@ -46,11 +58,9 @@ namespace App_consulta.Controllers
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var respRelacionado = await GetResponsablesbyIdParent(user.IDDependencia, 1,3);
-
-            KoboController kobo = new KoboController(db, userManager, _env);
-
+            
             var encuestadores = await db.Pollster.Where(n => respRelacionado.Contains(n.IdResponsable)).
-                Select(n => new EncuestadorViewModel{
+                Select(n => new {
                     ID = n.Id,
                     Cedula = n.DNI,
                     Nombre = n.Name,
@@ -58,24 +68,32 @@ namespace App_consulta.Controllers
                     Departamento = (n.Location != null && n.Location.LocationParent != null) ? n.Location.LocationParent.Name : "",
                     Coordinacion = n.Responsable != null ? n.Responsable.Nombre : "",
                     Telefono = n.PhoneNumber,
-                    Email = n.Email,
-                    NumeroEncuestas = 0,
-                    NumeroAsociaciones = 0
+                    n.Email,
+                    collections = new Dictionary<string, int>()
                 }).ToListAsync();
 
-            var totales = kobo.GetTotalEncuestas();
-            var asociaciones = kobo.GetTotalAsociaciones();
+            //Consulta los proyectos y las encuestas por colección
+            var collectionsCounter = new Dictionary<string, Dictionary<string, int>>();
+            var collections = await db.KoProject.ToDictionaryAsync(n => n.Collection, n => n.Name);
+            
+            foreach(var collection in collections)
+            {
+                var contador = await mdb.CountByUser(collection.Key);
+                var totales = contador.ToDictionary(n => n["_id"].ToString(), n => n["count"].ToInt32());
+                collectionsCounter.Add(collection.Value, totales);
+            }
+
+            
             foreach(var enc in encuestadores)
             {
                 var idUser = enc.Cedula.ToString();
-                if (totales.ContainsKey(idUser))
+                foreach (var counter in collectionsCounter)
                 {
-                    enc.NumeroEncuestas = totales[idUser];
+                    var dataCounter = counter.Value;
+                    var cantidad = dataCounter.ContainsKey(idUser) ? dataCounter[idUser] : 0;
+                    enc.collections.Add("numero" + counter.Key, cantidad);
                 }
-                if (asociaciones.ContainsKey(idUser))
-                {
-                    enc.NumeroAsociaciones = asociaciones[idUser];
-                }
+                 
             }
             return Json(encuestadores);
         }
@@ -89,13 +107,14 @@ namespace App_consulta.Controllers
             var respRelacionado = await GetResponsablesbyIdParent(user.IDDependencia, 1, 3);
 
             Pollster encuestador = await db.Pollster.Where(n => n.Id == id && respRelacionado.Contains(n.IdResponsable)).FirstOrDefaultAsync();
-
-            var kobo = new KoboController(db,userManager,_env);
-
-            ViewBag.DataTime = kobo.GetDatetimeData(KoboController.FILE_CARACTERIZACION);
-            ViewBag.DataTimeAssoc = kobo.GetDatetimeData(KoboController.FILE_ASOCIACION);
-
             if (encuestador == null) { return NotFound(); }
+
+            var projects = await db.KoProject.ToListAsync();
+
+            ViewBag.projects = projects;
+            var config = await GetConfProject(projects, encuestador.DNI);
+            ViewBag.config = JsonConvert.SerializeObject(config);
+                       
             return View(encuestador);
         }
 
@@ -103,7 +122,7 @@ namespace App_consulta.Controllers
         [Authorize(Policy = "Encuestador.Editar")]
         public async Task<ActionResult> Create()
         {
-            ResponsablesController controlResponsable = new ResponsablesController(db);
+            var controlResponsable = new ResponsablesController(db);
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var ids = controlResponsable.GetAllIdsFromResponsable(user.IDDependencia);
 
@@ -138,7 +157,7 @@ namespace App_consulta.Controllers
             }
 
 
-            ResponsablesController controlResponsable = new ResponsablesController(db);
+            var controlResponsable = new ResponsablesController(db);
                         
             var ids = controlResponsable.GetAllIdsFromResponsable(user.IDDependencia);
 
@@ -151,7 +170,7 @@ namespace App_consulta.Controllers
         [Authorize(Policy = "Encuestador.Editar")]
         public async Task<ActionResult> Edit(int id)
         {
-            ResponsablesController controlResponsable = new ResponsablesController(db);
+            var controlResponsable = new ResponsablesController(db);
             //Valida que el usuario tenga permisos sobre el encuestador
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var respRelacionado = await GetResponsablesbyIdParent(user.IDDependencia, 1, 3);
@@ -206,7 +225,7 @@ namespace App_consulta.Controllers
                 await db.SaveChangesAsync();
                 return RedirectToAction("Details", new { id = original.Id });
             }
-            ResponsablesController controlResponsable = new ResponsablesController(db);
+            var controlResponsable = new ResponsablesController(db);
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var ids = controlResponsable.GetAllIdsFromResponsable(user.IDDependencia);
 
@@ -246,10 +265,11 @@ namespace App_consulta.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<string> GenerateCode(int DNI)
+        public async Task<string> GenerateCode(string DNI)
         {
+            int IntDNI = Int32.Parse(DNI);
             int codigo = await db.Configuracion.Select(n => n.CodeEncuestador).FirstOrDefaultAsync();
-            int final = DNI % 100000;
+            int final = IntDNI % 100000;
 
             int clave = final > codigo ? final - codigo : codigo - final;
             return clave.ToString("00000");
@@ -276,7 +296,7 @@ namespace App_consulta.Controllers
 
 
         [AcceptVerbs("GET", "POST")]
-        public IActionResult VerifyDNI(int DNI, int Id)
+        public IActionResult VerifyDNI(string DNI, int Id)
         {
             if (db.Pollster.Where(n => n.DNI == DNI && n.Id != Id).Any())
             {
@@ -298,7 +318,34 @@ namespace App_consulta.Controllers
             return Json(locations);
         }
 
+        private async Task<List<Object>> GetConfProject(List<KoProject> projects, string code)
+        {
+            var config = new List<Object>();
 
+            foreach (var p in projects)
+            {
+                var fields = await db.KoField.Where(n => n.IdProject == p.Id && n.ShowTableUser)
+                  .Select(n => new {
+                      data = n.NameDB ?? n.Name,
+                      caption = n.TableTitle,
+                      order = n.TableOrder,
+                      priority = n.TablePriority,
+                      type = n.TableType,
+                      width = n.WidthTableUser
+                  }).OrderBy(n => n.order).ToListAsync();
+
+                config.Add(new {
+                    grid = "#gridContainer_"+p.Id,
+                    source = "Informes/GetEncuestasUsuario/" + p.Id + "?code=" + code,
+                    projectId = p.Id,
+                    showUser = false,
+                    reportName = p.Name,
+                    columns = fields
+                });
+            }
+
+            return config ;
+        }
         
 
     }

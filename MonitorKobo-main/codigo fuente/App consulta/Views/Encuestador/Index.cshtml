@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Encuestadores";
     ViewData["Subtitle"] = "";
+    ViewData["Fluid"] = true;
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var permisoEditar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Editar" && c.Value == "1"));
@@ -37,6 +38,9 @@
     </div>
 </div>
 @section Scripts {
+    <script>
+            var myProjects = JSON.parse('@Html.Raw(ViewBag.projects)');
+    </script>
     <script type="text/javascript" src="~/lib/jquery/moment.js"></script>
     <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
     <script type="text/javascript" src="~/js/tables/EncuestadorListadoScript.js?v=1.1"></script>

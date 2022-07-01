@@ -149,12 +149,25 @@ namespace App_consulta.Migrations
 
             modelBuilder.Entity("App_consulta.Models.Configuracion", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<int>("CodeEncuestador")
                         .HasColumnType("int");
+
+                    b.Property<string>("ColorPrincipal")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ColorTextoHeader")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ColorTextoPrincipal")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Contacto")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("DescripcionApp")
                         .IsRequired()
@@ -181,38 +194,25 @@ namespace App_consulta.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("colorPrincipal")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("colorTextoHeader")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("colorTextoPrincipal")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("contacto")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.ToTable("Configuracion");
 
                     b.HasData(
                         new
                         {
-                            id = 1,
+                            Id = 1,
                             CodeEncuestador = 0,
+                            ColorPrincipal = "#4287F5",
+                            ColorTextoHeader = "#FFFFFF",
+                            ColorTextoPrincipal = "#0448B5",
+                            Contacto = "rinconsebastian@gmail.com",
                             DescripcionApp = "Acuerdo AUNAP - PNUD 2022",
                             Entidad = "PNUD-AUNAP",
                             Favicon = "/images/favicon.png",
                             Logo = "/images/favicon1.png",
                             NombreApp = "App Consulta",
-                            NombrePlan = "Coordinación",
-                            colorPrincipal = "#52a3a1",
-                            colorTextoHeader = "#ffffff",
-                            colorTextoPrincipal = "#00000",
-                            contacto = "rinconsebastian@gmail.com"
+                            NombrePlan = "Coordinación"
                         });
                 });
 
@@ -222,49 +222,78 @@ namespace App_consulta.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Field")
-                        .IsRequired()
+                    b.Property<bool>("Editable")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("FormGroup")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Group")
+                    b.Property<string>("FormGroupSelect")
                         .HasColumnType("longtext");
+
+                    b.Property<string>("FormLabel")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("FormOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FormType")
+                        .HasColumnType("int");
 
                     b.Property<int>("IdProject")
                         .HasColumnType("int");
-
-                    b.Property<string>("Label")
-                        .HasColumnType("longtext");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("NameDB")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NameKobo")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PrintTitle")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("ShowForm")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<bool>("ShowTable")
+                    b.Property<bool>("ShowPrint")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<bool>("ShowTableSummary")
+                    b.Property<bool>("ShowTableReport")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("TitleTable")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<bool>("ShowTableUser")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("TitleTableSummary")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<bool>("ShowTableValidation")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("Type")
+                    b.Property<int?>("TableOrder")
                         .HasColumnType("int");
+
+                    b.Property<int?>("TablePriority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TableTitle")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("TableType")
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("Validable")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int?>("WidthTableReport")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WidthTableUser")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WidthTableValidation")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -279,7 +308,7 @@ namespace App_consulta.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Field")
+                    b.Property<string>("Collection")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -303,6 +332,9 @@ namespace App_consulta.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<DateTime>("LastUpdate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -310,7 +342,13 @@ namespace App_consulta.Migrations
                     b.Property<bool>("Validable")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("ValidationField")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("ValidationName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ValidationValue")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -324,11 +362,11 @@ namespace App_consulta.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Label")
+                    b.Property<string>("Class")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Label")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -340,32 +378,50 @@ namespace App_consulta.Migrations
                         new
                         {
                             Id = 1,
-                            Label = "Borrador",
-                            Name = "ESTADO_BORRADOR"
+                            Class = "",
+                            Label = "NO"
                         },
                         new
                         {
                             Id = 2,
-                            Label = "Completo",
-                            Name = "ESTADO_COMPLETO"
+                            Class = "",
+                            Label = "Pendiente"
                         },
                         new
                         {
                             Id = 3,
-                            Label = "Cancelado",
-                            Name = "ESTADO_CANCELADO"
+                            Class = "bg-warning",
+                            Label = "Borrador"
                         },
                         new
                         {
                             Id = 4,
-                            Label = "Impreso",
-                            Name = "ESTADO_IMPRESO"
+                            Class = "bg-success",
+                            Label = "Completo"
                         },
                         new
                         {
                             Id = 5,
-                            Label = "Carné vigente",
-                            Name = "ESTADO_CARNET_VIGENTE"
+                            Class = "bg-danger",
+                            Label = "Cancelado"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Class = "bg-info",
+                            Label = "Impreso"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Class = "bg-danger",
+                            Label = "Carné vigente"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Class = "bg-danger",
+                            Label = "Duplicado"
                         });
                 });
 
@@ -390,176 +446,6 @@ namespace App_consulta.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("KoVariable");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Group = "Zona",
-                            Key = "1",
-                            Value = "Arroyo"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Group = "Zona",
-                            Key = "2",
-                            Value = "Canal"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Group = "Zona",
-                            Key = "3",
-                            Value = "Ciénaga"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Group = "Zona",
-                            Key = "4",
-                            Value = "Estanque"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Group = "Zona",
-                            Key = "5",
-                            Value = "Laguna"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Group = "Zona",
-                            Key = "6",
-                            Value = "Lago"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Group = "Zona",
-                            Key = "7",
-                            Value = "Presa"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Group = "Zona",
-                            Key = "8",
-                            Value = "Quebrada"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Group = "Zona",
-                            Key = "9",
-                            Value = "Riachuelo"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Group = "Zona",
-                            Key = "10",
-                            Value = "Río"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Group = "Zona",
-                            Key = "11",
-                            Value = "Sector de río"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Group = "Zona",
-                            Key = "14",
-                            Value = "Embalse"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Group = "Arte",
-                            Key = "1",
-                            Value = "Arpón"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Group = "Arte",
-                            Key = "2",
-                            Value = "Atarraya"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Group = "Arte",
-                            Key = "3",
-                            Value = "Boliche"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Group = "Arte",
-                            Key = "4",
-                            Value = "Chinchorra"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Group = "Arte",
-                            Key = "5",
-                            Value = "Chinchorro"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Group = "Arte",
-                            Key = "6",
-                            Value = "Cóngolo / canasta"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Group = "Arte",
-                            Key = "7",
-                            Value = "Línea de mano"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Group = "Arte",
-                            Key = "8",
-                            Value = "Palangre"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Group = "Arte",
-                            Key = "9",
-                            Value = "Redes de enmalle"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Group = "Arte",
-                            Key = "10",
-                            Value = "Trampas/nasas"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Group = "Arte",
-                            Key = "11",
-                            Value = "Trasmallo"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Group = "Arte",
-                            Key = "12",
-                            Value = "Otro"
-                        });
                 });
 
             modelBuilder.Entity("App_consulta.Models.Location", b =>
@@ -749,35 +635,42 @@ namespace App_consulta.Migrations
                             id = 12,
                             claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver",
                             group = 5,
-                            nombre = "Ver formalización"
+                            nombre = "Ver registro"
                         },
                         new
                         {
                             id = 13,
                             claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Editar",
                             group = 5,
-                            nombre = "Editar formalización"
+                            nombre = "Editar registro"
                         },
                         new
                         {
                             id = 14,
                             claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar",
                             group = 5,
-                            nombre = "Validar formalización"
+                            nombre = "Validar registro"
                         },
                         new
                         {
                             id = 15,
                             claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado",
                             group = 5,
-                            nombre = "Informe formalización"
+                            nombre = "Informe registro"
                         },
                         new
                         {
                             id = 17,
                             claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir",
                             group = 5,
-                            nombre = "Imprimir formalización"
+                            nombre = "Imprimir registro"
+                        },
+                        new
+                        {
+                            id = 23,
+                            claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Cancelar",
+                            group = 5,
+                            nombre = "Carcelar registro"
                         },
                         new
                         {
@@ -791,14 +684,14 @@ namespace App_consulta.Migrations
                             id = 19,
                             claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar",
                             group = 5,
-                            nombre = "Cambiar imagenes formalización"
+                            nombre = "Cambiar imagenes registro"
                         },
                         new
                         {
                             id = 20,
                             claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer",
                             group = 5,
-                            nombre = "Restablecer imagenes formalización"
+                            nombre = "Restablecer imagenes registro"
                         },
                         new
                         {
@@ -828,8 +721,10 @@ namespace App_consulta.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("DNI")
-                        .HasColumnType("int");
+                    b.Property<string>("DNI")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("Email")
                         .HasColumnType("longtext");
@@ -919,9 +814,6 @@ namespace App_consulta.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<bool>("Editar")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<int?>("IdJefe")
                         .HasColumnType("int");
 
@@ -939,8 +831,13 @@ namespace App_consulta.Migrations
                         new
                         {
                             Id = 1,
-                            Editar = true,
                             Nombre = "Entidad"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IdJefe = 1,
+                            Nombre = "[CDR] Coordinación"
                         });
                 });
 
@@ -1118,6 +1015,13 @@ namespace App_consulta.Migrations
                         {
                             Id = 22,
                             ClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar",
+                            ClaimValue = "1",
+                            RoleId = "1"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            ClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir",
                             ClaimValue = "1",
                             RoleId = "1"
                         });

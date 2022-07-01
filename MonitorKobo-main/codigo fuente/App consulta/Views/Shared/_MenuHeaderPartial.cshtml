@@ -64,7 +64,7 @@
                             <div class="dropdown-divider"></div>
                             @foreach (KeyValuePair<int, string> item in registros)
                             {
-                                <a class="dropdown-item" asp-controller="Informes" asp-action="Listado" asp-route-id="@item.Key" asp-route-validable="@true">@item.Value</a>
+                                <a class="dropdown-item" asp-controller="Informes" asp-action="Validacion" asp-route-id="@item.Key">@item.Value</a>
                             }
                         }
                     </div>

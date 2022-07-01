@@ -1,4 +1,6 @@
-﻿@model IEnumerable<App_consulta.Models.KoField>
+﻿@using App_consulta.Controllers;
+
+@model IEnumerable<App_consulta.Models.KoField>
 
 @{
     ViewData["Title"] = "Panel de control";
@@ -6,11 +8,27 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 
     KoProject project = ViewBag.project;
+    int order = ViewBag.Order;
 }
 <h4>Campos proyecto - @project.Name</h4>
-<p>
-    @Html.ActionLink("Nuevo campo", "Create", new { idProject = project.Id })
-</p>
+
+<div class="row mb-2">
+    <div class="col-12 col-md-6">
+        <p>
+            @Html.ActionLink("Nuevo campo", "Create", new { idProject = project.Id })
+        </p>
+    </div>
+    <div class="col-12 col-md-6">
+        <select class="form-control" onchange="location = this.value;">
+            <option value="">Filtro</option>
+            <option value="@Url.Action("Index","KoField", new { idProject=project.Id, order=0 })">Todos los campos</option>
+            <option value="@Url.Action("Index","KoField", new { idProject=project.Id, order=1 })">Formulario</option>
+            <option value="@Url.Action("Index","KoField", new { idProject=project.Id, order=2 })">Tabla general</option>
+            <option value="@Url.Action("Index","KoField", new { idProject=project.Id, order=3 })">Tabla usuario</option>
+            <option value="@Url.Action("Index","KoField", new { idProject=project.Id, order=4 })">Tabla validación</option>
+        </select>
+    </div>
+</div>
 @if (ViewBag.error != null)
 {
     <div class="alert alert-warning" role="alert">
@@ -19,64 +37,146 @@
         @ViewBag.error
     </div>
 }
-<table class="table font-smaller">
+<table class="table font-smaller table-striped table-bordered align-middle">
+    <tr>
+        <th rowspan="2">
+            @Html.DisplayNameFor(model => model.Name) <br />
+            @Html.DisplayNameFor(model => model.NameDB) <br />
+            @Html.DisplayNameFor(model => model.NameKobo)
+        </th>
+        <th rowspan="2">
+            Etiqueta formulario <br />
+            Grupo formulario <br />
+            Título tablas
+        </th>
+        @if (order == 0)
+        {
+            <th class="text-sm-center" colspan="4">
+                Mostrar elementos
+            </th>
+        }
+        @if (order == 1)
+        {
+            <th class="text-sm-center" rowspan="2">
+                Editable
+            </th>
+        }
+        @if (order <= 1)
+        {
+            <th class="text-sm-center" colspan="3">
+                Formulario
+            </th>
+        }
+        @if (order != 1)
+        {
+            <th class="text-sm-center" colspan="3">
+                Informe (Opciones)
+            </th>
+            <th class="text-sm-center" colspan="3">
+                Informe (Ancho)
+            </th>
+        }
+        <th class="text-sm-center" rowspan="2">
+            Opciones
+        </th>
+    </tr>
     <tr class="text-sm-center">
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Field)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Value)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Type)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Validable)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ShowForm)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ShowTable)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ShowTableSummary)
-        </th>
-        <th></th>
+        @if (order == 0)
+        {
+            <th><span title="Formulario">F</span></th>
+            <th><span title="Reporte general">G</span></th>
+            <th><span title="Reporte usuario">U</span></th>
+            <th><span title="Reporte validación">V</span></th>
+        }
+        @if (order <= 1)
+        {
+            <th><span title="Validación">V</span></th>
+            <th><span title="Orden">O</span></th>
+            <th><span title="Tipo">T</span></th>
+        }
+        @if (order != 1)
+        {
+            <th><span title="Orden">O</span></th>
+            <th><span title="Prioridad">P</span></th>
+            <th><span title="Tipo / Variables">T</span></th>
+
+            <th><span title="Ancho tabla general">G</span></th>
+            <th><span title="Ancho tabla usuario">U</span></th>
+            <th><span title="Ancho tabla validación">V</span></th>
+        }
     </tr>
 
     @foreach (var item in Model)
     {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
+            <td class="td-formali-conf" style="max-width: 300px;">
+                @Html.DisplayFor(modelItem => item.Name) <br />
+                @Html.DisplayFor(modelItem => item.NameDB) <br />
+                <small>@Html.DisplayFor(modelItem => item.NameKobo)</small>
             </td>
             <td class="td-formali-conf">
-                @Html.DisplayFor(modelItem => item.Field)
+                @Html.DisplayFor(modelItem => item.FormLabel) <br />
+                <small><b>@Html.DisplayFor(modelItem => item.FormGroup) </b></small><br />
+                @Html.DisplayFor(modelItem => item.TableTitle)
             </td>
-            <td class="td-formali-conf">
-                @Html.DisplayFor(modelItem => item.Value)
-            </td>
-            <td class="text-center">
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            <td class="text-center">
-                @Html.DisplayFor(modelItem => item.Validable)
-            </td>
-            <td class="text-center">
-                @Html.DisplayFor(modelItem => item.ShowForm)
-            </td>
-            <td class="text-center">
-                @Html.DisplayFor(modelItem => item.ShowTable)
-            </td>
-            <td class="text-center">
-                @Html.DisplayFor(modelItem => item.ShowTableSummary)
-            </td>
-            <td>
-                <span class="button-inline small-button">
+            @if (order == 1)
+            {
+                <td class="text-center align-middle">
+                    @(item.Editable ? "X" : "-")
+                </td>
+            }
+            @if (order == 0)
+            {
+                <td class="text-center align-middle">
+                    @(item.ShowForm ? (item.Editable ? "E" : "X") : "-")
+                </td>
+                <td class="text-center align-middle">
+                    @(item.ShowTableReport ? "X" : "-")
+                </td>
+                <td class="text-center align-middle">
+                    @(item.ShowTableUser ? "X" : "-")
+                </td>
+                <td class="text-center align-middle">
+                    @(item.ShowTableValidation ? "X" : "-")
+                </td>
+            }
+            @if (order <= 1)
+            {
+                <td class="text-center align-middle">
+                    @(item.Validable ? "X" : "-")
+                </td>
+                <td class="text-center align-middle">
+                    @Html.DisplayFor(modelItem => item.FormOrder)
+                </td>
+                <td class="text-center align-middle">
+                    @(KoFieldController.OptionToLabel(item.FormType))<br />
+                    <small>@Html.DisplayFor(modelItem => item.FormGroupSelect)</small>
+                </td>
+            }
+            @if (order != 1)
+            {
+                <td class="text-center align-middle">
+                    @Html.DisplayFor(modelItem => item.TableOrder)
+                </td>
+                <td class="text-center align-middle">
+                    @Html.DisplayFor(modelItem => item.TablePriority)
+                </td>
+                <td class="text-center align-middle">
+                    @Html.DisplayFor(modelItem => item.TableType)
+                </td>
+
+                <td class="text-center align-middle">
+                    @Html.DisplayFor(modelItem => item.WidthTableReport)
+                </td>
+                <td class="text-center align-middle">
+                    @Html.DisplayFor(modelItem => item.WidthTableUser)
+                </td>
+                <td class="text-center align-middle">
+                    @Html.DisplayFor(modelItem => item.WidthTableValidation)
+                </td>
+            }
+            <td class="text-center align-middle">
+                <span class="button-inline small-button ">
                     <a href='@Url.Action("Edit", new { id=item.Id })' class="btn btn-default btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
                     <a href='@Url.Action("Delete", new { id=item.Id })' class="btn btn-default btn-sm" title="Borrar"><i class="fas fa-trash"></i></a>
                 </span>

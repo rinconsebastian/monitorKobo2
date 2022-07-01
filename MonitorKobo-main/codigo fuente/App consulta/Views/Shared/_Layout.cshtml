@@ -10,6 +10,8 @@
     {
         appName = conf.NombreApp;
     }
+
+    var containerClass = ViewData["Fluid"] != null ? "container-fluid" : "container";
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -29,9 +31,6 @@
 
     @await RenderSectionAsync("Styles", required: false)
 
-
-
-
     <partial name="_colorMenuPartial" />
 </head>
 <body>
@@ -47,7 +46,7 @@
         </div>
     </nav>
 
-    <div class="container bodyccs  @(ViewBag.ClaseContainer) ">
+    <div class="@containerClass bodyccs ">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

@@ -29,8 +29,9 @@ namespace App_consulta.Models
         
         [Display(Name = "Cedula")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
+        [MaxLength(20)]
         [Remote(action: "VerifyDNI", controller: "Encuestador", AdditionalFields = nameof(Id) )]
-        public int DNI { get; set; }
+        public string DNI { get; set; }
 
         [Display(Name = "Código")]
         public string Code { get; set; }
