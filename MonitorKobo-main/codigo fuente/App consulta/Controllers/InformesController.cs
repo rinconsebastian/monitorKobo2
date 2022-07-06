@@ -204,8 +204,7 @@ namespace App_consulta.Controllers
             //Consulta los datos filtrados
 
             var filter = userCode != null ? Builders<BsonDocument>.Filter.Eq("user", userCode) : Builders<BsonDocument>.Filter.In("user", cedulasEncuestadores);
-            //TODO temp
-            filter = Builders<BsonDocument>.Filter.Ne("user", BsonNull.Value);
+           
             if (fields.Contains("location"))
                 filter &= Builders<BsonDocument>.Filter.Ne("location", BsonNull.Value);
             if (isValidable)

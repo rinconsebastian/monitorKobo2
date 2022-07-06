@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace App_consulta.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220701203115_clean")]
+    [Migration("20220706173706_clean")]
     partial class clean
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -341,6 +341,12 @@ namespace App_consulta.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("PrintSubitle")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PrintTitle")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("Validable")
                         .HasColumnType("tinyint(1)");
 
@@ -372,6 +378,9 @@ namespace App_consulta.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("Print")
+                        .HasColumnType("tinyint(1)");
+
                     b.HasKey("Id");
 
                     b.ToTable("KoDataState");
@@ -381,49 +390,57 @@ namespace App_consulta.Migrations
                         {
                             Id = 1,
                             Class = "",
-                            Label = "NO"
+                            Label = "NO",
+                            Print = false
                         },
                         new
                         {
                             Id = 2,
                             Class = "",
-                            Label = "Pendiente"
+                            Label = "Pendiente",
+                            Print = false
                         },
                         new
                         {
                             Id = 3,
                             Class = "bg-warning",
-                            Label = "Borrador"
+                            Label = "Borrador",
+                            Print = false
                         },
                         new
                         {
                             Id = 4,
                             Class = "bg-success",
-                            Label = "Completo"
+                            Label = "Completo",
+                            Print = true
                         },
                         new
                         {
                             Id = 5,
                             Class = "bg-danger",
-                            Label = "Cancelado"
+                            Label = "Cancelado",
+                            Print = false
                         },
                         new
                         {
                             Id = 6,
                             Class = "bg-info",
-                            Label = "Impreso"
+                            Label = "Impreso",
+                            Print = true
                         },
                         new
                         {
                             Id = 7,
                             Class = "bg-danger",
-                            Label = "Carné vigente"
+                            Label = "Carné vigente",
+                            Print = false
                         },
                         new
                         {
                             Id = 8,
                             Class = "bg-danger",
-                            Label = "Duplicado"
+                            Label = "Duplicado",
+                            Print = false
                         });
                 });
 

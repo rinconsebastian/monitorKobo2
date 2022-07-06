@@ -22,5 +22,8 @@ namespace App_consulta.Models
         [Display(Name = "Descripción")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
         public String Label { get; set; }
+
+        [Display(Name = "Para imprimir")]
+        public bool Print { get; set; }
     }
 }

@@ -61,7 +61,7 @@ namespace App_consulta.Services
             {
                 try
                 {
-                    LogModel logn = new LogModel
+                    LogModel logn = new()
                     {
 
                         Usuario = registro.Usuario,
@@ -84,13 +84,89 @@ namespace App_consulta.Services
             return error;
         }
 
+        public async Task<string> RegistrarProps(RegistroLog registro, Type oType, int id)
+        {
+
+            var dicAnterior = new Dictionary<string, object>();
+            var dicNuevo = new Dictionary<string, object>();
+
+            var error = "";
+            var anteriorResp = new Dictionary<String, String>(); ;
+            var nuevoResp = new Dictionary<String, String>(); ;
+
+
+            var props = oType.GetProperties()
+                    .Where(pi => !Attribute.IsDefined(pi, typeof(JsonIgnoreAttribute))).ToArray();
+
+            foreach (var oProperty in props)
+            {
+                if (oProperty.Name == "Props") { continue;  }
+
+                var oOldValue = oProperty.GetValue(registro.ValAnterior, null);
+                var oNewValue = oProperty.GetValue(registro.ValNuevo, null);
+
+                if (oProperty.Name == "DynamicProperties")
+                {
+                    dicAnterior = (Dictionary<string, object>)oOldValue;
+                    dicNuevo = (Dictionary<string, object>)oNewValue;
+                    continue;
+                }
+              
+                if (!object.Equals(oOldValue, oNewValue))
+                {
+                    var sOldValue = oOldValue == null ? "null" : oOldValue.ToString();
+                    var sNewValue = oNewValue == null ? "null" : oNewValue.ToString();
+
+                    anteriorResp.Add(oProperty.Name, sOldValue);
+                    nuevoResp.Add(oProperty.Name, sNewValue);
+                }
+            }
+
+            var propsDynamic = dicAnterior.Keys.Concat(dicNuevo.Keys).Distinct().ToList();
+
+            foreach (var key in propsDynamic)
+            {
+                var oOldValue = dicAnterior.ContainsKey(key) ? dicAnterior[key] :null ;
+                var oNewValue = dicNuevo.ContainsKey(key) ? dicNuevo[key] : null;
+
+                if (!object.Equals(oOldValue, oNewValue))
+                {
+                    var sOldValue = oOldValue == null ? "null" : oOldValue.ToString();
+                    var sNewValue = oNewValue == null ? "null" : oNewValue.ToString();
+
+                    anteriorResp.Add(key, sOldValue);
+                    nuevoResp.Add(key, sNewValue);
+                }
+            }
+
+            try
+            {
+                var stringAnterior = anteriorResp.Count > 0 ? JsonConvert.SerializeObject(anteriorResp) : "";
+                var stringNuevo = nuevoResp.Count > 0 ? JsonConvert.SerializeObject(nuevoResp) : "";
+                LogModel logn = new()
+                {
+
+                    Usuario = registro.Usuario,
+                    Fecha = DateTime.Now,
+                    Accion = registro.Accion,
+                    Modelo = registro.Modelo + " " + id,
+                    ValAnterior = stringAnterior,
+                    ValNuevo = stringNuevo
+                };
+                db.Add(logn);
+                await db.SaveChangesAsync();
+            }
+            catch (Exception e) { error = e.Message; }
+
+            return error;
+        }
 
         public async Task<string> RegistrarDirecto(RegistroLog registro)
         {
             var error = "";
             try
             {
-                LogModel logn = new LogModel
+                LogModel logn = new()
                 {
                     Usuario = registro.Usuario,
                     Fecha = DateTime.Now,

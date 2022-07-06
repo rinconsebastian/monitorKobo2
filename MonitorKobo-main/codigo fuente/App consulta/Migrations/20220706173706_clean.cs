@@ -81,7 +81,8 @@ namespace App_consulta.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Class = table.Column<string>(type: "longtext", nullable: false),
-                    Label = table.Column<string>(type: "longtext", nullable: false)
+                    Label = table.Column<string>(type: "longtext", nullable: false),
+                    Print = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -105,7 +106,9 @@ namespace App_consulta.Migrations
                     KoboAssetUid = table.Column<string>(type: "longtext", nullable: false),
                     KoboAttachment = table.Column<string>(type: "longtext", nullable: false),
                     KoboUsername = table.Column<string>(type: "longtext", nullable: false),
-                    LastUpdate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    LastUpdate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    PrintTitle = table.Column<string>(type: "longtext", nullable: true),
+                    PrintSubitle = table.Column<string>(type: "longtext", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -450,17 +453,17 @@ namespace App_consulta.Migrations
 
             migrationBuilder.InsertData(
                 table: "KoDataState",
-                columns: new[] { "Id", "Class", "Label" },
+                columns: new[] { "Id", "Class", "Label", "Print" },
                 values: new object[,]
                 {
-                    { 7, "bg-danger", "Carné vigente" },
-                    { 6, "bg-info", "Impreso" },
-                    { 5, "bg-danger", "Cancelado" },
-                    { 8, "bg-danger", "Duplicado" },
-                    { 3, "bg-warning", "Borrador" },
-                    { 2, "", "Pendiente" },
-                    { 1, "", "NO" },
-                    { 4, "bg-success", "Completo" }
+                    { 7, "bg-danger", "Carné vigente", false },
+                    { 6, "bg-info", "Impreso", true },
+                    { 5, "bg-danger", "Cancelado", false },
+                    { 8, "bg-danger", "Duplicado", false },
+                    { 3, "bg-warning", "Borrador", false },
+                    { 2, "", "Pendiente", false },
+                    { 1, "", "NO", false },
+                    { 4, "bg-success", "Completo", true }
                 });
 
             migrationBuilder.InsertData(

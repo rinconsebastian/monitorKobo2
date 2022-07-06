@@ -248,12 +248,6 @@ body {
     color: #5CB85C !important;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
-}
 
 .margin-left-0 {
     margin-left: 0px;
@@ -657,9 +651,6 @@ input[type="file"] {
     padding-bottom: 0px !important;
 }
 
-input, select, textarea {
-    max-width: 424px !important;
-}
 
 .align-right {
     text-align: right;
@@ -934,9 +925,6 @@ input, select, textarea {
     color: white;
 }
 
-.maxWidthConfig {
-    max-width: 424px !important;
-}
 
 .valorTexto {
     color: #b42e2e;
@@ -1141,9 +1129,7 @@ input, select, textarea {
         box-shadow: 0 0 0 .2rem rgba(220,53,69,.25)
     }
 
-.custom-file {
-    max-width: 424px !important;
-}
+
 /*##################################### DETAILS POP UP #####################################*/
 .condensed .row {
     margin-bottom: 0;
@@ -1217,7 +1203,7 @@ input, select, textarea {
 
 }
 
-/* Detalles formalización */
+/* Detalles validación */
 .img-detail-formlz {
     height: 200px;
     width: 200px;
@@ -1321,3 +1307,14 @@ input, select, textarea {
     min-width: 40px;
     max-width: 40px;
 }
+
+/*NAV PILL ACTIVE/*/
+.nav-pills .nav-link.pill-complete {
+    color: #28a745;
+}
+
+    .nav-pills .nav-link.pill-complete.active {
+        color: #fff;
+        background-color: #218838;
+        border-color: #1e7e34;
+    }

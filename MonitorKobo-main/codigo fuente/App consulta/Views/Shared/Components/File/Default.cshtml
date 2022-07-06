@@ -4,8 +4,19 @@
     case ".jpg":
     case ".png":
     case ".jpeg":
-        <img id="@ViewBag.Id" class="@ViewBag.Css img-detail-large" alt="@ViewBag.Text"
-             src="@Url.Action("ViewImage", "Validation" , new { filename=@ViewBag.Path, time=@ViewBag.Time })" />
+        if (ViewBag.Zoom)
+        {
+            <a href="@Url.Action("ViewImage", "Validation" , new { filename=@ViewBag.Path, time=@ViewBag.Time })" target="_blank">
+                <img id="@ViewBag.Id" class="@ViewBag.Css img-detail-large" alt="@ViewBag.Text"
+                     src="@Url.Action("ViewImage", "Validation" , new { filename=@ViewBag.Path, time=@ViewBag.Time })" />
+            </a>
+            <p><small>Haga clic sobre la imagen para ampliar.</small></p>
+        }
+        else
+        {
+            <img id="@ViewBag.Id" class="@ViewBag.Css img-detail-large" alt="@ViewBag.Text"
+                 src="@Url.Action("ViewImage", "Validation" , new { filename=@ViewBag.Path, time=@ViewBag.Time })" />
+        }
         break;
     case ".pdf2":
         <h4 class="text-uppercase text-black-50 border-bottom border-dark">@ViewBag.Text</h4>

@@ -92,6 +92,9 @@ namespace App_consulta.Controllers
                 //reporte validacion
                 4 => await db.KoField.Where(n => n.IdProject == idProject && n.ShowTableValidation)
                                         .OrderBy(n => n.TableOrder).ToListAsync(),
+                //reporte impresion
+                5 => await db.KoField.Where(n => n.IdProject == idProject && n.ShowPrint)
+                                        .OrderBy(n => n.PrintTitle).ToListAsync(),
                 //all
                 _ => await db.KoField.Where(n => n.IdProject == idProject).ToListAsync(),
             };

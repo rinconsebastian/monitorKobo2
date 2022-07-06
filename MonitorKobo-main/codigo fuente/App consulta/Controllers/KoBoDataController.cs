@@ -42,7 +42,7 @@ namespace App_consulta.Controllers
 
         [HttpPost]
         [Authorize(Policy = "Registro.Imagen.Restablecer")]
-        public async Task<RespuestaAccion> ResetImage(string filename, string idKobo, int idProject, string record = "", string name = "")
+        public async Task<RespuestaAccion> ResetImage(string filename, string idKobo, int idProject, string name = "")
         {
             var r = new RespuestaAccion();
 
@@ -50,17 +50,16 @@ namespace App_consulta.Controllers
             {
                 var _fileName = Path.GetFileName(filename);
 
-                var config = await db.KoProject.FindAsync(idProject);
-                var remoteUri = config.KoboAttachment + config.KoboUsername + "/attachments/";
-                var nameProject = config.Name;
-                var _path = Path.Combine(_env.ContentRootPath, "Storage", nameProject, idKobo);
+                var project = await db.KoProject.FindAsync(idProject);
+                var remoteUri = project.KoboAttachment + project.KoboUsername + "/attachments/";
+                var _path = Path.Combine(_env.ContentRootPath, "Storage", project.Collection, idKobo);
 
-                DownloadFile(remoteUri, _fileName, _path, "", config.KoboApiToken);
+                DownloadFile(remoteUri, _fileName, _path, "", project.KoboApiToken);
 
                 r.Success = true;
 
                 var log = new Logger(db);
-                var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "ResetImage", Modelo = nameProject + " " + record, ValAnterior = "", ValNuevo = name + ": " + filename };
+                var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "ResetImage", Modelo = project.ValidationName + " " + idKobo, ValAnterior = "", ValNuevo = name + ": " + filename };
                 await log.RegistrarDirecto(registro);
 
             }
@@ -214,8 +213,8 @@ namespace App_consulta.Controllers
             if (result != null)
             {
                 // Descarga los adjuntos
-                var _path = Path.Combine(_env.ContentRootPath, "Storage", "Formalizacion", result.IdKobo);
-                var _relative = Path.Combine("Formalizacion", result.IdKobo);
+                var _path = Path.Combine(_env.ContentRootPath, "Storage", project.Collection , result.IdKobo);
+                var _relative = Path.Combine(project.Collection, result.IdKobo);
                 var remoteUri = project.KoboAttachment + project.KoboUsername + "/attachments/";
 
                 if (!Directory.Exists(_path))
@@ -259,7 +258,7 @@ namespace App_consulta.Controllers
                 var log = new Logger(db);
                 try
                 {
-                    //Validación formalización previo a guardar
+                    //Validación del registro previo a guardar
                     previo = await mdb.Find(project.Collection, idDb);
                     if (previo.State >= KoGenericData.ESTADO_BORRADOR)
                     {
@@ -268,9 +267,9 @@ namespace App_consulta.Controllers
                         return r;
                     }
 
-                    //Guarda la formalización
+                    //Guarda el registro
                     result.Id = previo.Id;
-                    var save = await mdb.Update(project.Collection, result);
+                    var save = await mdb.Replace(project.Collection, result);
                     if(!save)
                     {
                         r.Message = "ERROR: No fue posible actualizar el registro."; return r;
@@ -278,7 +277,7 @@ namespace App_consulta.Controllers
                     r.Url = "Validation/Edit/" + idDb + "?project=" + project.Id;
                     r.Success = true;
 
-                    var registro = new RegistroLog { Usuario = user.Email, Accion = "Create", Modelo = "Validation", ValNuevo = result };
+                    var registro = new RegistroLog { Usuario = user.Email, Accion = "Create", Modelo = project.ValidationName, ValNuevo = result };
                     await log.Registrar(registro, typeof(KoExtendData), Int32.Parse(result.IdKobo));
 
                 }
@@ -313,7 +312,7 @@ namespace App_consulta.Controllers
             //Url de consulta para kobo
             var fields = JsonConvert.SerializeObject(listParams);
             var sort = "&sort=%7B%22_id%22%3A1%7D";
-            var limit = "&limit=10";
+            var limit = "&limit=1000";
             var query = maxId != null ? "&query=%7B%22_id%22%3A%7B%22%24gt%22%3A" + maxId + "%7D%7D" : "";
             var url = project.KoboKpiUrl + "/assets/" + project.KoboAssetUid
                 + "/submissions/?format=json&fields=" + HttpUtility.UrlEncode(fields)
@@ -399,7 +398,7 @@ namespace App_consulta.Controllers
         }
 
 
-        private string DownloadFile(string remoteUri, string fileName, string path, string relative, String token)
+        private string DownloadFile(string remoteUri, string fileName, string path, string relative, string token)
         {
             var relativePath = Path.Combine(relative, fileName);
             var fullPath = Path.Combine(path, fileName);

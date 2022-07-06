@@ -54,5 +54,11 @@ namespace App_consulta.Models
 
         [Display(Name = "Última actualización")]
         public DateTime LastUpdate { get; set; }
+
+        [Display(Name = "Título impresión")]
+        public string PrintTitle { get; set; }
+
+        [Display(Name = "Subtitulo impresión")]
+        public string PrintSubitle { get; set; }
     }
 }

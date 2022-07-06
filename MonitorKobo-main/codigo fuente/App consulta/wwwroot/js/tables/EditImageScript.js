@@ -248,15 +248,16 @@ var funcImg = {
             var name = $(this).data('name');
 
             var idKobo = $('#IdKobo').val();
-            var idForm = $('#IdFormalizacion').val();
+            var idValidation = $('#IdValidation').val();
+            var idProject = $('#IdProject').val();
 
-            var fullurl = root + "Kobo/ResetImage/";
+            var fullurl = root + "KoBoData/ResetImage/";
 
             $('#resetInfo').html('Cargando <img src="' + root + 'images/ajax-loader.gif">');
             button.find('i').addClass('fa-cog fa-spin');
             $('.btn-modal-reset').attr('disabled', 'disabled');
 
-            $.post(fullurl, { filename: filename, idKobo: idKobo, formalizacion: idForm, name: name }).
+            $.post(fullurl, { filename: filename, idKobo: idKobo, id: idValidation, idProject: idProject, name: name }).
                 done(function (data) {
                     button.find('i').removeClass('fa-cog fa-spin');
                     $('.btn-modal-reset').removeAttr('disabled');
@@ -349,6 +350,67 @@ var funcImg = {
             }
         });
     },
+    LoadValidImages: function () {
+        $('body').on('change', '.ck_field', function (e) {
+            var basic = $('#ck_bar').data('basic');
+            var total = $('input.ck_field:checkbox').length;
+            var selected = $('input.ck_field:checkbox:checked').length;
+            var percent = basic + ((100-basic)* selected/total);
+
+            var tab = $(this).data('tab');
+            $('#' + tab).removeClass('pill-complete');
+            if ($(this).is(':checked')) {
+                $('#' + tab).addClass('pill-complete');
+            }
+
+            if (percent > 95) {
+                $('.ck_button').prop('disabled', false);
+                $('#ck_panel').attr('style', 'display:none !important');
+            } else {
+                $('.ck_button').prop('disabled', true);
+                $('#ck_panel').show();
+            }
+            $('#ck_bar').css('width', percent + '%').attr('aria-valuenow', percent);
+
+        });
+    },
+    LoadSetAllValid: function () {
+        document.addEventListener("keydown", function (event) {
+            if (event.altKey && event.code === "KeyY") {
+                $('input.ck_field:checkbox').attr('checked', 'checked');
+
+                $('.pill-item').addClass('pill-complete');
+                $('.ck_button').prop('disabled', false);
+                $('#ck_panel').attr('style', 'display:none !important');
+
+                $('#ck_bar').css('width', '100%').attr('aria-valuenow', 100);
+
+                event.preventDefault();
+            }
+        });
+        $('body').on('change', '.ck_field', function (e) {
+            var basic = $('#ck_bar').data('basic');
+            var total = $('input.ck_field:checkbox').length;
+            var selected = $('input.ck_field:checkbox:checked').length;
+            var percent = basic + ((100 - basic) * selected / total);
+
+            var tab = $(this).data('tab');
+            $('#' + tab).removeClass('pill-complete');
+            if ($(this).is(':checked')) {
+                $('#' + tab).addClass('pill-complete');
+            }
+
+            if (percent > 95) {
+                $('.ck_button').prop('disabled', false);
+                $('#ck_panel').attr('style', 'display:none !important');
+            } else {
+                $('.ck_button').prop('disabled', true);
+                $('#ck_panel').show();
+            }
+            $('#ck_bar').css('width', percent + '%').attr('aria-valuenow', percent);
+
+        });
+    },
     init: function () {
         // Carga las variables de configuración.
         root = $('#Root').val();
@@ -370,6 +432,8 @@ var funcImg = {
         funcImg.loadShowModalImage();
         funcImg.loadImageReset();
         funcImg.loadImageChange();
+        funcImg.LoadValidImages();
+        funcImg.LoadSetAllValid();
 
         funcImg.showSelectionFileInput();
 

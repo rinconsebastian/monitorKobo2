@@ -26,10 +26,30 @@ namespace App_consulta.Services
             return await collection.Find(n => n.Id == id).FirstOrDefaultAsync();
         }
 
+
         public async Task<KoExtendData> FindExt(String collectionName, String id)
         {
             var collection = database.GetCollection<KoExtendData>(collectionName);
             return await collection.Find(n => n.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<KoGenericData>> FindMany(String collectionName, string[] ids)
+        {
+            var collection = database.GetCollection<KoGenericData>(collectionName);
+            return await collection.Find(n => ids.Contains(n.Id)).ToListAsync();
+        }
+
+       
+        public async Task<KoDataViewModel> FindViewModel(String collectionName, String id)
+        {
+            var collection = database.GetCollection<KoDataViewModel>(collectionName);
+            return await collection.Find(n => n.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<KoDataViewModel>> FindManyViewModel(String collectionName, string[] ids)
+        {
+            var collection = database.GetCollection<KoDataViewModel>(collectionName);
+            return await collection.Find(n => ids.Contains(n.Id)).ToListAsync();
         }
 
         public async Task<List<KoGenericData>> Get(String collectionName)
@@ -88,13 +108,19 @@ namespace App_consulta.Services
         }
 
 
-        public async Task<bool> Update(String collectionName,  KoExtendData dataIn)
+        public async Task<bool> Replace(String collectionName,  KoExtendData dataIn)
         {
             var collection = database.GetCollection<KoExtendData>(collectionName);
             var actionResult = await collection.ReplaceOneAsync(n => n.Id == dataIn.Id, dataIn);
             return actionResult.IsAcknowledged && actionResult.ModifiedCount > 0;
         }
 
+        public async Task<bool> Update(String collectionName, UpdateDefinition<KoExtendData> update, FilterDefinition<KoExtendData> filter)
+        {
+            var collection = database.GetCollection<KoExtendData>(collectionName);
+            var actionResult = await collection.UpdateOneAsync(filter, update);
+            return actionResult.IsAcknowledged && actionResult.ModifiedCount > 0;
+        }
 
     }
 }

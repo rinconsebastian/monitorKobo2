@@ -22,7 +22,7 @@ namespace App_consulta.ViewComponents
             _env = env;
         }
 
-        public IViewComponentResult Invoke(string file, string text = "", string css = "", string id = "", string key = "")
+        public IViewComponentResult Invoke(string file, string text = "", string css = "", string id = "", string key = "", bool zoom = false)
         {
             var time = "";
             try
@@ -39,6 +39,7 @@ namespace App_consulta.ViewComponents
             ViewBag.Time = time;
             ViewBag.Id = id;
             ViewBag.Key = key;
+            ViewBag.Zoom = zoom;
             ViewBag.Extension = file != null ? Path.GetExtension(file).ToLower() : "";
 
             return View();

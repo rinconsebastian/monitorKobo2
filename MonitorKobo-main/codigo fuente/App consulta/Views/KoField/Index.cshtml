@@ -26,6 +26,7 @@
             <option value="@Url.Action("Index","KoField", new { idProject=project.Id, order=2 })">Tabla general</option>
             <option value="@Url.Action("Index","KoField", new { idProject=project.Id, order=3 })">Tabla usuario</option>
             <option value="@Url.Action("Index","KoField", new { idProject=project.Id, order=4 })">Tabla validación</option>
+            <option value="@Url.Action("Index","KoField", new { idProject=project.Id, order=5 })">Impresión</option>
         </select>
     </div>
 </div>
@@ -47,7 +48,8 @@
         <th rowspan="2">
             Etiqueta formulario <br />
             Grupo formulario <br />
-            Título tablas
+            Título tablas <br />
+            Título impresión
         </th>
         @if (order == 0)
         {
@@ -117,7 +119,8 @@
             <td class="td-formali-conf">
                 @Html.DisplayFor(modelItem => item.FormLabel) <br />
                 <small><b>@Html.DisplayFor(modelItem => item.FormGroup) </b></small><br />
-                @Html.DisplayFor(modelItem => item.TableTitle)
+                @Html.DisplayFor(modelItem => item.TableTitle)<br />
+                <small><b>@Html.DisplayFor(modelItem => item.PrintTitle) </b></small>
             </td>
             @if (order == 1)
             {

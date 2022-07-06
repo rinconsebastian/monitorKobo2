@@ -1,0 +1,182 @@
+﻿@model App_consulta.Models.KoExtendData
+
+@{
+    KoProject project = ViewBag.project;
+
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = project.ValidationName;
+    ViewData["Fluid"] = true;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    var permisoValidar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar" && c.Value == "1"));
+    var permisoEditar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Editar" && c.Value == "1"));
+    var permisoImprimir = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir" && c.Value == "1"));
+    var permisoAdmin = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Administrar" && c.Value == "1"));
+
+    var permisoSolicitud = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear" && c.Value == "1"));
+    var permisoCancelar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Cancelar" && c.Value == "1"));
+
+
+    var btnEditar = permisoEditar ? "Editar" : "Validar";
+
+    List<KoField> fieldsText = ViewBag.fieldsText;
+    List<KoField> fieldsFile = ViewBag.fieldsFile;
+    KoState estado = ViewBag.estado;
+
+    var groupLabel = "";
+
+}
+<div class="row my-4  d-print-none">
+    <div class="col-12 col-lg-10 mx-auto">
+        <div class="card border-dark">
+            <div class="card-body pb-0">
+                <h4 class="my-2 text-uppercase">
+                    Detalles @project.ValidationName @Model.IdKobo
+                    <span class="badge @estado.Class float-right">@estado.Label</span>
+                </h4>
+                @if (ViewBag.error != null)
+                {
+                    <hr />
+                    <div class="alert alert-warning" role="alert">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        @ViewBag.error
+                    </div>
+
+                }
+                <hr class="mb-0" />
+                <div class="row">
+                    <div class="col-12 col-md-3 bg-light pt-3">
+                        <div class="nav flex-column nav-pills" id="myTab" role="tablist" aria-orientation="vertical">
+                            <a class="nav-link active" id="home-tab" data-toggle="pill" href="#tab-home" role="tab" aria-controls="home" aria-selected="true">General</a>
+                            @foreach (var field in fieldsFile)
+                            {
+                                <a class="nav-link" id="@field.Id-tab" data-toggle="pill" href="#tab-@field.Id" role="tab" aria-controls="@field.NameDB" aria-selected="false">
+                                    @field.Name
+                                </a>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-9 pt-3">
+                        <div class="tab-content" id="myTabContent">
+
+                            <div class="tab-pane fade show active" id="tab-home" role="tabpanel" aria-labelledby="tab-home">
+                                <div class="row">
+                                    <div class="col-12 p-1 pl-4">
+                                        <h5 class="text-uppercase mb-3 text-center">INFORMACIÓN GENERAL</h5>
+                                        @foreach (var input in fieldsText)
+                                        {
+                                            if (input.FormGroup != null && groupLabel != input.FormGroup)
+                                            {
+
+                                                groupLabel = input.FormGroup;
+                                                <p class="mb-0"><strong>@groupLabel</strong></p>
+                                                <hr class="mt-0 border-dark" />
+                                            }
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">@input.FormLabel</label>
+                                                <div class="col-sm-8">
+                                                    <p class="form-control-plaintext font-weight-light text-uppercase">@(Model.DynamicProperties[input.NameDB])</p>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            @foreach (var fileItem in fieldsFile)
+                            {
+                                <div class="tab-pane fade" id="tab-@fileItem.Id" role="tabpanel" aria-labelledby="tab-@fileItem.Id">
+                                    <div class="text-center p-1">
+                                        <h5 class="text-uppercase mb-3">@fileItem.FormLabel</h5>
+                                        @await Component.InvokeAsync("File", new { file = Model.DynamicProperties[fileItem.NameDB], text = fileItem.FormLabel, key = Model.IdKobo, zoom = true })
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mt-0" />
+                <div class="w-75 mx-auto">
+                    <div class="form-group row">
+                        @if (permisoValidar && Model.State == KoGenericData.ESTADO_BORRADOR || permisoCancelar)
+                        {
+                            <div class="col-md text-center mb-2">
+                                <a asp-action="Edit" asp-route-id="@Model.Id" asp-route-project="@project.Id" class="btn btn-outline-primary btn-block">@btnEditar</a>
+                            </div>
+                        }
+                        @if (permisoImprimir && (Model.State == KoGenericData.ESTADO_COMPLETO || Model.State == KoGenericData.ESTADO_IMPRESO))
+                        {
+                            <div class="col-md text-center mb-2">
+                                <button data-link="@Url.Action("Print","Validation", new { ids = Model.Id, project = project.Id })" class="btn btn-outline-warning btn-block btn-print-formlz">Imprimir</button>
+                            </div>
+                        }
+                        <div class="col-md text-center mb-2">
+                            <button onclick="goBack()" class="btn btn btn-outline-dark btn-block">Volver</button>
+                        </div>
+                        @if (permisoSolicitud)
+                        {
+                            <div class="col-md text-center mb-2">
+                                <a asp-controller="Solicitud" asp-action="Create" asp-route-id="@Model.Id"
+                                   class="btn btn btn-outline-success btn-block" target="_blank">Solicitar cambio</a>
+                            </div>
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+            @if (permisoAdmin)
+            {
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-12 col-sm-4">
+                            @if (ViewBag.Responsable != null)
+                            {
+                                <p class="font-weight-light mb-sm-0 small">
+                                    Coordinación:  <b>@ViewBag.Responsable.Nombre</b>
+                                </p>
+                            }
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            @if (ViewBag.CreateByUser != null)
+                            {
+                                <p class="font-weight-light mb-sm-0 small">
+                                    Cargado por: <b>@ViewBag.CreateByUser.Nombre @ViewBag.CreateByUser.Apellido</b>
+                                    <br />
+                                    <i>@Model.CreateDate.ToString("f")</i>
+                                </p>
+                            }
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            @if (ViewBag.LastEditByUser != null)
+                            {
+                                <p class="font-weight-light mb-0 small">
+                                    Última modificación por:   <b>@ViewBag.LastEditByUser.Nombre @ViewBag.LastEditByUser.Apellido</b>
+                                    <br />
+                                    <i>@Model.LastEditDate.ToString("f")</i>
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
+    <script type="text/javascript" src="~/js/tables/ValidarFormalizacionScript.js?v=1.0"></script>
+    <script>
+        function goBack() {
+            if ('referrer' in document) {
+                window.location = document.referrer;
+            } else {
+                window.history.back();
+            }
+        }
+    </script>
+}

@@ -167,9 +167,9 @@ namespace App_consulta.Data
                 new KoState() { Id = 1, Class="", Label = "NO"},
                 new KoState() { Id = 2, Class="", Label = "Pendiente"},
                 new KoState() { Id = 3, Class="bg-warning", Label = "Borrador"},
-                new KoState() { Id = 4, Class="bg-success", Label = "Completo"},
+                new KoState() { Id = 4, Class="bg-success", Label = "Completo", Print= true},
                 new KoState() { Id = 5, Class="bg-danger", Label = "Cancelado"},
-                new KoState() { Id = 6, Class="bg-info", Label = "Impreso"},
+                new KoState() { Id = 6, Class="bg-info", Label = "Impreso", Print= true},
                 new KoState() { Id = 7, Class="bg-danger", Label = "Carné vigente"},
                 new KoState() { Id = 8, Class="bg-danger", Label = "Duplicado"},
                 };

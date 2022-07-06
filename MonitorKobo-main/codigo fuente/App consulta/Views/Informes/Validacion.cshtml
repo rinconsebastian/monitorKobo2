@@ -1,0 +1,44 @@
+﻿
+@{
+    KoProject project = ViewBag.project;
+
+    var nombreInforme = project.ValidationName;
+    ViewData["Title"] = "Informe " + nombreInforme;
+    ViewData["Subtitle"] = "";
+    ViewData["Fluid"] = true;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var permisoVer = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Ver" && c.Value == "1"));
+    var permisoValidar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Validar" && c.Value == "1"));
+    var permisoExportar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado" && c.Value == "1"));
+}
+
+@Html.Hidden("allowExport", (permisoExportar ? 1 : 0))
+@Html.Hidden("allowLoadValidate", (permisoValidar ? 1 : 0))
+@Html.Hidden("allowSeeValidate", (permisoVer ? 1 : 0))
+
+<div class="row mt-4">
+    <div class="col-12 ">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="text-center text-uppercase">Informe @nombreInforme</h3>
+                <div id="@ViewBag.gridId" class="row-lm aux-selection">
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <p class="font-weight-light mb-0 small">
+                    Actualizado el <i>@project.LastUpdate</i>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/lib/jquery/moment.js"></script>
+    <script>
+            var myConfig = JSON.parse('@Html.Raw(ViewBag.config)');
+    </script>
+    <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
+    <script type="text/javascript" src="~/js/tables/ListadoScript.js?v=1.0"></script>
+}

@@ -8,8 +8,6 @@ using System.Text.Json.Serialization;
 
 namespace App_consulta.Models
 {
-
-
     public class KoGenericData
     {
         public const int ESTADO_NUEVO = 1;
@@ -30,6 +28,7 @@ namespace App_consulta.Models
         [BsonIgnoreIfNull]
         public string IdKobo { get; set; }
 
+        [Display(Name = "Estado")]
         [BsonElement("state")]
         [BsonIgnoreIfNull]
         public int State { get; set; }
@@ -43,41 +42,68 @@ namespace App_consulta.Models
     }
 
     public class KoExtendData : KoGenericData
-    {
-      
+    {     
 
         [BsonElement("dependence")]
         [Display(Name = "Coordinación")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
         public int IdResponsable { get; set; }
-        [ForeignKey("IdResponsable")]
-        [JsonIgnore]
-        public virtual Responsable Responsable { get; set; }
-
+       
         [BsonElement("create_user")]
         [Display(Name = "Creado por")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
         public string IdCreateByUser { get; set; }
-        [ForeignKey("IdCreateByUser")]
-        [JsonIgnore]
-        public virtual ApplicationUser CreateByUser { get; set; }
 
         [BsonElement("edit_user")]
         [Display(Name = "Última edición por")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
         public string IdLastEditByUser { get; set; }
-        [ForeignKey("IdLastEditByUser")]
-        [JsonIgnore]
-        public virtual ApplicationUser LastEditByUser { get; set; }
+
 
         [BsonElement("create_date")]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         [Display(Name = "Fecha creación")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
         public DateTime CreateDate { get; set; }
 
         [BsonElement("edit_date")]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         [Display(Name = "Fecha última edición")]
         [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
+        public DateTime LastEditDate { get; set; }
+
+    }
+
+    public class KoDataViewModel : KoGenericData
+    {
+        public KoDataViewModel() { }
+
+        public KoDataViewModel(string Id, string IdKobo, int State, string User,
+            IDictionary<string, object> DynamicProperties, int IdResponsable)
+        {
+            this.Id = Id;
+            this.IdKobo = IdKobo;
+            this.State = State;
+            this.User = User;
+            this.IdResponsable = IdResponsable;
+
+            var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(DynamicProperties);
+            this.DynamicProperties = Newtonsoft.Json.JsonConvert.DeserializeObject<IDictionary<string, object>>(serialized);
+        }
+
+        [BsonElement("dependence")]
+        [Display(Name = "Coordinación")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio. ")]
+        public int IdResponsable { get; set; }
+
+        public Dictionary<string, string> Props { get; set; }
+
+
+        [BsonElement("edit_user")]
+        public string IdLastEditByUser { get; set; }
+
+        [BsonElement("edit_date")]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime LastEditDate { get; set; }
 
     }

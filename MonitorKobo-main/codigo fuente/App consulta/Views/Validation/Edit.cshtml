@@ -1,0 +1,467 @@
+﻿@model App_consulta.Models.KoDataViewModel
+
+@{
+    KoProject project = ViewBag.project;
+
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = project.ValidationName;
+    ViewData["Fluid"] = true;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    //Permisos
+
+    var permisoAdmin = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestador.Administrar" && c.Value == "1"));
+
+    var permisoEditar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Editar" && c.Value == "1"));
+    var permisoImprimir = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir" && c.Value == "1"));
+    var permisoCambiarEstado = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Cancelar" && c.Value == "1"));
+
+
+    var permisoSolicitud = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear" && c.Value == "1"));
+
+    var permisoCambiarAdjunto = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar" && c.Value == "1"));
+    var permisoRestablecerAdjunto = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer" && c.Value == "1"));
+
+    //Info
+
+    var title = permisoEditar ? "Editar" : "Validar";
+
+    var listaCoordinacion = (SelectList)ViewBag.Coordinaciones;
+    var listaEstados = (SelectList)ViewBag.Estados;
+
+    List<KoField> fieldsText = ViewBag.fieldsText;
+    List<KoField> fieldsFile = ViewBag.fieldsFile;
+    KoState estado = ViewBag.estado;
+
+    var groupLabel = "";
+}
+@Html.Hidden("IdValidation", Model.Id)
+@Html.Hidden("IdProject", project.Id)
+@Html.Hidden("IdKobo", Model.IdKobo)
+@Html.Hidden("PathStorage", @Url.Action("ViewImage", "Validation"))
+
+<div class="card mt-4 mx-auto d-print-none" style="max-width:90%">
+    <div class="card-body">
+        <h4 class="my-2 text-uppercase">
+            @title @project.ValidationName @Model.IdKobo
+            <span class="badge @estado.Class float-right">@estado.Label</span>
+        </h4>
+        <div class="progress">
+            <div id="ck_bar" data-basic="@(permisoEditar? 0 : 20)"
+                 class="progress-bar progress-bar-striped bg-info" role="progressbar"
+                 style="width: @(permisoEditar? 0 : 20)%" aria-valuenow="@(permisoEditar? 0 : 20)"
+                 aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        @if (ViewBag.error != null)
+        {
+            <hr />
+            <div class="alert alert-warning" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                @ViewBag.error
+            </div>
+
+        }
+
+        <hr class="mb-0" />
+        <div class="row">
+            <div class="col-12 col-md-3 bg-light pt-3">
+                <div class="nav flex-column nav-pills" id="myTab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link pill-item active" id="home-tab" data-toggle="pill" href="#tab-home" role="tab" aria-controls="home" aria-selected="true">General</a>
+                    @foreach (var field in fieldsFile)
+                    {
+                        <a class="nav-link pill-item" id="@field.Id-tab" data-toggle="pill" href="#tab-@field.Id" role="tab" aria-controls="@field.NameDB" aria-selected="false">
+                            @field.Name
+                        </a>
+                    }
+                    <a class="nav-link" id="final-tab" data-toggle="pill" href="#tab-final" role="tab" aria-controls="tab_final" aria-selected="false">Finalizar</a>
+
+                </div>
+                <hr class="border-dark" />
+                <button onclick="goBack()" class="btn btn btn-outline-dark btn-block mb-2">Volver</button>
+                @if (permisoSolicitud)
+                {
+                    <a asp-controller="Solicitud" asp-action="Create" asp-route-id="@Model.Id"
+                       class="btn btn btn-outline-success btn-block" target="_blank">Solicitar cambio</a>
+                }
+            </div>
+            <div class="col-12 col-md-9 pt-3">
+                <div class="tab-content" id="myTabContent">
+
+                    <div class="tab-pane fade show active" id="tab-home" role="tabpanel" aria-labelledby="tab-home">
+                        <div class="row">
+                            <div class="col-12 p-1 pl-4">
+                                <h5 class="text-uppercase mb-3 text-center">INFORMACIÓN GENERAL</h5>
+                                @if (permisoEditar)
+                                {
+                                    <div class="m-2 p-2">
+                                        <div class="alert alert-secondary" role="alert">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input ck_field" data-tab="home-tab" id="v_form_home" value="1">
+                                                <label for="v_form_home" class="custom-control-label">Confirma que esta información ha sido revisada. </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <form asp-action="Edit" asp-route-project="@project.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input asp-for="Id" type="hidden" />
+                                        <div asp-validation-summary="All" class="small text-danger"></div>
+
+                                        @foreach (var input in fieldsText)
+                                        {
+                                            if (input.FormGroup != null && groupLabel != input.FormGroup)
+                                            {
+
+                                                groupLabel = input.FormGroup;
+                                                <p class="mb-0"><strong>@groupLabel</strong></p>
+                                                <hr class="mt-0 border-dark" />
+                                            }
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label" for="f_@input.NameDB">@input.FormLabel</label>
+                                                <div class="col-sm-8">
+                                                    @if (input.Editable)
+                                                    {
+                                                        <input id="f_@input.NameDB" name="Props.@input.NameDB" value="@Model.DynamicProperties[input.NameDB]" class="form-control" required />
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="form-control-plaintext font-weight-light text-uppercase">@(Model.DynamicProperties[input.NameDB])</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (permisoCambiarEstado)
+                                        {
+                                            <hr />
+                                            <div class="form-group row">
+                                                <label asp-for="State" class="col-md-4 col-form-label"></label>
+                                                <div class="col-md-8">
+                                                    <select asp-for="State" asp-items="@listaEstados" class="form-control" required>
+                                                        <option value="">Seleccione una opción</option>
+                                                    </select>
+                                                    <span asp-validation-for="State" class="form-text small text-danger"></span>
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (permisoAdmin)
+                                        {
+                                            <hr />
+                                            <div class="form-group row">
+                                                <label asp-for="IdResponsable" class="col-md-4 col-form-label"></label>
+                                                <div class="col-md-8">
+                                                    <select asp-for="IdResponsable" asp-items="@listaCoordinacion" class="form-control" required>
+                                                        <option value="">Seleccione una opción</option>
+                                                    </select>
+                                                    <span asp-validation-for="IdResponsable" class="form-text small text-danger"></span>
+                                                </div>
+                                            </div>
+                                        }
+                                        <hr />
+                                        <div class="form-group row">
+                                            <div class="col-sm-4 offset-lg-4">
+                                                <input type="submit" value="Guardar" class="btn btn-outline-primary btn-block" />
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                }
+                                else
+                                {
+                                    @foreach (var input in fieldsText)
+                                    {
+                                        if (input.FormGroup != null && groupLabel != input.FormGroup)
+                                        {
+                                            groupLabel = input.FormGroup;
+                                            <p class="mb-0"><strong>@groupLabel</strong></p>
+                                            <hr class="mt-0 border-dark" />
+                                        }
+                                        <div class="form-group row">
+                                            <label class="col-sm-4 col-form-label">@input.FormLabel</label>
+                                            <div class="col-sm-8">
+                                                <p class="form-control-plaintext font-weight-light text-uppercase">@(Model.DynamicProperties[input.NameDB])</p>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @foreach (var fileItem in fieldsFile)
+                    {
+                        <div class="tab-pane fade" id="tab-@fileItem.Id" role="tabpanel" aria-labelledby="tab-@fileItem.Id">
+                            <div class="text-center p-1">
+                                <h5 class="text-uppercase mb-3">@fileItem.FormLabel</h5>
+                                <div class="p-2">
+                                    <div class="alert alert-secondary" role="alert">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input ck_field" data-tab="@fileItem.Id-tab" id="v_form_@fileItem.Id" value="1">
+                                            <label for="v_form_@fileItem.Id" class="custom-control-label">Confirma que esta información ha sido revisada. </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                @{
+                                    var valueItem = (String)Model.DynamicProperties[fileItem.NameDB];
+                                }
+                                @if (valueItem != "")
+                                {
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            @if (fileItem.FormType == KoField.TYPE_IMG)
+                                            {
+                                                <button class="btn btn-outline-warning showEditModal"
+                                                        data-img="img_@fileItem.NameDB"
+                                                        data-filename="@valueItem">
+                                                    <i class="fas fa-photo-video"></i> Editar
+                                                </button>
+                                            }
+                                            @if (permisoCambiarAdjunto)
+                                            {
+                                                <button class="btn btn-outline-success btn-image-load"
+                                                        data-filename="@valueItem"
+                                                        data-name="@fileItem.FormLabel"
+                                                        data-image="img_@fileItem.NameDB">
+                                                    <i class="fas fa-upload"></i> Cargar
+                                                </button>
+                                            }
+                                            @if (permisoRestablecerAdjunto)
+                                            {
+                                                <button class="btn btn-outline-danger btn-image-reset"
+                                                        data-filename="@valueItem"
+                                                        data-name="@fileItem.FormLabel"
+                                                        data-image="img_@fileItem.NameDB">
+                                                    <i class="far fa-window-restore"></i> Restablecer
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @await Component.InvokeAsync("File", new { file = valueItem, text = fileItem.FormLabel, key = Model.IdKobo, id = "img_" + fileItem.NameDB, zoom = true })
+
+                            </div>
+                        </div>
+                    }
+
+                    <div class="tab-pane fade" id="tab-final" role="tabpanel" aria-labelledby="tab-final">
+                        <div class="row mt-4 p-2 d-flex justify-content-center" id="ck_panel">
+                            <div class="alert alert-warning" role="alert">
+                                Para finalizar el registro primero debe marcar todos los cuadros de confirmación.
+                            </div>
+                        </div>
+                        <div class="row py-4 px-1">
+                            <div class="col-12 col-md-4 mb-1">
+                                <button class="btn btn-outline-success btn-lg btn-block btn-finalizar ck_button" disabled data-accion="finalizar">Finalizar <i class="fas"></i></button>
+                            </div>
+                            @if (permisoImprimir)
+                            {
+                                <div class="col-12 col-md-4 mb-1">
+                                    <button class="btn btn-outline-warning btn-lg btn-block btn-finalizar ck_button" disabled data-accion="imprimir" data-link="@Url.Action("Print","Validation", new { ids = Model.Id, project = project.Id })">Finalizar e imprimir <i class="fas"></i></button>
+                                </div>
+                            }
+                            <div class="col-12 col-md-4 mb-1">
+                                <button class="btn btn-outline-danger btn-lg btn-block" data-toggle="modal" data-target="#modalConfirm">No valida</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<div id="modalEditImage" class="modal fade  d-print-none" tabindex="-1" role="dialog"
+     aria-labelledby="modalEditImageLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <img class="img-edit" src="" alt="Picture" id="image">
+                        <div class="my-4">
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 px-5 text-center">
+                        <div class="card">
+                            <div class="card-body">
+                                <canvas style="display:none"></canvas>
+                                <div id="result" style="min-height: 60vh">
+                                    <div class="preview">VISTA PREVIA</div>
+                                    <img id="imgResult" class="img-edit" />
+                                </div>
+                            </div>
+                            <div id="uploadingInfo" class="small"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-5">
+                        <div class="row">
+                            <div class="col-12 col-sm-4 d-flex range-image" title="Brillo">
+                                <label for="formControlRange" class="text-warning"><i class="fas fa-sun"></i></label>
+                                <input type="range" class="form-control-range filter-color" min="1" max="500" value="100" id="brightness">
+                            </div>
+                            <div class="col-12 col-sm-4 d-flex range-image" title="Contraste">
+                                <label for="formControlRange" class="text-dark"><i class="fas fa-adjust"></i></label>
+                                <input type="range" class="form-control-range filter-color" min="1" max="500" value="100" id="contrast">
+                            </div>
+                            <div class="col-12 col-sm-4 d-flex range-image" title="Saturación">
+                                <label for="formControlRange" class="text-info"><i class="fas fa-tint"></i></label>
+                                <input type="range" class="form-control-range filter-color" min="1" max="500" value="100" id="saturate">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class=" col-12  d-flex range-image" title="Rotar">
+                                <label for="formControlRange" class="text-dark"><i class="fas fa-sync-alt"></i></label>
+                                <input type="range" class="form-control-range " min="-360" max="360" value="0" id="angle">
+                                <span id="dataRotate" class="small ml-2 mt-2">0°</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-3">
+                        <div class="row mb-3">
+                            <div class="col-12 text-center">
+                                <button type="button" class="btn btn-outline-dark btn-rotar btn-img" data-option="-90" title="Rotar 90° a la izquierda" disabled>
+                                    <i class="fa fa-undo-alt"></i> 90
+                                </button>
+                                <button type="button" class="btn btn-outline-dark btn-rotar btn-img" data-option="90" title="Rotar 90° a la derecha" disabled>
+                                    90  <i class="fa fa-redo-alt"></i>
+                                </button>
+
+                                <button type="button" class="btn btn-outline-success btn-recortar btn-img" title="Aplicar" disabled>
+                                    <i class="fa fa-check"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-reset btn-img" title="Limpiar" disabled>
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12 text-center">
+                                <button type="button" class="btn btn-outline-dark btn-rotar btn-img" data-option="-10" title="Rotar 10° a la izquierda" disabled>
+                                    <i class="fa fa-undo-alt"></i> 10
+                                </button>
+                                <button type="button" class="btn btn-outline-dark btn-rotar btn-img" data-option="10" title="Rotar 10° a  la derecha" disabled>
+                                    10 <i class="fa fa-redo-alt"></i>
+                                </button>
+
+                                <button type="button" class="btn btn-outline-info btn-zoom btn-img" data-option="1" title="Zoom -" disabled>
+                                    <i class="fas fa-search-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-info btn-zoom btn-img" data-option="-1" title="Zoom +" disabled>
+                                    <i class="fas fa-search-plus"></i>
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-2 ">
+                        <form id="formUpload" asp-action="UpdateImage" asp-controller="Validation" enctype="multipart/form-data" method="post">
+                            @Html.Hidden("filename", "", new { id = "inputFilename" })
+                            <button type="submit" class="btn btn-outline-info btn-save btn-block" title="Guardar cambios" disabled>
+                                <i class="fa fa-upload"></i> Guardar
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-6 col-sm-2">
+                        <button type="button" class="btn btn-outline-danger btn-block" data-dismiss="modal">Salir</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalConfirm" class="modal fade  d-print-none" tabindex="-1" role="dialog"
+     aria-labelledby="modalConfirmLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="alert alert-danger text-lg-center">
+                    ¿Realmente desea marcar esta registro como
+                    <br /> "NO VALIDA"?
+                </p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-finalizar" data-accion="cancelar">Confirmar  <i class="fas"></i></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalConfirmReset" class="modal fade  d-print-none" tabindex="-1" role="dialog"
+     aria-labelledby="modalConfirmResetLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="text-lg-center">
+                    ¿Realmente desea restablecer la imagen
+                    "<b id="img-reset-name" class="text-uppercase"></b>"?
+                </p>
+                <div id="resetInfo"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="BtnConfirmReset" type="button" class="btn btn-danger btn-modal-reset">Restablecer  <i class="fas"></i></button>
+                <button type="button" class="btn btn-secondary btn-modal-reset" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalUploadImage" class="modal fade  d-print-none" tabindex="-1" role="dialog"
+     aria-labelledby="modalUploadImageLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="text-uppercase">Cargar archivo </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p> Archivo:  "<b id="img-load-name" class="text-uppercase"></b>"</p>
+                <br />
+                <form id="formLoad" asp-action="LoadImage" asp-controller="Validation" enctype="multipart/form-data" method="post">
+                    @Html.Hidden("filename", "", new { id = "inputFilenameLoad" })
+                    @Html.Hidden("name", "", new { id = "inputNameLoad" })
+                    @Html.Hidden("item", Model.IdKobo)
+                    <input name="project" value="@project.ValidationName" type="hidden" />
+                    <div class="custom-file">
+                        <input id="fileLoad" name="file" type="file" required class="custom-file-input"
+                               accept="image/png, image/gif, image/jpeg" lang="es">
+                        <label class="custom-file-label" for="fileLoad" data-browse="Elegir">Seleccionar Archivo</label>
+                    </div>
+                </form>
+                <div id="loadInfo"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="BtnConfirmLoad" type="submit" form="formLoad" class="btn btn-success btn-modal-load"> Cargar  <i class="fas"></i></button>
+                <button type="button" class="btn btn-secondary btn-modal-load" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles{
+    <link rel="stylesheet" href="~/lib/cropper/cropper.css" />
+}
+@section Scripts{
+    <script type="text/javascript" src="~/lib/cropper/cropper.js"></script>
+    <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
+    <script type="text/javascript" src="~/js/tables/EditImageScript.js?v=1.0"></script>
+    <script type="text/javascript" src="~/js/tables/ValidarFormalizacionScript.js?v=1.0"></script>
+    <script>
+        function goBack() {
+            if ('referrer' in document) {
+                window.location = document.referrer;
+            } else {
+                window.history.back();
+            }
+        }
+    </script>
+}

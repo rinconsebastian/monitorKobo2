@@ -1,6 +1,7 @@
 ﻿//*********************************** VARIABLES ******************************************
 var root_v;
-var idForm = 0;
+var idValidation = 0;
+var idProyect = 0;
 var waitClose = false;
 //*********************************** funcLE ******************************************
 
@@ -32,14 +33,14 @@ var funcVali = {
 
             switch (accion) {
                 case "finalizar":
-                    estado = 2;
+                    estado = 4;
                     break;
                 case "imprimir":
-                    estado = 2;
+                    estado = 4;
                     print = $(this).data("link");
                     break;
                 case "cancelar":
-                    estado = 3;
+                    estado = 5;
                     break;
             }
 
@@ -47,8 +48,8 @@ var funcVali = {
                 $(this).find('i').addClass('fa-cog fa-spin');
                 $('.btn-finalizar').attr('disabled', 'disabled');
 
-                var fullurl = root_v + "Formalizacion/CambiarEstado/";
-                $.post(fullurl, { id: idForm, estado: estado }).
+                var fullurl = root_v + "Validation/CambiarEstado/";
+                $.post(fullurl, { id: idValidation, project: idProyect, estado: estado }).
                     done(function (data) {
                         button.find('i').removeClass('fa-cog fa-spin');
                         $('.btn-finalizar').removeAttr('disabled');
@@ -79,7 +80,8 @@ var funcVali = {
     init: function () {
         // Carga las variables de configuración.
         root_v = $('#Root').val();
-        idForm = $('#IdFormalizacion').val();
+        idValidation = $('#IdValidation').val();
+        idProyect = $('#IdProject').val();
         funcVali.loadFinalizar();
         funcVali.loadPrintFormlz();
     }

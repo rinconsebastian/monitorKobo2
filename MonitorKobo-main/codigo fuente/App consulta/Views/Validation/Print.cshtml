@@ -1,0 +1,180 @@
+﻿@model IEnumerable<App_consulta.Models.KoGenericData>
+
+@{
+    KoProject project = ViewBag.project;
+
+    ViewData["Title"] = "Imprimir";
+    ViewData["Subtitle"] = project.ValidationName;
+    Layout = "~/Views/Shared/_LayoutPrint.cshtml";
+
+    if (Model.Count() == 1)
+    {
+        ViewData["Title"] = project.ValidationName + "_" + Model.First().IdKobo;
+    }
+    else if (Model.Count() > 1)
+    {
+        ViewData["Title"] = "Fichas: " + project.ValidationName;
+    }
+
+    var disabled = Model.Count() > 0 ? "" : "disabled";
+
+    var estadosValidos = ViewBag.EstadosValidos;
+    Dictionary<int, KoState> estados = ViewBag.Estados;
+
+    List<KoField> fieldsText = ViewBag.fieldsText;
+    List<KoField> fieldsImages = ViewBag.fieldsImages;
+
+    var firstImage = fieldsImages.Count > 0 ? fieldsImages[0] : null;
+    var firstText = fieldsText.Count > 0 ? fieldsText[0] : null;
+
+    var firstPage = true;
+}
+
+<div class="row my-4 d-print-none ">
+    <div class="col-10 mx-auto">
+        <div class="card  border-dark ">
+            <div class="card-body">
+                <h4 class="my-2">Imprimir registros</h4>
+                <hr />
+                <div class="m-2 p-2">
+                    <div class="alert alert-secondary" role="alert">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="print_ck" value="1" checked>
+                            <label for="print_ck" class="custom-control-label">Versión simplificada</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class=" col-4 offset-4">
+                        <button onclick="window.print();" @disabled class="btn btn-lg btn-block btn-success"><i class="fas fa-print"></i> IMPRIMIR </button>
+                    </div>
+                </div>
+
+
+                @foreach (var item in Model)
+                {
+                    <div class="d-print-none">
+                        <table class="table table-bordered table-formalz   table-sm" style="table-layout: fixed">
+                            <tbody class="@(!estadosValidos.Contains(item.State) ? "text-danger" : "")">
+                                <tr>
+                                    <td rowspan="4" class="text-center">
+                                        @if (firstImage != null && item.DynamicProperties.ContainsKey(firstImage.NameDB))
+                                        {
+                                            <img />
+                                            @await Component.InvokeAsync("File", new { file = item.DynamicProperties[firstImage.NameDB], text = firstImage.FormLabel, key = item.IdKobo, css = "img-mini" })
+                                        }
+                                    </td>
+                                </tr>
+                                <tr class="text-danger text-center">
+                                    <td colspan="4">
+                                        @switch (item.State)
+                                        {
+                                            case 4: //completo
+                                            case 6: //impreso
+                                                break;
+                                            case 3: //Borrador
+                                                <i><b>Registro en borrador</b>, no puede ser impresa</i>
+                                                break;
+                                            case 5: //cancelado
+                                            case 7: //vigente
+                                            case 8: //duplicado
+                                                <i><b>Registro cancelado</b>, no puede ser impresa</i>
+                                                break;
+                                            default:
+                                                <i><b>Registro invalida</b>, no puede ser impresa</i>
+                                                break;
+                                        }
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="align-middle font-weight-light">No. de registro</td>
+                                    <td class="align-middle text-center">@item.IdKobo</td>
+                                    <td class="align-middle font-weight-light">Estado</td>
+                                    <td class="align-middle text-center">
+                                        <span class="badge @estados[item.State].Class">@estados[item.State].Label</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    @if (firstText != null && item.DynamicProperties.ContainsKey(firstText.NameDB))
+                                    {
+                                        <td colspan="2" class="align-middle font-weight-light">@firstText.FormLabel</td>
+                                        <td colspan="2" class="align-middle text-center font-weight-bold text-uppercase">  @item.DynamicProperties[firstText.NameDB]</td>
+
+                                    }
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@foreach (var registro in Model)
+{
+    if (!estadosValidos.Contains(registro.State)){continue;}
+    foreach (var fieldImage in fieldsImages)
+    {
+        if (!registro.DynamicProperties.ContainsKey(fieldImage.NameDB)) { continue;  }
+        <div class="page-f d-none @(firstPage ? "d-print-block" : "pageExtra")">
+            @await Html.PartialAsync("_FormalizacionPartial", project)
+            @if (firstPage)
+            {
+                <p class="font-weight-bold text-center">INFORMACIÓN GENERAL</p>
+            }
+
+            <p class="text-justify">
+                <strong><i class="far fa-check-circle"></i> @fieldImage.PrintTitle</strong>
+            </p>
+
+            <table class="table table-bordered table-formalz  table-sm">
+                <tbody>
+                    <tr>
+                        <td class="font-weight-bold">Fecha de solicitud</td>
+                        <td>@(registro.DynamicProperties.ContainsKey("datetime") ? registro.DynamicProperties["datetime"]: "" )</td>
+                        <td class="font-weight-bold">No. de registro</td>
+                        <td>@registro.IdKobo</td>
+                    </tr>
+                    @if (firstPage)
+                    {
+                        @foreach (var fieldText in fieldsText)
+                        {
+                            if (registro.DynamicProperties.ContainsKey(fieldText.NameDB))
+                            {
+                                <tr>
+                                    <td class="font-weight-bold">@fieldText.PrintTitle</td>
+                                    <td colspan="3" class="text-uppercase">@registro.DynamicProperties[fieldText.NameDB]</td>
+                                </tr>
+                            }
+                        }
+                    }
+                    <tr>
+                        <td class="font-weight-bold"> Nombre del formato</td>
+                        <td colspan="3">@fieldImage.PrintTitle</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            @await Component.InvokeAsync("File", new { file = registro.DynamicProperties[fieldImage.NameDB], text = fieldImage.Name, css = "img-large" })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        firstPage = false;
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/site-f.css" />
+}
+@section Scripts{
+    <script>
+        var myIdsPrint = @Html.Raw(ViewBag.Ids);
+        var myProject = @project.Id;
+    </script>
+    <script type="text/javascript" src="~/js/tables/PrintFormalizacionScript.js?v=1.0"></script>
+}
