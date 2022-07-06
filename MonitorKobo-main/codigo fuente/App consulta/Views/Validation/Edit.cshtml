@@ -80,7 +80,7 @@
                 <button onclick="goBack()" class="btn btn btn-outline-dark btn-block mb-2">Volver</button>
                 @if (permisoSolicitud)
                 {
-                    <a asp-controller="Solicitud" asp-action="Create" asp-route-id="@Model.Id"
+                    <a asp-controller="Solicitud" asp-action="Create" asp-route-id="@Model.Id" asp-route-project="@project.Id"
                        class="btn btn btn-outline-success btn-block" target="_blank">Solicitar cambio</a>
                 }
             </div>

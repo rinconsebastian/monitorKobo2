@@ -7,8 +7,7 @@
 
     RequestUser solicitud = ViewBag.Solicitud;
 
-    Formalization formalizacion = ViewBag.Formalizacion;
-    var numeroRegistro = formalizacion != null ? formalizacion.NumeroRegistro : "";
+    var numeroRegistro = ViewBag.registro;
 
     ApplicationUser user = ViewBag.User;
     var listaEstados = (SelectList)ViewBag.Estados;
@@ -42,11 +41,11 @@
                 <h6>Solicitud</h6>
                 <p class="text-justify">@solicitud.Message</p>
 
-                @if (solicitud.FormalizationId > 0)
+                @if (solicitud.RecordNumber != null && solicitud.RecordNumber != "")
                 {
-                    <h6>No. Formalización</h6>
+                    <h6>No. Registro</h6>
                     <p>
-                        <a asp-controller="Formalizacion" asp-action="Edit" asp-route-id="@solicitud.FormalizationId" class="btn btn-link btn-sm text-left" target="_blank">
+                        <a asp-controller="Validation" asp-action="Edit" asp-route-id="@solicitud.RecordId" asp-route-project="@solicitud.RecordProject" class="btn btn-link btn-sm text-left" target="_blank">
                             @numeroRegistro
                         </a>
                     </p>

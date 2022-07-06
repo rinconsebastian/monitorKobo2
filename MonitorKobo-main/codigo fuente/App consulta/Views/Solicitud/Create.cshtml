@@ -5,9 +5,9 @@
     ViewData["Subtitle"] = "Nueva solicitud";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    Formalization formalizacion = ViewBag.Formalizacion;
-    var titulo = formalizacion != null ? "Solicitud para la formalización " + formalizacion.NumeroRegistro
-        : "Nueva solicitud";
+    KoGenericData registro = ViewBag.registro;
+    int project = ViewBag.project;
+    var titulo = registro != null ? "Solicitud para el registro " + registro.IdKobo : "Nueva solicitud";
 }
 
 <div class="card w-50 mt-4 mx-auto">
@@ -16,9 +16,11 @@
         <hr />
         <form asp-action="Create" method="post" id="formSolicitud">
             @Html.AntiForgeryToken()
-            @if (formalizacion != null)
+            @if (registro != null)
             {
-                <input asp-for="FormalizationId" value="@formalizacion.Id" type="hidden" />
+                <input asp-for="RecordNumber" value="@registro.IdKobo" type="hidden" />
+                <input asp-for="RecordId" value="@registro.Id" type="hidden" />
+                <input asp-for="RecordProject" value="@project" type="hidden" />
             }
             <div asp-validation-summary="All" class="small text-danger"></div>
 
@@ -42,7 +44,7 @@
                 <label asp-for="File" class="col-md-3 col-form-label"></label>
                 <div class="col-md-9">
                     <div class="custom-file">
-                        <input id="fileAdjunto" name="fileTemp"  type="file" class="custom-file-input fileUploadAdjunto" lang="es">
+                        <input id="fileAdjunto" name="fileTemp" type="file" class="custom-file-input fileUploadAdjunto" lang="es">
                         <label class="custom-file-label" for="fileAdjunto" data-browse="Elegir">Seleccionar Archivo</label>
                     </div>
                 </div>
@@ -66,7 +68,7 @@
             </div>
         </form>
 
-        
+
     </div>
 </div>
 @section Scripts {

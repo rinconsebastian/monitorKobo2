@@ -5,8 +5,7 @@
     ViewData["Subtitle"] = "Detalles";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    Formalization formalizacion = ViewBag.Formalizacion;
-    var numeroRegistro = formalizacion != null ? formalizacion.NumeroRegistro : "";
+    var numeroRegistro = ViewBag.registro;
 }
 <div class="row mt-5">
     <div class="col-12 col-sm-5 mx-auto">
@@ -36,11 +35,11 @@
                 <h6>Solicitud</h6>
                 <p class="text-justify">@Model.Message</p>
 
-                @if (Model.FormalizationId > 0)
+                @if (Model.RecordNumber != null && Model.RecordNumber != "")
                 {
-                    <h6>No. Formalización</h6>
+                    <h6>No. Registro</h6>
                     <p>
-                        <a asp-controller="Formalizacion" asp-action="Edit" asp-route-id="@Model.FormalizationId" class="btn btn-link btn-sm text-left" target="_blank">
+                        <a asp-controller="Validation" asp-action="Edit" asp-route-id="@Model.RecordId" asp-route-project="@Model.RecordProject" class="btn btn-link btn-sm text-left" target="_blank">
                             @numeroRegistro
                         </a>
                     </p>

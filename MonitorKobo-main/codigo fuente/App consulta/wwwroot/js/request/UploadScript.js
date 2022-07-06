@@ -8,7 +8,7 @@ var funcUpload = {
 
             // Serialize your form
             var formData = new FormData(formulario[0]);
-            var time = funcUpload.getFormatDate("Solic");
+            var time = funcUpload.getFormatDate("Solicitud");
             formData.append("time", time);
 
 

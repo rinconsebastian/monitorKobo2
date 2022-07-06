@@ -33,8 +33,15 @@ namespace App_consulta.Models
         public string Message { get; set; }
 
 
-        [Display(Name = "Formalización")]
-        public int FormalizationId { get; set; }
+        [Display(Name = "Id registro")]
+        public string RecordId { get; set; }
+
+        [Display(Name = "Numero registro")]
+        public string RecordNumber { get; set; }
+
+        [Display(Name = "Proyecto registro")]
+        public int RecordProject { get; set; }
+
 
         [Display(Name = "Adjunto")]
         [JsonIgnore]
@@ -51,6 +58,9 @@ namespace App_consulta.Models
 
         [Display(Name = "Alerta administrar")]
         public bool AlertAdmin { get; set; }
+
+        [Display(Name = "Alerta email")]
+        public bool AlertEmail { get; set; }
 
 
         [Display(Name = "Usuario registro")]

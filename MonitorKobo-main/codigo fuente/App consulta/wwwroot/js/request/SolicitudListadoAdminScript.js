@@ -126,7 +126,7 @@ var funcLE = {
                                 nombre = "En proceso";
                                 break;
                         }
-                        contenido = '<h6 class="mb-0"><span class="badge ' + color + '">' + nombre + '</span></h6>';
+                        var contenido = '<h6 class="mb-0"><span class="badge ' + color + '">' + nombre + '</span></h6>';
                         $("<div class='preventSelection'>")
                             .append(contenido)
                             .appendTo(container);
@@ -140,13 +140,13 @@ var funcLE = {
                     hidingPriority: 9
                 },
                 {
-                    dataField: "nameUser",
+                    dataField: "userName",
                     caption: "Nombre\r\nUsuario",
                     headerCellTemplate: function (header, info) {
                         $("<div>").html(info.column.caption.replace(/\r\n/g, "<br/>")).appendTo(header);
                     },
                     alignment: "center",
-                    width: 110,
+                    width: 120,
                     hidingPriority: 8
                 }, 
                 {
@@ -168,16 +168,19 @@ var funcLE = {
                 },
                
                 {
-                    dataField: "formalizationNumber",
-                    caption: "Formalización",
+                    dataField: "recordNumber",
+                    caption: "Registro",
                     alignment: "center",
                     width: 100,
                     hidingPriority: 6,
                     cellTemplate: function (container, options) {
-                        var nombre = options.data.formalizationNumber;
-                        var id = options.data.formalizationId;
-                        
-                        contenido = '<a href="' + root + 'Formalizacion/Details/' + id + '" target="_blank">' + nombre + '</a>';
+                        var nombre = options.data.recordNumber;
+                        var id = options.data.recordId;
+                        var project = options.data.recordProject;
+                        var contenido = "";
+                        if (nombre != null && nombre != "") {
+                            contenido = '<a href="' + root + 'Validation/Details/' + id + '?project=' + project + '" target="_blank">' + nombre + '</a>';
+                        }
                         $("<div class='preventSelection'>")
                             .append(contenido)
                             .appendTo(container);
@@ -187,7 +190,7 @@ var funcLE = {
                     dataField: "file",
                     caption: "Adjunto",
                     alignment: "center",
-                    width: 70,
+                    width: 100,
                     hidingPriority: 3
                 },
                 {
@@ -197,7 +200,7 @@ var funcLE = {
                         $("<div>").html(info.column.caption.replace(/\r\n/g, "<br/>")).appendTo(header);
                     },
                     alignment: "center",
-                    width: 70,
+                    width: 80,
                     hidingPriority: 5
                 },
                 {
@@ -207,7 +210,17 @@ var funcLE = {
                         $("<div>").html(info.column.caption.replace(/\r\n/g, "<br/>")).appendTo(header);
                     },
                     alignment: "center",
-                    width: 70,
+                    width: 80,
+                    hidingPriority: 4
+                },
+                {
+                    dataField: "alertEmail",
+                    caption: "Alerta\r\nEmail",
+                    headerCellTemplate: function (header, info) {
+                        $("<div>").html(info.column.caption.replace(/\r\n/g, "<br/>")).appendTo(header);
+                    },
+                    alignment: "center",
+                    width: 80,
                     hidingPriority: 4
                 },
                 {
@@ -217,7 +230,7 @@ var funcLE = {
                         $("<div>").html(info.column.caption.replace(/\r\n/g, "<br/>")).appendTo(header);
                     },
                     alignment: "center",
-                    width: 110,
+                    width: 130,
                     hidingPriority: 2
                 }, 
                 {

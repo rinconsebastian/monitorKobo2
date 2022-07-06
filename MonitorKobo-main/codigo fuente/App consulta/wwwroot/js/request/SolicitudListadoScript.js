@@ -153,8 +153,8 @@ var funcLE = {
                     }
                 },
                 {
-                    dataField: "formalizacion",
-                    caption: "Formalización",
+                    dataField: "registro",
+                    caption: "Registro",
                     alignment: "center",
                     width: 130,
                     hidingPriority: 3

@@ -1,5 +1,6 @@
 ﻿using App_consulta.Data;
 using App_consulta.Models;
+using App_consulta.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,13 +23,18 @@ namespace App_consulta.Controllers
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IWebHostEnvironment _env;
+        private readonly MongoDatabaseService mdb;
 
 
-        public SolicitudController(ApplicationDbContext context, UserManager<ApplicationUser> _userManager, IWebHostEnvironment env)
+        public SolicitudController(ApplicationDbContext context, 
+            UserManager<ApplicationUser> _userManager,
+            IWebHostEnvironment env,
+            MongoDatabaseService mongoService)
         {
             db = context;
             userManager = _userManager;
             _env = env;
+            mdb = mongoService;
         }
 
         // GET: EncuestadorController
@@ -51,9 +57,9 @@ namespace App_consulta.Controllers
             var solicitudes = await db.RequestUser.Where(n => user.Id == n.IdUser)
                 .Select(n => new
                 {
-                    Id = n.Id,
+                    n.Id,
                     Asunto = n.Request,
-                    Formalizacion = n.FormalizationId > 0 ? "Si" : "No",
+                    Registro = n.RecordNumber != null && n.RecordNumber != "" ? "Si" : "No",
                     Adjunto = n.File != null && n.File != "" ? "Si" : "No",
                     Fecha = n.CreateDate,
                     Estado = n.State,
@@ -62,15 +68,20 @@ namespace App_consulta.Controllers
             return Json(solicitudes);
         }
 
+
         [Authorize(Policy = "Solicitud.Crear")]
-        public async Task<ActionResult> Create(int id = 0)
+        public async Task<ActionResult> Create(string id = "", int project = 0)
         {
-            Formalization formalizacion = null;
-            if(id > 0)
-            {
-                formalizacion = await db.Formalization.FindAsync(id);
+            KoGenericData registro = null;
+            var projectObj = await db.KoProject.FindAsync(project);
+
+            if (projectObj != null && projectObj.Validable) { 
+                registro = await mdb.Find(projectObj.Collection, id);
             }
-            ViewBag.Formalizacion = formalizacion;
+
+            ViewBag.registro = registro;
+            ViewBag.project = project;
+
             return View();
         }
 
@@ -78,7 +89,7 @@ namespace App_consulta.Controllers
         [Authorize(Policy = "Solicitud.Crear")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(IFormFile fileTemp, string Request, string Message, string FormalizationId = "", string time = "")
+        public async Task<ActionResult> Create(IFormFile fileTemp, RequestUser item, string time = "")
         {
             String error = "";
 
@@ -110,26 +121,22 @@ namespace App_consulta.Controllers
             //Crea la solicitud
             try
             {
-                var solicitud = new RequestUser();
-
-                solicitud.Request = Request;
-                solicitud.Message = Message;
-                solicitud.FormalizationId = FormalizationId != "" ? Int32.Parse(FormalizationId) : 0;
-                solicitud.File = adjunto;
-
                 var user = await userManager.FindByNameAsync(User.Identity.Name);
-                solicitud.IdUser = user.Id;
-                solicitud.CreateDate = DateTime.Now;
-                solicitud.State = RequestUser.ESTADO_NUEVA;
-                solicitud.AlertAdmin = true;
 
-                db.RequestUser.Add(solicitud);
+                item.File = adjunto;        
+                item.IdUser = user.Id;
+                item.CreateDate = DateTime.Now;
+                item.State = RequestUser.ESTADO_NUEVA;
+                item.AlertAdmin = true;
+
+                db.RequestUser.Add(item);
                 await db.SaveChangesAsync();
             }
             catch (Exception e) { error = "Error solicitud: " + e.Message; }
 
             return Json(error);
         }
+
 
         [Authorize(Policy = "Solicitud.Crear")]
         public async Task<ActionResult> DetailsAlert(int id)
@@ -154,15 +161,11 @@ namespace App_consulta.Controllers
             var solicitud = await db.RequestUser.Where(n => n.Id == id && n.IdUser == user.Id).FirstOrDefaultAsync();
             if (solicitud == null) { return NotFound(); }
 
-            Formalization formalizacion = null;
-            if (solicitud.FormalizationId > 0)
-            {
-                formalizacion = await db.Formalization.FindAsync(solicitud.FormalizationId);
-            }
-            ViewBag.Formalizacion = formalizacion;
+            ViewBag.registro = solicitud.RecordNumber;
 
             return View(solicitud);
         }
+
 
         // GET: EncuestadorController
         [Authorize(Policy = "Solicitud.Administrar")]
@@ -185,47 +188,37 @@ namespace App_consulta.Controllers
                     Id = n.Id,
                     State = n.State,
                     Request = n.Request,
-                    IdUser = n.IdUser,
+                    UserId = n.IdUser,
+                    UserName = "",
                     File = n.File != null && n.File != "" ? "Si" : "No",
                     AlertAdmin = n.AlertAdmin ? "Si" : "No",
                     AlertUser = n.AlertUser ? "Si" : "No",
+                    AlertEmail = n.AlertUser ? "Si" : "No",
                     CreateDate = n.CreateDate,
                     ValidationDate = n.AdminName != null ? n.ValidationDate.ToString() : "",
                     AdminName = n.AdminName,
-                    FormalizationId = n.FormalizationId,
-                    FormalizationNumber = ""
+                    RecordId = n.RecordId,
+                    RecordProject = n.RecordProject,
+                    RecordNumber = n.RecordNumber
                 }).ToListAsync();
 
-            var idsUsuarios = solicitudes.Select(n => n.IdUser).Distinct().ToList();
+            var idsUsuarios = solicitudes.Select(n => n.UserId).Distinct().ToList();
             var usuarios = await db.Users.Where(n => idsUsuarios.Contains(n.Id))
                 .Select(n => new
                 {
-                    Id = n.Id,
+                    n.Id,
                     Nombre = n.Nombre + " " + n.Apellido
                 })
                 .ToDictionaryAsync(n => n.Id, n => n.Nombre);
-
-            var idsFormalizaciones = solicitudes.Select(n => n.FormalizationId).Distinct().ToList();
-            var formalizaciones = await db.Formalization.Where(n => idsFormalizaciones.Contains(n.Id))
-               .Select(n => new
-               {
-                   Id = n.Id,
-                   Numero = n.NumeroRegistro
-               })
-               .ToDictionaryAsync(n => n.Id, n => n.Numero);
-
+            
             foreach(var item in solicitudes)
             {
-                if (usuarios.ContainsKey(item.IdUser))
+                if (usuarios.ContainsKey(item.UserId))
                 {
-                    item.NameUser = usuarios[item.IdUser];
-                }
-                if (item.FormalizationId > 0 && formalizaciones.ContainsKey(item.FormalizationId))
-                {
-                    item.FormalizationNumber = formalizaciones[item.FormalizationId];
+                    item.UserName = usuarios[item.UserId];
                 }
             }
-
+            
             return Json(solicitudes);
         }
 
@@ -250,12 +243,7 @@ namespace App_consulta.Controllers
             var user = await userManager.FindByIdAsync(solicitud.IdUser);
             ViewBag.User = user;
 
-            Formalization formalizacion = null;
-            if (solicitud.FormalizationId > 0)
-            {
-                formalizacion = await db.Formalization.FindAsync(solicitud.FormalizationId);
-            }
-            ViewBag.Formalizacion = formalizacion;
+            ViewBag.registro = solicitud.RecordNumber;
 
             return View(dataForm);
         }
@@ -303,13 +291,8 @@ namespace App_consulta.Controllers
 
             var user = await userManager.FindByIdAsync(original.IdUser);
             ViewBag.User = user;
-
-            Formalization formalizacion = null;
-            if (original.FormalizationId > 0)
-            {
-                formalizacion = await db.Formalization.FindAsync(original.FormalizationId);
-            }
-            ViewBag.Formalizacion = formalizacion;
+            //TODO revisar que funcione
+            ViewBag.registro = original.RecordNumber;
 
             return View(data);
         }
@@ -327,8 +310,7 @@ namespace App_consulta.Controllers
 
             byte[] data = System.IO.File.ReadAllBytes(filepath);
 
-            string contentType;
-            new FileExtensionContentTypeProvider().TryGetContentType(filename, out contentType);
+            new FileExtensionContentTypeProvider().TryGetContentType(filename, out string contentType);
             var mime = contentType ?? "application/octet-stream";
 
             Stream stream = new MemoryStream(data);
