@@ -162,6 +162,7 @@ namespace App_consulta.Controllers
                 HttpContext.Session.Remove("error");
             }
 
+            //Campos dinamicos
             var keysExists = item.DynamicProperties.Keys.ToList();
             var fields = await db.KoField.Where(n => n.IdProject == project && n.ShowForm && keysExists.Contains(n.NameDB)).ToListAsync();
 
@@ -179,11 +180,16 @@ namespace App_consulta.Controllers
                 .OrderBy(n => n.FormOrder).ToList();
             ViewBag.fieldsFile = fieldsFile;
 
+            //estado del registro
             var estado = await db.KoDataState.FindAsync(item.State);
             ViewBag.estado = estado;
 
+            //Campos de seleccion
             ViewBag.Coordinaciones = new SelectList(await db.Responsable.Where(n => n.Nombre.StartsWith("[CDR]")).OrderBy(n => n.Nombre).ToListAsync(), "Id", "Nombre", item.IdResponsable);
             ViewBag.Estados = new SelectList(await db.KoDataState.Where(n => n.Id > 2).ToListAsync(), "Id", "Label", item.State);
+
+            var variables = await db.KoVariable.ToListAsync(); 
+            ViewBag.Variables = variables.GroupBy(n => n.Group).ToDictionary(n => n.Key, n => n.ToList());
 
             return View(item);
         }

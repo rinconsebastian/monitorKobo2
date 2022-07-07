@@ -34,6 +34,9 @@
     KoState estado = ViewBag.estado;
 
     var groupLabel = "";
+
+
+    Dictionary<string, List<KoVariable>> variables = ViewBag.Variables;
 }
 @Html.Hidden("IdValidation", Model.Id)
 @Html.Hidden("IdProject", project.Id)
@@ -108,6 +111,9 @@
 
                                         @foreach (var input in fieldsText)
                                         {
+                                            var valor = Model.DynamicProperties[input.NameDB];
+                                            var isRequired = valor != null ;
+
                                             if (input.FormGroup != null && groupLabel != input.FormGroup)
                                             {
 
@@ -116,11 +122,27 @@
                                                 <hr class="mt-0 border-dark" />
                                             }
                                             <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label" for="f_@input.NameDB">@input.FormLabel</label>
+                                                <label class="col-sm-4 col-form-label" for="f_@input.NameDB">
+                                                @input.FormLabel @(isRequired ? "*" : "")
+                                                </label>
                                                 <div class="col-sm-8">
                                                     @if (input.Editable)
                                                     {
-                                                        <input id="f_@input.NameDB" name="Props.@input.NameDB" value="@Model.DynamicProperties[input.NameDB]" class="form-control" required />
+                                                       
+
+                                                        switch (input.FormType)
+                                                        {
+                                                            case KoField.TYPE_SELECT_ONE:
+                                                                var listaItems = new SelectList(variables[input.FormGroupSelect], "Value", "Value", valor);
+                                                                <select  id="f_@input.NameDB" name="Props.@input.NameDB" asp-items="@listaItems" class="form-control" required="@(isRequired)"  >
+                                                                    <option value="">Seleccione una opción</option>
+                                                                </select>
+                                                                break;
+                                                            default:
+                                                                <input id="f_@input.NameDB" name="Props.@input.NameDB" value="@valor" class="form-control" @(isRequired ? "required": "") />
+                                                                break;
+                                                        }
+
                                                     }
                                                     else
                                                     {
