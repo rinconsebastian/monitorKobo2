@@ -16,8 +16,8 @@
         ViewData["Title"] = "Fichas: " + project.ValidationName;
     }
 
-    var disabled = Model.Count() > 0 ? "" : "disabled";
-
+    var disabled = ViewBag.Ids != "[]" ? "" : "disabled";
+    
     var estadosValidos = ViewBag.EstadosValidos;
     Dictionary<int, KoState> estados = ViewBag.Estados;
 

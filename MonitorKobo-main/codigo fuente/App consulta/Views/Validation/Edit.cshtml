@@ -188,53 +188,56 @@
 
                     @foreach (var fileItem in fieldsFile)
                     {
+                        var valueItem = (String)Model.DynamicProperties[fileItem.NameDB];
                         <div class="tab-pane fade" id="tab-@fileItem.Id" role="tabpanel" aria-labelledby="tab-@fileItem.Id">
                             <div class="text-center p-1">
                                 <h5 class="text-uppercase mb-3">@fileItem.FormLabel</h5>
-                                <div class="p-2">
-                                    <div class="alert alert-secondary" role="alert">
-                                        <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input ck_field" data-tab="@fileItem.Id-tab" id="v_form_@fileItem.Id" value="1">
-                                            <label for="v_form_@fileItem.Id" class="custom-control-label">Confirma que esta información ha sido revisada. </label>
+                                <div class="row p-2">
+                                    <div class="col-12 col-md-7">
+                                        <div class="alert alert-secondary" role="alert">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input ck_field" data-tab="@fileItem.Id-tab" id="v_form_@fileItem.Id" value="1">
+                                                <label for="v_form_@fileItem.Id" class="custom-control-label">Confirma que esta información ha sido revisada. </label>
+                                            </div>
                                         </div>
+                                    </div>
+                                    <div class="col-12 col-md-5">
+                                        @if (valueItem != "")
+                                        {
+                                            <div class="row mb-4">
+                                                <div class="col-12">
+                                                    @if (fileItem.FormType == KoField.TYPE_IMG)
+                                                    {
+                                                        <button class="btn btn-outline-warning showEditModal"
+                                                                data-img="img_@fileItem.NameDB"
+                                                                data-filename="@valueItem">
+                                                            <i class="fas fa-photo-video"></i> Editar
+                                                        </button>
+                                                    }
+                                                    @if (permisoCambiarAdjunto)
+                                                    {
+                                                        <button class="btn btn-outline-success btn-image-load"
+                                                                data-filename="@valueItem"
+                                                                data-name="@fileItem.FormLabel"
+                                                                data-image="img_@fileItem.NameDB">
+                                                            <i class="fas fa-upload"></i> Cargar
+                                                        </button>
+                                                    }
+                                                    @if (permisoRestablecerAdjunto)
+                                                    {
+                                                        <button class="btn btn-outline-danger btn-image-reset"
+                                                                data-filename="@valueItem"
+                                                                data-name="@fileItem.FormLabel"
+                                                                data-image="img_@fileItem.NameDB">
+                                                            <i class="far fa-window-restore"></i> Restablecer
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
-                                @{
-                                    var valueItem = (String)Model.DynamicProperties[fileItem.NameDB];
-                                }
-                                @if (valueItem != "")
-                                {
-                                    <div class="row mb-4">
-                                        <div class="col-12">
-                                            @if (fileItem.FormType == KoField.TYPE_IMG)
-                                            {
-                                                <button class="btn btn-outline-warning showEditModal"
-                                                        data-img="img_@fileItem.NameDB"
-                                                        data-filename="@valueItem">
-                                                    <i class="fas fa-photo-video"></i> Editar
-                                                </button>
-                                            }
-                                            @if (permisoCambiarAdjunto)
-                                            {
-                                                <button class="btn btn-outline-success btn-image-load"
-                                                        data-filename="@valueItem"
-                                                        data-name="@fileItem.FormLabel"
-                                                        data-image="img_@fileItem.NameDB">
-                                                    <i class="fas fa-upload"></i> Cargar
-                                                </button>
-                                            }
-                                            @if (permisoRestablecerAdjunto)
-                                            {
-                                                <button class="btn btn-outline-danger btn-image-reset"
-                                                        data-filename="@valueItem"
-                                                        data-name="@fileItem.FormLabel"
-                                                        data-image="img_@fileItem.NameDB">
-                                                    <i class="far fa-window-restore"></i> Restablecer
-                                                </button>
-                                            }
-                                        </div>
-                                    </div>
-                                }
+                              
                                 @await Component.InvokeAsync("File", new { file = valueItem, text = fileItem.FormLabel, key = Model.IdKobo, id = "img_" + fileItem.NameDB, zoom = true })
 
                             </div>

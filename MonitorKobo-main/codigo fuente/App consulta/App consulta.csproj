@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="Views\Rol\" />
     <Folder Include="Views\Users\" />
     <Folder Include="wwwroot\lib\font-awesome\" />

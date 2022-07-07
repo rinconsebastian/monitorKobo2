@@ -5,14 +5,29 @@ var allowExport = false;
 var allowLoadValidate = false;
 var allowSeeValidate = false;
 
+var allowPrint = false;
+var urlPrint = "";
+var projectPrint = 0;
+
 //*********************************** funcL ******************************************
 
 var funcL = {
+    imprimirMultiple: function (seleccion) {
+        if (seleccion.length > 0) {
+            var ids = $.map(seleccion, function (n, i) {
+                return n._id + "";
+            });
+            var url = urlPrint + "?ids=" + ids.join('&ids=') + "&project=" + projectPrint;
+            var myWindow = window.open(url, "_blank", "toolbar=no,titlebar=no,menubar=no,scrollbars=yes,resizable=no,top=0,left=386,width=1000,height=700");
+        } else {
+            DevExpress.ui.notify("No hay formalizaciones seleccionadas.", 'warning', 3000);
+        }
+    },
     instanceDataGrid: function (gridName, reportName, columns, showUser, source) {
         var dataGrid = $(gridName).dxDataGrid({
             dataSource: source,
             selection: {
-                mode: "none",
+                mode: allowPrint ? "multiple" : "none",
                 showCheckBoxesMode: "always",
                 selectAllMode: "allPages"
             },
@@ -132,6 +147,19 @@ var funcL = {
                             hint: "Borrar filtros",
                             onClick: function () {
                                 dataGrid.state(null);
+                            }
+                        }
+                    },
+                    {
+                        location: "after",
+                        widget: "dxButton",
+                        options: {
+                            icon: "print",
+                            hint: "Imprimir",
+                            visible: allowPrint,
+                            onClick: function () {
+                                var seleccion = dataGrid.option('selectedRowKeys');
+                                funcL.imprimirMultiple(seleccion);
                             }
                         }
                     }
@@ -257,6 +285,9 @@ var funcL = {
         allowExport = $('#allowExport').val() == 1;
         allowSeeValidate = $('#allowSeeValidate').val() == 1;
         allowLoadValidate = $('#allowLoadValidate').val() == 1;
+        allowPrint = $('#allowPrint').val() == 1;
+        urlPrint = $('#urlPrint').val();
+        projectPrint = $('#projectPrint').val();
 
         if (typeof myConfig !== "undefined") {
             for (var i = 0; i < myConfig.length; i++) {

@@ -178,8 +178,9 @@ namespace App_consulta.Controllers
                     var props = new Dictionary<string, Object>();
                     foreach (var param in mapParams)
                     {
-                        if (resultKobo[param.NameKobo] == null) { continue; }
-                        string valueTemp = (String)resultKobo[param.NameKobo];
+                        if ((param.FormType == KoField.TYPE_IMG || param.FormType == KoField.TYPE_FILE)
+                            && resultKobo[param.NameKobo] == null) { continue; }
+                        string valueTemp = resultKobo[param.NameKobo] != null ? (String)resultKobo[param.NameKobo] : null;
 
                         switch (param.NameDB)
                         {
