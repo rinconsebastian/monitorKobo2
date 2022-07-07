@@ -106,7 +106,7 @@ namespace App_consulta.Data
                  new IdentityRoleClaim<string>() { Id =20, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer", ClaimValue = "1"},
                  new IdentityRoleClaim<string>() { Id =21, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear", ClaimValue = "1"},
                  new IdentityRoleClaim<string>() { Id =22, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", ClaimValue = "1"},
-                 new IdentityRoleClaim<string>() { Id =23, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir", ClaimValue = "1"},
+                 new IdentityRoleClaim<string>() { Id =23, RoleId = "1", ClaimType= "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Cancelar", ClaimValue = "1"},
                 };
             modelBuilder.Entity<IdentityRoleClaim<string>>().HasData(policiesRol);
 

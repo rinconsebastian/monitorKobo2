@@ -1047,7 +1047,7 @@ namespace App_consulta.Migrations
                         new
                         {
                             Id = 23,
-                            ClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir",
+                            ClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Cancelar",
                             ClaimValue = "1",
                             RoleId = "1"
                         });
