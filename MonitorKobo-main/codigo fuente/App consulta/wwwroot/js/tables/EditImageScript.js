@@ -71,12 +71,12 @@ var funcImg = {
             funcImg.resetFilter();
             cropper.reset();
             funcImg.updateRotate(true);
-            
+
         });
     },
     //Save
     loadCropper: function () {
-       image = document.getElementById('image');
+        image = document.getElementById('image');
         cropper = new Cropper(image, {
             minContainerWidth: 450,
             minContainerHeight: 450,
@@ -85,12 +85,12 @@ var funcImg = {
             scalable: false,
             zoomable: true,
             zoomOnWheel: false,
-           toggleDragModeOnDblclick: false,
-           autoCrop: false,
-           ready() {
-               funcImg.changeStateBtns(true);
-               this.cropper.crop();
-           },
+            toggleDragModeOnDblclick: false,
+            autoCrop: false,
+            ready() {
+                funcImg.changeStateBtns(true);
+                this.cropper.crop();
+            },
         });
     },
     loadSave: function () {
@@ -100,7 +100,7 @@ var funcImg = {
 
             var canvas = document.querySelector("canvas");
             canvas.toBlob((blob) => {
-                
+
                 var formData = new FormData(formulario[0]);
                 var filename = $('#inputFilename').val();
 
@@ -118,10 +118,8 @@ var funcImg = {
                     success: function (data) {
                         if (data != null) {
                             if (data.success) {
-                                var d = new Date();
-                                $("#" + currentImg).attr("src", pathStorage + filename + "&time=" + d.getTime());
                                 $('#modalEditImage').modal('hide');
-                                funcGenerico.mostrarMensaje("Imagen actualizada correctamente", "success");
+                                funcImg.reloadImageOrFile(currentImg, filename, "Imagen actualizada correctamente.");
                                 cropper.destroy();
                             } else {
                                 $('#uploadingInfo').html('<div class="text-danger">' + data.message + '</div>');
@@ -140,8 +138,9 @@ var funcImg = {
             }, "image/jpeg"); //"image/webp"
         });
     },
-    //Modal
-    loadShowModal: function () {
+    //Load show modals
+    loadShowModals: function () {
+        //modal edit
         $('body').on('click', '.showEditModal', function (e) {
             var filename = $(this).data('filename');
             var d = new Date();
@@ -159,48 +158,72 @@ var funcImg = {
         $('#modalEditImage').on('hidden.bs.modal', function (e) {
             cropper.destroy();
             funcImg.changeStateBtns(false);
-        })
-    },
-    loadShowModalImage: function () {
+        });
+        //modal reset
         $('body').on('click', '.btn-image-reset', function (e) {
-            var filename = $(this).data('filename');
             var name = $(this).data('name');
-            var image = $(this).data('image');
+            var label = $(this).data('label');
+            var container = $(this).data('container');
 
-            $('#img-reset-name').html(name);
-            $('#BtnConfirmReset').data("filename", filename);
-            $('#BtnConfirmReset').data("image", image);
+            $('#img-reset-name').html(label);
+
+            $('#BtnConfirmReset').data("container", container);
             $('#BtnConfirmReset').data("name", name);
+            $('#BtnConfirmReset').data("label", label);
+
             $('#modalConfirmReset').modal('show');
         });
-
-        $('body').on('click', '.btn-image-load', function (e) {
-            var filename = $(this).data('filename');
+        //modal delete
+        $('body').on('click', '.btn-image-delete', function (e) {
             var name = $(this).data('name');
-            var image = $(this).data('image');
+            var label = $(this).data('label');
+            var container = $(this).data('container');
+
+            $('#img-delete-name').html(label);
+
+            $('#BtnConfirmDelete').data("container", container);
+            $('#BtnConfirmDelete').data("name", name);
+            $('#BtnConfirmDelete').data("label", label);
+
+            $('#modalConfirmDelete').modal('show');
+        });
+        //modal load file
+        $('body').on('click', '.btn-image-load', function (e) {
+            var name = $(this).data('name');
+            var label = $(this).data('label');
+            var container = $(this).data('container');
+            var type = $(this).data('type');
+
+            if (type == "img") {
+                $('#fileLoad').attr("accept", "image/png, image/gif, image/jpeg");
+            } else {
+                $('#fileLoad').attr("accept", "image/png, image/gif, image/jpeg, application/pdf, .zip");
+            }
 
             //Reset inputs
             $('#fileLoad').val('');
             $('#fileLoad').next('.custom-file-label').html('Seleccionar Archivo');
-            $('#inputFilenameLoad').val(filename);
-            $('#inputNameLoad').val(name);
+            $('#img-load-name').html(label);
 
-            $('#img-load-name').html(name);
-            $('#BtnConfirmLoad').data("image", image);
+            $('#inputNameLoad').val(name);
+            $('#BtnConfirmLoad').data("container", container);
+            $('#BtnConfirmLoad').data("label", label);
 
             $('#modalUploadImage').modal('show');
         });
     },
-    loadImageChange: function () {
+    //Manage files
+    loadFileUpload: function () {
         $('body').on('submit', '#formLoad', function (e) {
 
             e.preventDefault();
 
             var formulario = $(this).closest('form');
-            var button = $('#BtnConfirmLoad');
 
-            var filename = $('#inputFilenameLoad').val();
-            var image = button.data('image');
+            var button = $('#BtnConfirmLoad');
+            var container = button.data('container');
+            var label = button.data('label');
+
             $('#loadInfo').html('Cargando <img src="' + root + 'images/ajax-loader.gif">');
             button.find('i').addClass('fa-cog fa-spin');
             $('.btn-modal-load').attr('disabled', 'disabled');
@@ -219,10 +242,8 @@ var funcImg = {
                     $('#loadInfo').html('');
                     if (data != null) {
                         if (data.success) {
-                            var d = new Date();
-                            $("#" + image).attr("src", pathStorage + filename + "&time=" + d.getTime());
                             $('#modalUploadImage').modal('hide');
-                            funcGenerico.mostrarMensaje("Imagen se cargó correctamente", "success");
+                            funcImg.reloadImageOrFile(container, data.message, "Archivo '" + label + "'cargado correctamente.");
                         } else {
                             $('#loadInfo').html('<div class="alert alert-danger">' + data.message + '</div>');
                         }
@@ -243,11 +264,10 @@ var funcImg = {
         $('body').on('click', '#BtnConfirmReset', function (e) {
 
             var button = $(this);
-            var filename = $(this).data('filename');
-            var image = $(this).data('image');
+            var label = $(this).data('label');
+            var container = $(this).data('container');
             var name = $(this).data('name');
 
-            var idKobo = $('#IdKobo').val();
             var idValidation = $('#IdValidation').val();
             var idProject = $('#IdProject').val();
 
@@ -257,17 +277,15 @@ var funcImg = {
             button.find('i').addClass('fa-cog fa-spin');
             $('.btn-modal-reset').attr('disabled', 'disabled');
 
-            $.post(fullurl, { filename: filename, idKobo: idKobo, id: idValidation, idProject: idProject, name: name }).
+            $.post(fullurl, { id: idValidation, projectid: idProject, name: name }).
                 done(function (data) {
                     button.find('i').removeClass('fa-cog fa-spin');
                     $('.btn-modal-reset').removeAttr('disabled');
                     $('#resetInfo').html('');
                     if (data != null) {
                         if (data.success) {
-                            var d = new Date();
-                            $("#" + image).attr("src", pathStorage + filename + "&time=" + d.getTime());
                             $('#modalConfirmReset').modal('hide');
-                            funcGenerico.mostrarMensaje("Imagen restablecida correctamente", "success");
+                            funcImg.reloadImageOrFile(container, data.message, "Archivo '" + label + "' restablecido correctamente.");
                         } else {
                             $('#resetInfo').html('<div class="alert alert-danger">' + data.message + '</div>');
                         }
@@ -282,11 +300,51 @@ var funcImg = {
                 });
         });
     },
+    loadImageDelete: function () {
+        $('body').on('click', '#BtnConfirmDelete', function (e) {
+
+            var button = $(this);
+            var label = $(this).data('label');
+            var container = $(this).data('container');
+            var name = $(this).data('name');
+
+            var idValidation = $('#IdValidation').val();
+            var idProject = $('#IdProject').val();
+
+            var fullurl = root + "Validation/DeleteNewFile/";
+
+            $('#deleteInfo').html('Cargando <img src="' + root + 'images/ajax-loader.gif">');
+            button.find('i').addClass('fa-cog fa-spin');
+            $('.btn-modal-delete').attr('disabled', 'disabled');
+
+            $.post(fullurl, { id: idValidation, projectid: idProject, name: name }).
+                done(function (data) {
+                    button.find('i').removeClass('fa-cog fa-spin');
+                    $('.btn-modal-delete').removeAttr('disabled');
+                    $('#deleteInfo').html('');
+                    if (data != null) {
+                        if (data.success) {
+                            $('#modalConfirmDelete').modal('hide');
+                            funcImg.reloadImageOrFile(container, data.message, "Archivo '" + label + "' borrado correctamente.");
+                        } else {
+                            $('#deleteInfo').html('<div class="alert alert-danger">' + data.message + '</div>');
+                        }
+                    } else {
+                        $('#deleteInfo').html('<div class="alert alert-danger">Error en la respuesta del servidor.</div>');
+                    }
+
+                }).fail(function (data) {
+                    button.find('i').removeClass('fa-cog fa-spin');
+                    $('.btn-modal-delete').removeAttr('disabled');
+                    $('#deleteInfo').html('<div class="alert alert-danger">Error al solicitar la operación.</div>');
+                });
+        });
+    },
     //Load image canvas
     draw: function () {
         var canvas = document.querySelector("canvas"),
             ctx = canvas.getContext("2d");
-        
+
         canvas.width = this.width;
         canvas.height = this.height;
 
@@ -302,6 +360,28 @@ var funcImg = {
 
     },
     //Extra
+    reloadImageOrFile: function (id, newVal, text) {
+        if (newVal != null) {
+            var d = new Date();
+            var extension = newVal.substr((newVal.lastIndexOf('.') + 1));
+            if ($("img#" + id).length > 0) {
+                if (extension == 'jpg' || extension == 'png' || extension == 'jpeg') {
+                    $("#" + id).attr("src", pathStorage + newVal + "&time=" + d.getTime());
+                    $('#btn-edit_'+id).data("filename", newVal);
+                    funcGenerico.mostrarMensaje(text, "success");
+                    return;
+                }
+            } else if ($("embed#" + id).length > 0) {
+                if (extension == 'pdf') {
+                    $("#" + id).attr("src", pathStorage + newVal + "&time=" + d.getTime());
+                    funcGenerico.mostrarMensaje(text, "success");
+                    return;
+                }
+            }
+        }
+        $("div#cont_" + id).html("<div class='alert alert-success'><b>" + text + "</b><br>Recargue la página para ver los cambios.</div>");
+        funcGenerico.mostrarMensaje(" Recargue la página para ver los cambios.", "success");
+    },
     updateFilter: function () {
         var brightness = $('#brightness').val();
         var contrast = $('#contrast').val();
@@ -324,11 +404,11 @@ var funcImg = {
         if (bar) {
             $('#angle').val(rotate)
         }
-        $('#dataRotate').html(rotate + "°") ;
+        $('#dataRotate').html(rotate + "°");
     },
-    
+
     changeStateBtns: function (state) {
-        
+
         if (state) {
             $('.btn-img').removeAttr('disabled');
         } else {
@@ -337,7 +417,7 @@ var funcImg = {
     },
     cleanResult: function () {
         $('#uploadingInfo').html('');
-        $('.btn-save').attr('disabled','disabled');
+        $('.btn-save').attr('disabled', 'disabled');
         $('#result').html('<div class="preview">VISTA PREVIA</div>');
     },
     showSelectionFileInput: function () {
@@ -355,7 +435,7 @@ var funcImg = {
             var basic = $('#ck_bar').data('basic');
             var total = $('input.ck_field:checkbox').length;
             var selected = $('input.ck_field:checkbox:checked').length;
-            var percent = basic + ((100-basic)* selected/total);
+            var percent = basic + ((100 - basic) * selected / total);
 
             var tab = $(this).data('tab');
             $('#' + tab).removeClass('pill-complete');
@@ -379,7 +459,7 @@ var funcImg = {
             if (event.altKey && event.code === "KeyY") {
                 $('input.ck_field:checkbox').attr('checked', 'checked');
 
-                $('.pill-item').addClass('pill-complete');
+                $('.pill-item.not-null').addClass('pill-complete');
                 $('.ck_button').prop('disabled', false);
                 $('#ck_panel').attr('style', 'display:none !important');
 
@@ -427,14 +507,17 @@ var funcImg = {
         funcImg.loadReset();
         funcImg.loadSave();
         funcImg.loadColor();
-        funcImg.loadShowModal();
 
-        funcImg.loadShowModalImage();
+        //modals
+        funcImg.loadShowModals();
+        //files
         funcImg.loadImageReset();
-        funcImg.loadImageChange();
+        funcImg.loadFileUpload();
+        funcImg.loadImageDelete();
+
+        //Extra functions
         funcImg.LoadValidImages();
         funcImg.LoadSetAllValid();
-
         funcImg.showSelectionFileInput();
 
         //Load image

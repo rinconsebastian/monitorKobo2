@@ -51,9 +51,12 @@
                             <a class="nav-link active" id="home-tab" data-toggle="pill" href="#tab-home" role="tab" aria-controls="home" aria-selected="true">General</a>
                             @foreach (var field in fieldsFile)
                             {
+                                var valueItem = (String)Model.DynamicProperties[field.NameDB];
+                                if(valueItem != null) { 
                                 <a class="nav-link" id="@field.Id-tab" data-toggle="pill" href="#tab-@field.Id" role="tab" aria-controls="@field.NameDB" aria-selected="false">
                                     @field.Name
                                 </a>
+                                }
                             }
                         </div>
                     </div>
@@ -86,12 +89,16 @@
 
                             @foreach (var fileItem in fieldsFile)
                             {
-                                <div class="tab-pane fade" id="tab-@fileItem.Id" role="tabpanel" aria-labelledby="tab-@fileItem.Id">
-                                    <div class="text-center p-1">
-                                        <h5 class="text-uppercase mb-3">@fileItem.FormLabel</h5>
-                                        @await Component.InvokeAsync("File", new { file = Model.DynamicProperties[fileItem.NameDB], text = fileItem.FormLabel, key = Model.IdKobo, zoom = true })
+                                var valueItem = (String)Model.DynamicProperties[fileItem.NameDB];
+                                if (valueItem != null)
+                                {
+                                    <div class="tab-pane fade" id="tab-@fileItem.Id" role="tabpanel" aria-labelledby="tab-@fileItem.Id">
+                                        <div class="text-center p-1">
+                                            <h5 class="text-uppercase mb-3">@fileItem.FormLabel</h5>
+                                            @await Component.InvokeAsync("File", new { file = valueItem, text = fileItem.FormLabel, key = Model.IdKobo, zoom = true })
+                                        </div>
                                     </div>
-                                </div>
+                                }
                             }
 
                         </div>

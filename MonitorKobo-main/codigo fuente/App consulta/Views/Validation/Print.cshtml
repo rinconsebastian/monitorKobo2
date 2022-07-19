@@ -17,17 +17,17 @@
     }
 
     var disabled = ViewBag.Ids != "[]" ? "" : "disabled";
-    
+
     var estadosValidos = ViewBag.EstadosValidos;
     Dictionary<int, KoState> estados = ViewBag.Estados;
 
     List<KoField> fieldsText = ViewBag.fieldsText;
     List<KoField> fieldsImages = ViewBag.fieldsImages;
+    List<KoField> fieldsFiles = ViewBag.fieldsFiles;
 
     var firstImage = fieldsImages.Count > 0 ? fieldsImages[0] : null;
     var firstText = fieldsText.Count > 0 ? fieldsText[0] : null;
 
-    var firstPage = true;
 }
 
 <div class="row my-4 d-print-none ">
@@ -116,51 +116,110 @@
 
 @foreach (var registro in Model)
 {
-    if (!estadosValidos.Contains(registro.State)){continue;}
+    if (!estadosValidos.Contains(registro.State)) { continue; }
+    var firstPage = true;
     foreach (var fieldImage in fieldsImages)
     {
-        if (!registro.DynamicProperties.ContainsKey(fieldImage.NameDB)) { continue;  }
+        //Ingorar las cedulas impresas en la primera pagina
+        if (fieldImage.NameDB.Contains("cedula")) { continue; }
+
+        //Ignorar imagenes nulas
+        if (!registro.DynamicProperties.ContainsKey(fieldImage.NameDB) || registro.DynamicProperties[fieldImage.NameDB] == null) { continue; }
+        var valueFile = registro.DynamicProperties[fieldImage.NameDB];
+
         <div class="page-f d-none @(firstPage ? "d-print-block" : "pageExtra")">
             @await Html.PartialAsync("_FormalizacionPartial", project)
+            @{
+                var titleSection = fieldImage.PrintTitle.Substring(fieldImage.PrintTitle.IndexOf('.') + 1);
+            }
             @if (firstPage)
             {
                 <p class="font-weight-bold text-center">INFORMACIÓN GENERAL</p>
             }
-
-            <p class="text-justify">
-                <strong><i class="far fa-check-circle"></i> @fieldImage.PrintTitle</strong>
-            </p>
-
-            <table class="table table-bordered table-formalz  table-sm">
+            else
+            {
+                <p class="text-justify text-uppercase font-weight-lighter "> @titleSection</p>
+            }
+            <table class="table table-bordered table-formalz table-sm">
                 <tbody>
                     <tr>
                         <td class="font-weight-bold">Fecha de solicitud</td>
-                        <td>@(registro.DynamicProperties.ContainsKey("datetime") ? registro.DynamicProperties["datetime"]: "" )</td>
+                        <td colspan="2" class="middle">@(registro.DynamicProperties.ContainsKey("datetime") ? registro.DynamicProperties["datetime"]: "" )</td>
                         <td class="font-weight-bold">No. de registro</td>
-                        <td>@registro.IdKobo</td>
+                        <td colspan="2" class="resaltado">@registro.IdKobo</td>
                     </tr>
                     @if (firstPage)
                     {
-                        @foreach (var fieldText in fieldsText)
-                        {
-                            if (registro.DynamicProperties.ContainsKey(fieldText.NameDB))
+                        var columnCount = 0;
+                        <tr class="tr-text">
+                            @foreach (var fieldText in fieldsText)
                             {
-                                <tr>
-                                    <td class="font-weight-bold">@fieldText.PrintTitle</td>
-                                    <td colspan="3" class="text-uppercase">@registro.DynamicProperties[fieldText.NameDB]</td>
-                                </tr>
+                                if (registro.DynamicProperties.ContainsKey(fieldText.NameDB) && registro.DynamicProperties[fieldText.NameDB] != null)
+                                {
+                                    columnCount++;
+                                    <td class="font-weight-bold">@(fieldText.PrintTitle.Substring(fieldText.PrintTitle.IndexOf('.') + 1))</td>
+                                    <td colspan="2" class="text-uppercase middle @(columnCount % 2 == 0 ? "sc-val": "")">@registro.DynamicProperties[fieldText.NameDB]</td>
+                                    @Html.Raw(columnCount % 2 == 0 ? "</tr><tr class='tr-text'>" : "")
+                                }
+
                             }
-                        }
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold">Anexos</td>
+                            <td colspan="5">
+                                @foreach (var fieldFile in fieldsFiles)
+                                {
+                                    if (registro.DynamicProperties.ContainsKey(fieldFile.NameDB) && registro.DynamicProperties[fieldFile.NameDB] != null)
+                                    {
+                                        if (fieldFile.FormType == KoField.TYPE_FILE)
+                                        {
+                                            var ext = System.IO.Path.GetExtension((String)registro.DynamicProperties[fieldFile.NameDB]).Substring(1);
+                                            <span>●</span>
+                                            <span class="font-weight-lighter text-uppercase">[@ext]</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="mark-check">●</span>
+                                        }
+                                        <span>@(fieldFile.PrintTitle.Substring(fieldFile.PrintTitle.IndexOf('.') + 1))</span>
+                                        <br />
+                                    }
+                                }
+                            </td>
+                        </tr>
                     }
                     <tr>
                         <td class="font-weight-bold"> Nombre del formato</td>
-                        <td colspan="3">@fieldImage.PrintTitle</td>
+                        <td colspan="5">@titleSection<span class="font-weight-light">: documento original.</span></td>
                     </tr>
-                    <tr>
-                        <td colspan="4" class="text-center">
-                            @await Component.InvokeAsync("File", new { file = registro.DynamicProperties[fieldImage.NameDB], text = fieldImage.Name, css = "img-large" })
-                        </td>
-                    </tr>
+
+                    @if (firstPage)
+                    {
+                        <tr>
+                            <td colspan="3" rowspan="2" class="text-center">
+                                <span class="font-weight-light">Foto encuestado</span><br />
+                                @await Component.InvokeAsync("File", new { file = valueFile, text = fieldImage.Name, css = "img-medium" })
+                            </td>
+                            <td colspan="3" class="text-center">
+                                <span class="font-weight-light">Foto cédula encuestado (frontal)</span><br />
+                                @await Component.InvokeAsync("File", new { file = registro.DynamicProperties["foto_cedula_frontal"], text = "Cedula frontal", css = "img-small" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-center">
+                                <span class="font-weight-light">Foto cédula encuestado (reverso)</span><br />
+                                @await Component.InvokeAsync("File", new { file = registro.DynamicProperties["foto_cedula_reverso"], text = "Cedula reverso", css = "img-small" })
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                @await Component.InvokeAsync("File", new { file = valueFile, text = fieldImage.Name, css = "img-large" })
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
@@ -175,6 +234,9 @@
     <script>
         var myIdsPrint = @Html.Raw(ViewBag.Ids);
         var myProject = @project.Id;
+        $(document).ready(function () {
+            $("tr.tr-text:not(:has(td.sc-val)) > .middle").attr('colspan', 5);
+        });
     </script>
     <script type="text/javascript" src="~/js/tables/PrintFormalizacionScript.js?v=1.0"></script>
 }

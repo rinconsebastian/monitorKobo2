@@ -30,6 +30,15 @@ p {
     object-fit: cover;
 }
 
+.resaltado {
+    font-family: Courier, "Lucida Console", monospace;
+    color: darkblue;
+    font-weight: 600;
+    font-size:20px;
+    text-align: center;
+    line-height: normal;
+}
+
 
 @media print {
 
@@ -52,10 +61,17 @@ p {
     }
 
     .img-small {
-        max-height: 5in;
+        max-height: 2.7in;
         object-fit: contain;
         max-width: 100%;
     }
+
+    .img-medium {
+        max-height: 5.4in;
+        object-fit: contain;
+        max-width: 100%;
+    }
+
 
     /* Tablas */
     .table-formalz {
@@ -68,6 +84,14 @@ p {
 
     .table tbody + tbody {
         border-top: none;
+    }
+
+    .table tr td {
+      line-height: normal;
+    }
+
+    .table tr td.middle {
+        vertical-align: middle;
     }
 }
 

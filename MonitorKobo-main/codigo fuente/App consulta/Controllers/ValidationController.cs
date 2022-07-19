@@ -39,7 +39,6 @@ namespace App_consulta.Controllers
             _env = env;
         }
 
-
         [Authorize(Policy = "Registro.Validar")]
         [HttpPost]
         public async Task<IActionResult> Load(string id, int project)
@@ -84,8 +83,13 @@ namespace App_consulta.Controllers
                 HttpContext.Session.Remove("error");
             }
 
+            var allFields = await db.KoField.Where(n => n.IdProject == project && n.ShowForm).ToListAsync();
+
+            //Agregar ubicación simple 
+            await AddLocation(allFields, item.DynamicProperties);
+
             var keysExists = item.DynamicProperties.Keys.ToList();
-            var fields = await db.KoField.Where(n => n.IdProject == project && n.ShowForm && keysExists.Contains(n.NameDB)).ToListAsync();
+            var fieldsValids = allFields.Where(n => keysExists.Contains(n.NameDB)).ToList();
 
             var validStates = new List<int> { 
                 KoField.TYPE_TEXT, 
@@ -94,12 +98,14 @@ namespace App_consulta.Controllers
                 KoField.TYPE_SELECT_EXTRA
             };
 
-            var fieldsText = fields.Where(n => validStates.Contains(n.FormType)).OrderBy(n => n.FormOrder).ToList();
+            var fieldsText = fieldsValids.Where(n => validStates.Contains(n.FormType)).OrderBy(n => n.FormOrder).ToList();
             ViewBag.fieldsText = fieldsText;
 
-            var fieldsFile = fields.Where(n => n.FormType == KoField.TYPE_IMG || n.FormType == KoField.TYPE_FILE)
+            var fieldsFile = fieldsValids.Where(n => n.FormType == KoField.TYPE_IMG || n.FormType == KoField.TYPE_FILE)
                 .OrderBy(n => n.FormOrder).ToList();
             ViewBag.fieldsFile = fieldsFile;
+
+            
 
             var estado = await db.KoDataState.FindAsync(item.State);
             ViewBag.estado = estado;
@@ -162,9 +168,14 @@ namespace App_consulta.Controllers
                 HttpContext.Session.Remove("error");
             }
 
-            //Campos dinamicos
+            var allFields = await db.KoField.Where(n => n.IdProject == project && n.ShowForm).ToListAsync();
+
+            //Agregar ubicación simple 
+            await AddLocation(allFields, item.DynamicProperties);
+
             var keysExists = item.DynamicProperties.Keys.ToList();
-            var fields = await db.KoField.Where(n => n.IdProject == project && n.ShowForm && keysExists.Contains(n.NameDB)).ToListAsync();
+            var fieldsValids = allFields.Where(n => keysExists.Contains(n.NameDB)).ToList();
+
 
             var validStates = new List<int> {
                 KoField.TYPE_TEXT,
@@ -173,10 +184,10 @@ namespace App_consulta.Controllers
                 KoField.TYPE_SELECT_EXTRA
             };
 
-            var fieldsText = fields.Where(n => validStates.Contains(n.FormType)).OrderBy(n => n.FormOrder).ToList();
+            var fieldsText = fieldsValids.Where(n => validStates.Contains(n.FormType)).OrderBy(n => n.FormOrder).ToList();
             ViewBag.fieldsText = fieldsText;
 
-            var fieldsFile = fields.Where(n => n.FormType == KoField.TYPE_IMG || n.FormType == KoField.TYPE_FILE)
+            var fieldsFile = fieldsValids.Where(n => n.FormType == KoField.TYPE_IMG || n.FormType == KoField.TYPE_FILE)
                 .OrderBy(n => n.FormOrder).ToList();
             ViewBag.fieldsFile = fieldsFile;
 
@@ -188,7 +199,7 @@ namespace App_consulta.Controllers
             ViewBag.Coordinaciones = new SelectList(await db.Responsable.Where(n => n.Nombre.StartsWith("[CDR]")).OrderBy(n => n.Nombre).ToListAsync(), "Id", "Nombre", item.IdResponsable);
             ViewBag.Estados = new SelectList(await db.KoDataState.Where(n => n.Id > 2).ToListAsync(), "Id", "Label", item.State);
 
-            var variables = await db.KoVariable.ToListAsync(); 
+            var variables = await db.KoVariable.ToListAsync();
             ViewBag.Variables = variables.GroupBy(n => n.Group).ToDictionary(n => n.Key, n => n.ToList());
 
             return View(item);
@@ -204,13 +215,21 @@ namespace App_consulta.Controllers
             ViewBag.project = projectObj;
 
             //Registros para log
-            var orginal = await mdb.FindViewModel(projectObj.Collection, item.Id);
-            var nuevo = new KoDataViewModel(orginal.Id, orginal.IdKobo, orginal.State, orginal.User, orginal.DynamicProperties, orginal.IdResponsable);
-
+            var original = await mdb.FindViewModel(projectObj.Collection, item.Id);
+           
             //Consulta los parametros editables
-            var keysExists = orginal.DynamicProperties.Keys.ToList();
-            var fields = await db.KoField.Where(n => n.IdProject == project && n.ShowForm && keysExists.Contains(n.NameDB)).ToListAsync();
+            var allFields = await db.KoField.Where(n => n.IdProject == project && n.ShowForm).ToListAsync();
 
+            //Agregar ubicación simple 
+            await AddLocation(allFields, original.DynamicProperties);
+
+            var nuevo = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.DynamicProperties, original.IdResponsable);
+
+
+            var keysExists = original.DynamicProperties.Keys.ToList();
+            var fieldsValids = allFields.Where(n => keysExists.Contains(n.NameDB)).ToList();
+
+         
             var validStates = new List<int> {
                 KoField.TYPE_TEXT,
                 KoField.TYPE_SELECT_ONE,
@@ -218,7 +237,7 @@ namespace App_consulta.Controllers
                 KoField.TYPE_SELECT_EXTRA
             };
 
-            var fieldsText = fields.Where(n => validStates.Contains(n.FormType)).OrderBy(n => n.FormOrder).ToList();
+            var fieldsText = fieldsValids.Where(n => validStates.Contains(n.FormType)).OrderBy(n => n.FormOrder).ToList();
             var fieldsEditables = fieldsText.Where(n => n.Editable).Select(n => n.NameDB).ToList();
 
             if (ModelState.IsValid)
@@ -253,8 +272,8 @@ namespace App_consulta.Controllers
                 if (save)
                 {
                     var log = new Logger(db);
-                    var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "Edit", Modelo = projectObj.ValidationName, ValAnterior = orginal, ValNuevo = nuevo };
-                    await log.RegistrarProps(registro, typeof(KoDataViewModel), Int32.Parse(orginal.IdKobo));
+                    var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "Edit", Modelo = projectObj.ValidationName, ValAnterior = original, ValNuevo = nuevo };
+                    await log.RegistrarProps(registro, typeof(KoDataViewModel), Int32.Parse(original.IdKobo));
 
                     HttpContext.Session.SetComplex("error", "Los datos fueron actualizados correctamente.");
                     return RedirectToAction("Edit", new { id = item.Id, project });
@@ -264,16 +283,16 @@ namespace App_consulta.Controllers
 
             ViewBag.fieldsText = fieldsText;
 
-            var fieldsFile = fields.Where(n => n.FormType == KoField.TYPE_IMG || n.FormType == KoField.TYPE_FILE)
+            var fieldsFile = fieldsValids.Where(n => n.FormType == KoField.TYPE_IMG || n.FormType == KoField.TYPE_FILE)
                 .OrderBy(n => n.FormOrder).ToList();
             ViewBag.fieldsFile = fieldsFile;
 
-            var estado = await db.KoDataState.FindAsync(orginal.State);
+            var estado = await db.KoDataState.FindAsync(original.State);
             ViewBag.estado = estado;
 
-            ViewBag.Coordinaciones = new SelectList(await db.Responsable.Where(n => n.Nombre.StartsWith("[CDR]")).OrderBy(n => n.Nombre).ToListAsync(), "Id", "Nombre", orginal.IdResponsable);
-            ViewBag.Estados = new SelectList(await db.KoDataState.ToDictionaryAsync(n => n.Id, n => n.Label), "Id", "Label", orginal.State);
-
+            ViewBag.Coordinaciones = new SelectList(await db.Responsable.Where(n => n.Nombre.StartsWith("[CDR]")).OrderBy(n => n.Nombre).ToListAsync(), "Id", "Nombre", original.IdResponsable);
+            ViewBag.Estados = new SelectList(await db.KoDataState.ToDictionaryAsync(n => n.Id, n => n.Label), "Id", "Label", original.State);
+            
             return View(item);
         }
 
@@ -288,12 +307,12 @@ namespace App_consulta.Controllers
             if (projectObj == null || !projectObj.Validable) { r.Message = "Proyecto no encontrado."; return r; }
             ViewBag.project = projectObj;
 
-            var orginal = await mdb.FindViewModel(projectObj.Collection, id);
-            if (orginal == null) { r.Message = "Registro no encontrado."; return r; }
+            var original = await mdb.FindViewModel(projectObj.Collection, id);
+            if (original == null) { r.Message = "Registro no encontrado."; return r; }
 
             try
             {
-                var item = new KoDataViewModel(orginal.Id, orginal.IdKobo, orginal.State, orginal.User, orginal.DynamicProperties, orginal.IdResponsable);
+                var item = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.DynamicProperties, original.IdResponsable);
 
                 var user = await userManager.FindByNameAsync(User.Identity.Name);
                 var update = Builders<KoExtendData>.Update.Set("edit_user", user.Id);
@@ -313,7 +332,7 @@ namespace App_consulta.Controllers
 
                     var log = new Logger(db);
                     var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "ChangeStatus",
-                        Modelo = projectObj.ValidationName, ValAnterior = orginal, ValNuevo = item };
+                        Modelo = projectObj.ValidationName, ValAnterior = original, ValNuevo = item };
                     await log.RegistrarProps(registro, typeof(KoDataViewModel), Int32.Parse(item.IdKobo));
 
                     r.Success = true;
@@ -346,11 +365,51 @@ namespace App_consulta.Controllers
             //Campos dinamicos 
             var fields = await db.KoField.Where(n => n.IdProject == project && n.ShowPrint).ToListAsync();
 
-            var fieldsText = fields.Where(n => n.FormType != KoField.TYPE_IMG).OrderBy(n => n.PrintTitle).ToList();
+            var fieldsText = fields.Where(n => n.FormType != KoField.TYPE_IMG && n.FormType != KoField.TYPE_FILE)
+                .OrderBy(n => n.PrintTitle).ToList();
             ViewBag.fieldsText = fieldsText;
 
             var fieldsImages = fields.Where(n => n.FormType == KoField.TYPE_IMG).OrderBy(n => n.PrintTitle).ToList();
             ViewBag.fieldsImages = fieldsImages;
+
+            var fieldsFiles= fields.Where(n => (n.FormType == KoField.TYPE_FILE || n.FormType == KoField.TYPE_IMG)
+                   && !n.NameDB.Contains("cedula") && n.NameDB != "foto_encuestado")
+                .OrderBy(n => n.PrintTitle).ToList();
+            ViewBag.fieldsFiles = fieldsFiles;
+
+            //Agregar ubicación multiple
+            Dictionary<String, LocationViewModel> locations = new();
+            var fieldsTextName = fieldsText.Select(n => n.NameDB).ToList();
+            if (fieldsTextName.Contains("location"))
+            {
+                var codesLocation = new List<string>();
+                foreach (var item in items)
+                {
+                    codesLocation.Add((String)item.DynamicProperties["location"]);
+                }
+                codesLocation = codesLocation.Distinct().ToList();
+                locations = await db.Location.Where(n => codesLocation.Contains(n.Code2))
+                    .Select(n => new LocationViewModel
+                    {
+                        Code = n.Code2,
+                        Name = n.Name,
+                        Parent = n.LocationParent != null ? n.LocationParent.Name : ""
+                    }).ToDictionaryAsync(n => n.Code, n => n);
+
+                foreach(var item in items)
+                {
+                    if (item.DynamicProperties.ContainsKey("location"))
+                    {
+                        var locationItem = (String)item.DynamicProperties["location"];
+                        if (locations.ContainsKey(locationItem))
+                        {
+                            var aux = locations[locationItem];
+                            item.DynamicProperties["location"] = aux.Name;
+                            item.DynamicProperties.Add("location_level", aux.Parent);
+                        }
+                    }
+                }
+            }
 
             return View(items);
         }
@@ -415,14 +474,109 @@ namespace App_consulta.Controllers
 
         [HttpPost]
         [Authorize(Policy = "Registro.Imagen.Cambiar")]
-        public async Task<IActionResult> LoadImage(IFormFile file, string filename, string item = "", string name = "", string project = "Validation")
+        public async Task<IActionResult> LoadFile(IFormFile file, string id, int projectid, string name)
         {
-            var r = await UpdateFile(file, filename);
+            var r = new RespuestaAccion();
 
-            var log = new Logger(db);
-            var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "LoadFile", Modelo = project + " " + item, ValAnterior = "", ValNuevo = name + ": " + filename };
-            await log.RegistrarDirecto(registro);
+            var project = await db.KoProject.FindAsync(projectid);
+            if (project == null || !project.Validable) { r.Message = "Error: proyecto no encontrado."; return Json(r); }
 
+            var item = await mdb.Find(project.Collection, id);
+            if (item == null) { r.Message = "Error: Item no encontrado."; return Json(r); }
+
+            string filename = null;
+            if (item.DynamicProperties.ContainsKey(name))
+                filename = item.DynamicProperties[name] != null ? (String)item.DynamicProperties[name] : null;
+            
+            var actionNew = false;
+            if (filename == null)
+            {
+                var extension = (Path.GetExtension(file.FileName)).ToLower();
+                filename = Path.Combine(project.Collection, item.IdKobo, name + extension);
+                actionNew = true;
+            }
+            r = await UpdateFile(file, filename);
+
+            if (r.Success)
+            {
+                var user = await userManager.FindByNameAsync(User.Identity.Name);
+                var update = Builders<KoExtendData>.Update.Set("edit_user", user.Id);
+                var datetime = DateTime.Now;
+                update = update.Set("edit_date", datetime);
+                update = update.Set(name, r.Message);
+
+                var filter = Builders<KoExtendData>.Filter.Eq(n => n.Id, item.Id);
+                var save = await mdb.Update(project.Collection, update, filter);
+
+                if (save)
+                {
+                    r.Success = true;
+                    var log = new Logger(db);
+                    var registro = new RegistroLog
+                    {
+                        Usuario = User.Identity.Name,
+                        Accion = actionNew ? "LoadNewFile" : "LoadFile",
+                        Modelo = project.ValidationName + " " + item.IdKobo,
+                        ValAnterior = actionNew ? "" : name + ": " + filename,
+                        ValNuevo = name + ": " + r.Message
+                    };
+                    await log.RegistrarDirecto(registro);
+                }
+                else { r.Message = "No fue posible actualizar el registro asociado al archivo."; return Json(r); }
+            }
+            return Json(r);
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "Registro.Imagen.Cambiar")]
+        public async Task<IActionResult> DeleteNewFile(string id, int projectid, string name)
+        {
+            var r = new RespuestaAccion();
+
+            var project = await db.KoProject.FindAsync(projectid);
+            if (project == null || !project.Validable) { r.Message = "Error: proyecto no encontrado."; return Json(r); }
+
+            var item = await mdb.Find(project.Collection, id);
+            if (item == null) { r.Message = "Error: Item no encontrado."; return Json(r); }
+
+            string filename = null;
+            if (item.DynamicProperties.ContainsKey(name))
+                filename = item.DynamicProperties[name] != null ? (String)item.DynamicProperties[name] : null;
+
+            if (filename != null)
+            {
+                string filepath = Path.Combine(_env.ContentRootPath, "Storage", filename);
+                if (System.IO.File.Exists(filepath))
+                {
+                    System.IO.File.Delete(filepath);
+
+                    var user = await userManager.FindByNameAsync(User.Identity.Name);
+                    var update = Builders<KoExtendData>.Update.Set("edit_user", user.Id);
+                    var datetime = DateTime.Now;
+                    update = update.Set("edit_date", datetime);
+                    update = update.Set(name, MongoDB.Bson.BsonNull.Value);
+
+                    var filter = Builders<KoExtendData>.Filter.Eq(n => n.Id, item.Id);
+                    var save = await mdb.Update(project.Collection, update, filter);
+                    if (save)
+                    {
+                        r.Success = true;
+                        var log = new Logger(db);
+                        var registro = new RegistroLog
+                        {
+                            Usuario = User.Identity.Name,
+                            Accion = "DeleteNewFile",
+                            Modelo = project.ValidationName + " " + item.IdKobo,
+                            ValAnterior = name + ": " + filename,
+                            ValNuevo = ""
+                        };
+                        await log.RegistrarDirecto(registro);
+                    }
+                    else { r.Message = "No fue posible actualizar el registro asociado al archivo."; return Json(r); }
+                }
+                else { r.Message = "Error: El archivo no es válido."; }
+            }
+            else { r.Message = "Error: Archivo no encontrado."; }
             return Json(r);
         }
 
@@ -433,17 +587,23 @@ namespace App_consulta.Controllers
             if (file != null && file.Length > 0)
             {
                 string filepath = Path.Combine(_env.ContentRootPath, "Storage", filename);
+                //busca y elimina el archivo actual
                 if (System.IO.File.Exists(filepath))
                 {
                     System.IO.File.Delete(filepath);
                 }
-
+                //actualiza la extensión 
+                var extension = (Path.GetExtension(file.FileName)).ToLower();
+                if(extension != "")
+                    filepath = Path.ChangeExtension(filepath, extension);
+                //carga el nuevo archivo
                 try
                 {
                     using (var fileStream = new FileStream(filepath, FileMode.Create))
                     {
                         await file.CopyToAsync(fileStream);
                     }
+                    r.Message = Path.ChangeExtension(filename, extension);
                     r.Success = true;
                 }
                 catch (Exception e) { r.Message = "Error: " + e.Message; }
@@ -452,5 +612,27 @@ namespace App_consulta.Controllers
             else { r.Message = "Error: El archivo no es válido."; }
             return r;
         }
+
+        private async Task AddLocation(List<KoField> fields, IDictionary<string, object> DynamicProperties)
+        {
+            var fieldsTextName = fields.Select(n => n.NameDB).ToList();
+            if (fieldsTextName.Contains("location"))
+            {
+                var codeLocation = (String)DynamicProperties["location"];
+                var location = await db.Location.Where(n => n.Code2 == codeLocation)
+                    .Select(n => new LocationViewModel
+                    {
+                        Name = n.Name,
+                        Parent = n.LocationParent != null ? n.LocationParent.Name : ""
+                    }).FirstOrDefaultAsync();
+
+                if (location != null)
+                {
+                    DynamicProperties["location"] = location.Name;
+                    DynamicProperties.Add("location_level", location.Parent);
+                }
+            }
+        }
+
     }
 }

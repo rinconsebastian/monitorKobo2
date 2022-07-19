@@ -26,8 +26,10 @@ var funcPrint = {
             var value = $('input#print_ck:checkbox:checked').length;
             if (value == 1) {
                 $('.pageExtra').removeClass('d-print-block');
+                $('.mark-check').html("●");
             } else {
                 $('.pageExtra').addClass('d-print-block');
+                $('.mark-check').html("✓");
             }
         });
     },

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -42,31 +43,74 @@ namespace App_consulta.Controllers
 
         [HttpPost]
         [Authorize(Policy = "Registro.Imagen.Restablecer")]
-        public async Task<RespuestaAccion> ResetImage(string filename, string idKobo, int idProject, string name = "")
+        public async Task<RespuestaAccion> ResetImage(string id, int projectid, string name)
         {
             var r = new RespuestaAccion();
 
+            var project = await db.KoProject.FindAsync(projectid);
+            if (project == null || !project.Validable) { r.Message = "Error: proyecto no encontrado."; return r; }
+
+            var item = await mdb.Find(project.Collection, id);
+            if (item == null) { r.Message = "Error: Item no encontrado."; return r; }
+
             try
             {
-                var _fileName = Path.GetFileName(filename);
-
-                var project = await db.KoProject.FindAsync(idProject);
+                //Variables path
                 var remoteUri = project.KoboAttachment + project.KoboUsername + "/attachments/";
-                var _path = Path.Combine(_env.ContentRootPath, "Storage", project.Collection, idKobo);
+                var pathStorage = Path.Combine(_env.ContentRootPath, "Storage");
+                
+                //Borra el archivo actual
+                var currentFile = "";
+                if (item.DynamicProperties.ContainsKey(name))
+                {
+                    if (item.DynamicProperties[name] != null)
+                    {
+                        currentFile =  (String)item.DynamicProperties[name];
+                        var currentPath = Path.Combine(pathStorage, currentFile);
+                        if (System.IO.File.Exists(currentPath))
+                            System.IO.File.Delete(currentPath);                       
+                    }   
+                }
+                
+               
+                //Carga el archivo desde reset
+                var resetName = "reset_" + name;
+                var _fileName = item.DynamicProperties.ContainsKey(resetName) ? item.DynamicProperties[resetName] : null;
+                if (_fileName == null) { r.Message = "Error: Campo no encontrado."; return r; }
+                var filename = (String)_fileName;
 
-                DownloadFile(remoteUri, _fileName, _path, "", project.KoboApiToken);
+                var _path = Path.Combine(_env.ContentRootPath, "Storage", project.Collection, item.IdKobo);
+                var _relative = Path.Combine(project.Collection, item.IdKobo);
 
-                r.Success = true;
+                var resultFile = DownloadFile(remoteUri, filename, _path, _relative, project.KoboApiToken);
+                if(resultFile == ""){ r.Message = "Error: No fue posible guardar los cambios."; return r; }
 
-                var log = new Logger(db);
-                var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "ResetImage", Modelo = project.ValidationName + " " + idKobo, ValAnterior = "", ValNuevo = name + ": " + filename };
-                await log.RegistrarDirecto(registro);
+                //actualiza el campo
+                var user = await userManager.FindByNameAsync(User.Identity.Name);
+                var update = Builders<KoExtendData>.Update.Set("edit_user", user.Id);
+                var datetime = DateTime.Now;
+                update = update.Set("edit_date", datetime);
+                update = update.Set(name, resultFile);
 
+                var filter = Builders<KoExtendData>.Filter.Eq(n => n.Id, item.Id);
+                var save = await mdb.Update(project.Collection, update, filter);
+                if (save) {
+                    r.Success = true;
+                    r.Message = resultFile;
+
+                    var log = new Logger(db);
+                    var registro = new RegistroLog
+                    {
+                        Usuario = User.Identity.Name,
+                        Accion = "ResetFile",
+                        Modelo = project.ValidationName + " " + item.IdKobo,
+                        ValAnterior = name + ": " + currentFile,
+                        ValNuevo = name + ": " + resultFile
+                    };
+                    await log.RegistrarDirecto(registro);
+                }
             }
-            catch (Exception e)
-            {
-                r.Message = e.Message;
-            }
+            catch (Exception e){r.Message = e.Message;}
 
             return r;
         }
@@ -178,8 +222,6 @@ namespace App_consulta.Controllers
                     var props = new Dictionary<string, Object>();
                     foreach (var param in mapParams)
                     {
-                        if ((param.FormType == KoField.TYPE_IMG || param.FormType == KoField.TYPE_FILE)
-                            && resultKobo[param.NameKobo] == null) { continue; }
                         string valueTemp = resultKobo[param.NameKobo] != null ? (String)resultKobo[param.NameKobo] : null;
 
                         switch (param.NameDB)
@@ -192,7 +234,18 @@ namespace App_consulta.Controllers
                                 break;
                             default:
                                 
-                                props.Add(param.NameDB, MapValue(valueTemp, param.FormGroupSelect, allMapValues));
+                                if(param.FormType == KoField.TYPE_IMG || param.FormType == KoField.TYPE_FILE)
+                                {
+                                    props.Add(param.NameDB, valueTemp);
+                                    if(valueTemp != null)
+                                    {
+                                        props.Add("reset_"+param.NameDB, valueTemp);
+                                    }
+                                }
+                                else
+                                {
+                                    props.Add(param.NameDB, MapValue(valueTemp, param.FormGroupSelect, allMapValues));
+                                }
                                 break;
                         }
                     }
@@ -209,7 +262,7 @@ namespace App_consulta.Controllers
 
                 result = (KoExtendData)encuestas[0];
             }
-            catch (HttpRequestException e) { r.Message = e.Message; return r; }
+            catch (Exception e) { r.Message = e.Message; return r; }
 
             if (result != null)
             {

@@ -1309,6 +1309,38 @@ input[type="file"] {
 }
 
 /*NAV PILL ACTIVE/*/
+
+.nav-pills .nav-link.pill-null {
+    color: darkgrey;
+}
+
+    .nav-pills .nav-link.pill-null.active {
+        color: #fff;
+        background-color: #888888;
+        border-color: #888888;
+    }
+
+.nav-pills .nav-link.pill-optional {
+    color: #f0ad4e;
+}
+
+    .nav-pills .nav-link.pill-optional.active {
+        color: #fff;
+        background-color: #f0ad4e;
+        border-color: #f0ad4e;
+    }
+
+    .nav-pills .nav-link.pill-optional.pill-complete {
+        color: #889a43;
+    }
+
+        .nav-pills .nav-link.pill-optional.pill-complete.active {
+            color: #fff;
+            background-color: #889a43;
+            border-color: #889a43;
+        }
+
+
 .nav-pills .nav-link.pill-complete {
     color: #28a745;
 }
@@ -1316,5 +1348,5 @@ input[type="file"] {
     .nav-pills .nav-link.pill-complete.active {
         color: #fff;
         background-color: #218838;
-        border-color: #1e7e34;
+        border-color: #218838;
     }

@@ -204,7 +204,7 @@ namespace App_consulta.Controllers
             //Consulta los datos filtrados
 
             var filter = userCode != null ? Builders<BsonDocument>.Filter.Eq("user", userCode) : Builders<BsonDocument>.Filter.In("user", cedulasEncuestadores);
-           
+            //filter = Builders<BsonDocument>.Filter.Ne("user", BsonNull.Value);
             if (fields.Contains("location"))
                 filter &= Builders<BsonDocument>.Filter.Ne("location", BsonNull.Value);
             if (isValidable)
@@ -227,7 +227,7 @@ namespace App_consulta.Controllers
                         codesLocation.Add((String)item["location"]);
                     }
                     codesLocation = codesLocation.Distinct().ToList();
-                    var locationss = await db.Location.Where(n => codesLocation.Contains(n.Code2))
+                    locations = await db.Location.Where(n => codesLocation.Contains(n.Code2))
                         .Select(n => new LocationViewModel
                         {
                             Code = n.Code2,
