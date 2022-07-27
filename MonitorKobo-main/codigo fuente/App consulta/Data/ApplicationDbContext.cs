@@ -35,6 +35,9 @@ namespace App_consulta.Data
         public DbSet<KoField> KoField { get; set; }
         public DbSet<KoVariable> KoVariable { get; set; }
         public DbSet<KoState> KoDataState { get; set; }
+        
+        public DbSet<AquacultureField> AquacultureField { get; set; }
+        public DbSet<AquacultureVariable> AquacultureVariable { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -74,6 +77,9 @@ namespace App_consulta.Data
 
                 new Policy() { id = 21, nombre = "Crear solicitudes", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear", group = 7  },
                 new Policy() { id = 22, nombre = "Administrar solicitudes", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", group = 7  },
+
+                new Policy() { id = 24, nombre = "Informe acuicultura", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Listado", group = 8  },
+                new Policy() { id = 25, nombre = "Imprimir acuicultura", claim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Imprimir", group = 8  },
                 };
             modelBuilder.Entity<Policy>().HasData(policies);
 

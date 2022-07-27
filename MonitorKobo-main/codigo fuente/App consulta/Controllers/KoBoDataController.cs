@@ -125,7 +125,7 @@ namespace App_consulta.Controllers
             var lineBreak = "";
 
             var projects = await db.KoProject.ToListAsync();
-
+            
             foreach (var project in projects)
             {
                 var resp = await LoadDataFromKobo(project);
@@ -134,6 +134,12 @@ namespace App_consulta.Controllers
                 else { error += lineBreak + r.Message; }
                 lineBreak = "<br>";
             }
+            
+            //Load acuicultura
+            var respA = await LoadAquaculture(2);
+            var rA = ExecUpdateData(respA);
+            if (rA.Success) { accion += lineBreak + rA.Message; }
+            else { error += lineBreak + rA.Message; }
 
             ViewBag.Error = error;
             ViewBag.Accion = accion;
@@ -399,6 +405,151 @@ namespace App_consulta.Controllers
             return resp;
         }
 
+        private async Task<string> LoadAquaculture(int projectId)
+        {
+            string r = "";
+
+            var project2 = await db.KoProject.FindAsync(projectId);
+            if (project2 == null) { return "ERROR: datos de configuración no encontrados."; }
+
+            var maxId = await mdb.MaxIdKobo("aquaculture");
+
+            var fields = await db.AquacultureField.Where(n => n.NameKobo != null).ToListAsync();
+
+            var listParams = fields.Where(n => n.IdParent == null).Select(n => n.NameKobo).ToArray();
+            var fieldsParent = fields.Where(n => n.IdParent == null).ToList();
+            var fieldsChild = fields.Where(n => n.IdParent != null).GroupBy(n => n.IdParent)
+                .ToDictionary(n => n.Key, n => n);
+
+            var valuesQuery = await db.AquacultureVariable.ToListAsync();
+            var allMapValues = valuesQuery.GroupBy(n => n.Group)
+                .ToDictionary(n => n.Key, n => n.ToDictionary(k => k.Key, k => k.Value));
+
+
+            //Url de consulta para kobo
+            var paramsString = JsonConvert.SerializeObject(listParams);
+            var paramsString2 = "['" + String.Join("','", listParams) + "']";
+            paramsString2 = paramsString2.Replace("'", "\"");
+
+            var sort = "&sort=%7B%22_id%22%3A1%7D";
+            var limit = "&limit=1000";
+
+            var userField = fields.Where(n => n.NameDB == "user").Select(n => n.NameKobo).FirstOrDefault();
+            var queryFull = maxId != null ? "&query={'_id':{'$gt':" + maxId + "},'"+ userField + "':{'$exists':1}}" : "&query={'" + userField+ "': {'$exists':1}}";
+            var query = queryFull.Replace("'", "\"");
+
+
+            var url = project2.KoboKpiUrl + "/assets/" + project2.KoboAssetUid + "/submissions/?format=json"
+                //+ "&fields=" + HttpUtility.UrlEncode(paramsString)
+                + "&fields=" + paramsString2
+                + sort + query + limit;
+
+            //Listado resultado
+            List<KoGenericData> encuestas = new();
+            try
+            {
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Add("Authorization", "Token " + project2.KoboApiToken);
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                dynamic data = JsonConvert.DeserializeObject(responseBody);
+
+                if (data != null) {
+                    foreach (var result in data)
+                    {
+                        var dataItem = new KoGenericData();
+                        var props = new Dictionary<string, Object>();
+                        var state = KoGenericData.ESTADO_BORRADOR;
+
+                        foreach (var param in fieldsParent)
+                        {
+                            if(result[param.NameKobo] != null)
+                            {
+                                switch (param.Type)
+                                {
+                                    case 1:
+                                    case 4:
+                                    case 5:
+                                        props.Add(param.NameDB, (String)result[param.NameKobo]);
+                                        break;
+                                    case 2:
+                                        props.Add(param.NameDB, MapValue((String)result[param.NameKobo], param.GroupMap, allMapValues));
+                                        break;
+                                    case 3:
+                                        var listAux = new List<string>();
+                                        var splitList = ((String)result[param.NameKobo]).Split(' ');
+                                        foreach (var a in splitList)
+                                            listAux.Add(MapValue(a, param.GroupMap, allMapValues));
+                                        props.Add(param.NameDB, listAux);
+                                        break;
+                                    case 6:
+                                        var arrayGroup = new List<Dictionary<string, object>>();
+                                        foreach (var subresul in result[param.NameKobo])
+                                        {
+                                            var subProp = new Dictionary<string, object>();
+                                            foreach (var subparam in fieldsChild[param.Id])
+                                            {
+                                                if (subresul[subparam.NameKobo] != null)
+                                                {
+                                                    var valueAux = (String)subresul[subparam.NameKobo];
+                                                    switch (subparam.Type)
+                                                    {
+                                                        case 1:
+                                                        case 4:
+                                                            subProp.Add(subparam.NameDB, valueAux);
+                                                            break;
+                                                        case 2:
+                                                            subProp.Add(subparam.NameDB, MapValue(valueAux, subparam.GroupMap, allMapValues));
+                                                            break;
+                                                        case 3:
+                                                            var sublistAux = new List<string>();
+                                                            var subSplitList = valueAux.Split(' ');
+                                                            foreach (var b in subSplitList)
+                                                                sublistAux.Add(MapValue(b, subparam.GroupMap, allMapValues));
+                                                            subProp.Add(subparam.NameDB, sublistAux);
+                                                            break;
+                                                    }
+                                                }
+                                                else { subProp.Add(subparam.NameDB, null); }
+                                            }
+                                            arrayGroup.Add(subProp);
+                                        }
+                                        props.Add(param.NameDB, arrayGroup);
+                                        break;
+                                    case 7:
+                                        dataItem.IdKobo = (String)result[param.NameKobo];
+                                        break;
+                                    case 8:
+                                        dataItem.User = (String)result[param.NameKobo];
+                                        break;
+                                }
+                            }
+                            else{props.Add(param.NameDB, null);}
+                        }
+
+                        dataItem.State = state;
+                        dataItem.DynamicProperties = props;
+                        encuestas.Add(dataItem);
+                    }
+                }
+
+                //Guarda la información en MongoDB
+                if (encuestas.Count == 0)
+                {
+                    r = "ALERTA: No se encontraron nuevas encuestas de Acuicultura.";
+                }
+                else
+                {
+                    mdb.InsertMany("aquaculture", encuestas);
+                    r = "EXITO: Se cargaron " + encuestas.Count + " encuestas de Acuicultura.";
+                }
+            }
+            catch (HttpRequestException e){r = "ERROR: " + e.Message;}
+            return r;
+        }
+
+
         private async Task<List<KoGenericData>> GetDataFromUrl(string url, string token, List<KoField> mapParams, string validationField, string validationValue, Dictionary<string, Dictionary<string, string>> allMapValues)
         {
             var client = new HttpClient();
@@ -533,7 +684,7 @@ namespace App_consulta.Controllers
          * Remapea los campos con la información de las variables
          * 
          */
-        private static string MapValue(string key, string group, Dictionary<string,Dictionary<string, string>> allValues)
+       private static string MapValue(string key, string group, Dictionary<string,Dictionary<string, string>> allValues)
         {
             if(group == null || key == null) { return key; }
 
@@ -546,6 +697,6 @@ namespace App_consulta.Controllers
                 }
             }
             return key;
-        }
+        }       
     }
 }

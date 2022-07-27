@@ -41,6 +41,12 @@
                 <a class="nav-link text-dark" asp-area="" asp-controller="Encuestador" asp-action="Index">Encuestadores</a>
             </li>
         }
+        @if (User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Listado" && c.Value == "1")))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Acuicultura" asp-action="Index">FT-IV-046</a>
+            </li>
+        }
         @{
             var permisoEncuestas = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Encuestas.Listado" && c.Value == "1"));
             var permisoRegistros = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado" && c.Value == "1"));
@@ -71,6 +77,7 @@
                 </li>
             }
         }
+
     </ul>
     <partial name="_LoginPartial" />
 </div>

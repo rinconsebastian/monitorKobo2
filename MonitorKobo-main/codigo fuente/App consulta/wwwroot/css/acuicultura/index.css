@@ -1,0 +1,18 @@
+﻿@page {
+    size: letter;
+    margin: 7mm;
+}
+
+
+td.alerta {
+    color: red;
+}
+
+
+@media print {
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+}

@@ -1,0 +1,18 @@
+﻿
+@{ 
+    int columns = ViewBag.Columns;
+    string text = ViewBag.Text;
+}
+
+@if (ViewBag.SeparateNumbers == true)
+{
+    text = text.PadLeft(columns);
+    for (var i = 0; i < columns; i++)
+    {
+        <td class="@ViewBag.Class">@(text.Substring(i, 1))</td>
+    }
+}
+else
+{
+    <td colspan="@(columns > 0 ? columns: "")" class="@ViewBag.Class">@text</td>
+}
