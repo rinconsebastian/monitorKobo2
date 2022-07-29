@@ -145,8 +145,14 @@ namespace App_consulta.Controllers
             }
 
             codes = codes.Distinct().ToList();
-            var locations = await db.Location.Where(n => codes.Contains(n.Code2))
-                .ToDictionaryAsync(n => n.Code2 + "_" + n.IdLevel, n => n.Name);
+            var locationsList = await db.Location.Where(n => codes.Contains(n.Code2))
+                .Select(n => new { 
+                    codeTemp = n.Code2 + "_" + n.IdLevel,
+                    name = n.Name
+                })
+                .ToListAsync();
+            locationsList = locationsList.Distinct().ToList();
+            var locations   = locationsList.ToDictionary(n => n.codeTemp, n => n.name);
             ViewBag.Locations = locations;
 
             return View(item);

@@ -6,13 +6,22 @@
 
     Dictionary<string, AquacultureField> fields = ViewBag.Fields;
     var props = Model.DynamicProperties;
+
     //Locations
     Dictionary<string, string> locations = ViewBag.Locations;
 
-    //Date A_04
-    var date_A_04 = DataHelpers.DateToString(props["a_04"]);
+    //Geolocation
+    var geo = props["ii_geo_p"] != null ? ((String)props["ii_geo_p"]).Split(' ') : null;
+    var location = DataHelpers.DecimalToDMS(geo != null ? geo[0] : null, geo != null ? geo[1] : null);
 
-    //Dic I_08
+    //Datetime
+    var date_A_04 = DataHelpers.DatetimeToString(props["a_04"]);
+
+    //Date
+    var date_III_22 = DataHelpers.DateToString(props["iii_22"]);
+    var date_III_24 = DataHelpers.DateToString(props["iii_24"]);
+
+    //Dictionary
     var dic_I_8 = new List<AqFieldSelectViewModel>()
 {
         new(){Key = "Propietario/a", Label= "Propietario (a)", Columns= 6},
@@ -24,10 +33,172 @@
         new(){Key = "Operario de Producción", Label= "Operario de producción", Columns= 8},
         new(){Key = "Trabajador Familiar", Label= "Trabajador familiar", Columns= 10},
     };
-    //Geolocation
-    var geo = props["ii_geo_p"] != null ? ((String)props["ii_geo_p"]).Split(' ') : null;
-    var location = DataHelpers.DecimalToDMS(geo != null ? geo[0] : null, geo != null ? geo[1] : null);
 
+    var dic_II_17 = new List<AqFieldSelectViewModel>()
+{
+        new(){Key = "Privada", Label= "Privada", Columns= 7},
+        new(){Key = "Pública", Label= "Pública", Columns= 7},
+        new(){Key = "Comunal", Label= "Comunal", Columns= 7},
+        new(){Key = "Arrendada", Label= "Arrendada", Columns= 7},
+        new(){Key = "Comodato", Label= "Comodato", Columns= 7},
+        new(){Key = "Ocupación Pacífica", Label= "Ocupación Pacífica", Columns= 7},
+    };
+
+    var dic_III_21 = new List<AqFieldSelectViewModel>()
+{
+        new(){Key = "Activa", Label= "Activa", Columns= 4},
+        new(){Key = "Inactiva temporalmente", Label= "Inactiva temporalmente", Columns= 9},
+        new(){Key = "Comunal", Label= "Cerrada", Columns= 4},
+    };
+
+    var dic_III_27 = new List<AqFieldSelectViewModel>()
+{
+        new(){Key = "C.C", Label= "C.C.", Columns= 2},
+        new(){Key = "C.E", Label= "C.E.", Columns= 2},
+    };
+
+    var dic_III_34 = new List<AqFieldSelectViewModel>()
+{
+        new(){Key = "Independiente", Label= "Independiente", Columns= 7},
+        new(){Key = "Asociado", Label= "Asociado", Columns= 7},
+    };
+
+    var dic_IV_38 = new List<AqFieldSelectViewModel>()
+{
+        new(){Key = "Marino-Costera", Label= "Marino-Costera", Columns= 6},
+        new(){Key = "Lago", Label= "Lago", Columns= 6},
+        new(){Key = "Laguna", Label= "Laguna", Columns= 7},
+        new(){Key = "Ciénaga", Label= "Ciénaga", Columns= 6},
+        new(){Key = "Embalse", Label= "Embalse", Columns= 5},
+        new(){Key = "Terrestre", Label= "Terrestre", Columns= 5},
+    };
+
+    var dic_IV_39 = new List<AqFieldSelectViewModel>()
+{
+        new(){Key = "Cría", Label= "Cría", Columns= 3},
+        new(){Key = "Carne", Label= "Carne", Columns= 3},
+        new(){Key = "Ornamentales", Label= "Ornamentales", Columns= 5},
+    };
+
+    var dic_IV_40 = new List<AqFieldSelectViewModel>()
+{
+        new(){Key = "Ovas", Label= "Ovas", Columns= 3},
+        new(){Key = "Nauplios", Label= "Nauplios", Columns= 4},
+        new(){Key = "Larvas /Postlarvas", Label= "Larvas /Postlarvas", Columns= 8},
+        new(){Key = "Alevinos", Label= "Alevinos", Columns= 4},
+        new(){Key = "Juveniles", Label= "Juveniles", Columns= 4},
+        new(){Key = "Adultos", Label= "Adultos", Columns= 3},
+        new(){Key = "Carne", Label= "Carne", Columns= 3},
+        new(){Key = "Ornamentales", Label= "Ornamentales", Columns= 5},
+    };
+
+    var dic_VI_55 = new List<AqFieldSelectViewModel>()
+{
+        new(){Key = "S-EX", Label= "S-EX", Columns= 2},
+        new(){Key = "S-SI", Label= "S-SI", Columns= 2},
+        new(){Key = "JAU", Label= "JAU", Columns= 2},
+        new(){Key = "BFT", Label= "BFT", Columns= 2},
+        new(){Key = "RAS", Label= "RAS", Columns= 2},
+        new(){Key = "AP", Label= "AP", Columns= 2},
+        new(){Key = "RW", Label= "RW", Columns= 2},
+        new(){Key = "IPRS", Label= "IPRS", Columns= 2},
+    };
+
+    var dic_VIII_69 = new List<AqFieldSelectViewModel>()
+    {
+        new(){Key = "Repr.", Label= "Repr.", Columns= 2},
+        new(){Key = "Larv.", Label= "Larv.", Columns= 2},
+        new(){Key = "Alev.", Label= "Alev.", Columns= 2},
+        new(){Key = "Leva.", Label= "Leva.", Columns= 2},
+        new(){Key = "Engo.", Label= "Engo.", Columns= 2},
+    };
+
+    var dic_XI_77 = new List<AqFieldSelectViewModel>()
+    {
+        new(){Key = "Si", Label= "SI", Columns= 3},
+        new(){Key = "No", Label= "NO", Columns= 3},
+        new(){Key = "Nr", Label= "NR", Columns= 3}
+    };
+
+    var dic_XI_80 = new List<AqFieldSelectViewModel>()
+    {
+        new(){Key = "Cría", Label= "Cría", Columns= 2},
+        new(){Key = "Carne", Label= "Carne", Columns= 2},
+        new(){Key = "Ornamentales", Label= "Orna.", Columns= 2},
+    };
+
+    var dic_XI_81 = new List<AqFieldSelectViewModel>()
+    {
+        new(){Key = "Individuo", Label= "in", Columns= 1},
+        new(){Key = "Kilogramo", Label= "kg", Columns= 1}
+    };
+
+    var dic_XIV_88_A = new List<AqFieldSelectViewModel>()
+    {
+        new(){Key = "Si", Label= "SI", Columns= 2},
+        new(){Key = "No", Label= "NO", Columns= 3},
+        new(){Key = "Nr", Label= "NR", Columns= 3}
+    };
+    var dic_XIV_88_B = new List<AqFieldSelectViewModel>()
+    {
+        new(){Key = "Si", Label= "SI", Columns= 3},
+        new(){Key = "No", Label= "NO", Columns= 3},
+        new(){Key = "Nr", Label= "NR", Columns= 3}
+    };
+
+    //Groups
+    var group_V = DataHelpers.GroupFormat(props["v_group"]);
+
+    var group_VI = new Dictionary<string, List<Dictionary<string, object>>>();
+    group_VI.Add("a", DataHelpers.GroupFormat(props["vi_49_a"]));
+    group_VI.Add("b", DataHelpers.GroupFormat(props["vi_49_b"]));
+    group_VI.Add("c", DataHelpers.GroupFormat(props["vi_49_c"]));
+    group_VI.Add("d", DataHelpers.GroupFormat(props["vi_49_d"]));
+
+    var group_VII = DataHelpers.GroupFormat(props["vii_group"]);
+
+    var group_VIII = DataHelpers.GroupFormat(props["viii"]);
+    var length_VIII_IX_X = group_VIII.Count > 10 ? group_VIII.Count : 10;
+
+    var group_XI = DataHelpers.GroupFormat(props["xi"]);
+    var group_XII = DataHelpers.GroupFormat(props["xii"]);
+
+    var group_XIII = DataHelpers.GroupFormat(props["xiii"]);
+
+    var length_XII = group_XII.Count > 4 ? group_XII.Count : 4;
+    var length_XIII = group_XIII.Count > 4 ? group_XIII.Count : 4;
+    var length_XII_XIII = length_XII > length_XIII ? length_XII : length_XIII;
+
+    //List
+    var list_IX_72 = new string[]
+{
+        "Sala de Proceso",
+        "Sala de manejo de alimento",
+        "Cuatro frío",
+        "Bodega para alimento",
+        "Bodega de insumos agrícolas",
+        "Laboratorio de patología",
+        "Laboratorio de alimento vivo",
+        "Laboratorio de reproducción",
+        "Oficinas",
+        "Zona de cuarentena"
+};
+
+    var list_X_75 = new string[]
+    {
+        "Alimento concentrado",
+        "Asesorías técnicas",
+        "Crías(larvas,alevinos,dedinos,etc.)",
+        "Insumos agrícolas",
+        "Mantenimiento",
+        "Personal",
+        "Reproductores",
+        "Servicios públicos",
+        "Transporte",
+        "Otros"
+    };
+
+    var list_AJ = new string[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j" };
 }
 <div>
     <input type="button" onclick="tableToExcel('table-export', 'Caracterización', 'estilo')" value="Exportar">
@@ -41,15 +212,50 @@
             background-color: white;
         }
 
+        tr {
+            height: 16px;
+        }
+
         td {
             vertical-align: middle;
-            min-height: 16px;
             text-align: center;
             border: 0.5pt solid black;
         }
 
         .b-0 {
             border: none;
+        }
+
+        .b-left {
+            border: none;
+            border-left: 1pt solid black;
+        }
+
+        .b-righ {
+            border: none;
+            border-right: 1pt solid black;
+        }
+
+        .b-x {
+            border: none;
+            border-left: 1pt solid black;
+            border-right: 1pt solid black;
+        }
+
+        .b-top {
+            border: none;
+            border-top: 1pt solid black;
+        }
+
+        .b-bottom {
+            border: none;
+            border-bottom: 1pt solid black;
+        }
+
+        .b-y {
+            border: none;
+            border-top: 1pt solid black;
+            border-bottom: 1pt solid black;
         }
 
         .separator {
@@ -70,15 +276,16 @@
             font-weight: 700;
             background-color: #D9E1F2;
             text-align: left;
-            overflow: hidden;
-            height: 16px;
         }
 
         .label {
             font-weight: 700;
             background-color: #D9E1F2;
-            overflow: hidden;
-            height: 16px;
+        }
+
+        .option {
+            font-weight: 700;
+            background-color: #E9EDF7;
         }
 
         .bold {
@@ -87,7 +294,21 @@
 
         .titled {
             color: #A6A6A6;
-            font-weight: 700;
+            font-weight: 500;
+        }
+
+        .diagonal {
+            mso-diagonal-down: .5pt solid windowtext;
+            mso-diagonal-up: .5pt solid windowtext;
+        }
+
+        .money {
+            text-align: right;
+            mso-number-format: \#\,\#\#0\.00;
+        }
+
+        .right {
+            text-align: right;
         }
     </style>
     <table>
@@ -98,6 +319,7 @@
             }
         </colgroup>
         <tr></tr>
+        @*CABECERA*@
         <tr class="header">
             <td class="b-0"></td>
             <td colspan="11" rowspan="6">
@@ -111,7 +333,9 @@
         </tr>
         <tr class="header">
             <td class="b-0"></td>
-            <td colspan="11" rowspan="2">Versión: 1</td>
+            <td colspan="11" rowspan="2">
+                Versión: 1
+            </td>
         </tr>
         <tr class="header">
             <td class="b-0"></td>
@@ -124,10 +348,14 @@
         <tr class="header">
             <td class="b-0"></td>
         </tr>
-
-        <tr class="separator"></tr>
-        <tr>
+        <tr class="separator">
             <td class="b-0"></td>
+            <td colspan="79" class="b-bottom"></td>
+        </tr>
+
+        @*IDENTICACIÓN*@
+        <tr>
+            <td class="b-righ"></td>
             <td colspan="8" class="label_l">@fields["a_01"].Name:</td>
             @await Component.InvokeAsync("AqFieldText", new { columns = 6, value = props["a_01"], number = true })
             <td colspan="5" class="label">@fields["a_02"].Name:</td>
@@ -138,36 +366,49 @@
             @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = date_A_04[0], title = "DD" })
             @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = date_A_04[1], title = "MM" })
             @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = date_A_04[2], title = "YYYY" })
+            <td class="b-left"></td>
+        </tr>
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="79" class="b-y"></td>
         </tr>
 
-        <tr class="separator"></tr>
+        @*I. DATOS DEL ENCUESTADO*@
         <tr>
-            <td class="b-0"></td>
+            <td class="b-righ"></td>
             <td colspan="79" class="section">@fields["i"].Name</td>
+            <td class="b-left"></td>
         </tr>
         <tr>
-            <td class="b-0"></td>
-            <td colspan="11" class="label">@fields["i_05"].Name:</td>
+            <td class="b-righ"></td>
+            <td colspan="11" class="label_l">@fields["i_05"].Name:</td>
             @await Component.InvokeAsync("AqFieldText", new { columns = 20, value = props["i_05"] })
             <td colspan="9" class="label">@fields["i_06"].Name:</td>
             @await Component.InvokeAsync("AqFieldText", new { columns = 10, value = props["i_06"] })
             <td colspan="10" class="label">@fields["i_07"].Name:</td>
             @await Component.InvokeAsync("AqFieldText", new { columns = 19, value = props["i_07"] })
+            <td class="b-left"></td>
         </tr>
-        <tr class="last-line">
-            <td class="b-0"></td>
-            <td colspan="9" class="label">@fields["i_08"].Name:</td>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="9" class="label_l">@fields["i_08"].Name:</td>
             @await Component.InvokeAsync("AqFieldSelect", new { options = dic_I_8, value = props["i_08"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="79" class="b-y"></td>
         </tr>
 
-        <tr class="separator"></tr>
+        @*II. DATOS DE LA UBICACIÓN DE LA UNIDAD PRODUCTIVA*@
         <tr>
-            <td class="b-0"></td>
+            <td class="b-righ"></td>
             <td colspan="79" class="section">@fields["ii"].Name</td>
+            <td class="b-left"></td>
         </tr>
         <tr>
-            <td class="b-0"></td>
-            <td colspan="7" class="label">@fields["ii_09"].Name:</td>
+            <td class="b-righ"></td>
+            <td colspan="7" class="label_l">@fields["ii_09"].Name:</td>
             @await Component.InvokeAsync("AqFieldText", new { columns = 13, value = props["ii_09"], locations, extra = "_2" })
             <td colspan="6" class="label">@fields["ii_10"].Name:</td>
             @await Component.InvokeAsync("AqFieldText", new { columns = 13, value = props["ii_10"], locations, extra = "_3" })
@@ -189,32 +430,838 @@
             {
                 @await Component.InvokeAsync("AqFieldText", new { columns = 13, value = props["ii_12"], locations, extra = "_5" })
             }
+            <td class="b-left"></td>
         </tr>
         <tr>
-            <td class="b-0"></td>
-            <td colspan="9" class="label">@fields["ii_13"].Name:</td>
+            <td class="b-righ"></td>
+            <td colspan="9" class="label_l">@fields["ii_13"].Name:</td>
             @await Component.InvokeAsync("AqFieldText", new { columns = 20, value = props["ii_13"] })
             <td colspan="6" class="label">@fields["ii_14"].Name:</td>
             @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = location[0], title = "GG" })
             @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = location[1], title = "MM" })
             @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = location[2], title = "SS.SS" })
-            <td class="@(location[3] == "N" ? "bold" : "titled")">N</td>
-            <td class="@(location[3] == "S" ? "bold" : "titled")">S</td>
+            <td class="@(location[3] == "N" ? "diagonal" : "titled")">N</td>
+            <td class="@(location[3] == "S" ? "diagonal" : "titled")">S</td>
             <td colspan="6" class="label">@fields["ii_15"].Name:</td>
             @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = location[4], title = "GG" })
             @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = location[5], title = "MM" })
             @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = location[6], title = "SS.SS" })
-            <td class="@(location[7] == "W" ? "bold" : "titled")">W</td>
-            <td class="@(location[7] == "E" ? "bold" : "titled")">E</td>
+            <td class="@(location[7] == "W" ? "diagonal" : "titled")">W</td>
+            <td class="@(location[7] == "E" ? "diagonal" : "titled")">E</td>
             <td colspan="5" class="label">@fields["ii_16"].Name:</td>
-            @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = geo != null ? geo[2] : "" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = geo != null ? DataHelpers.StringDoubleFormat(geo[2]) : "" })
             <td colspan="4">m s. n. m.</td>
+            <td class="b-left"></td>
         </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="9" class="label_l">@fields["ii_17"].Name:</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_II_17, value = props["ii_17"] })
+            <td colspan="22" class="@(props["ii_17"] != null && (String)props["ii_17"] == "Otro" ? "bold" : "titled")" style="color:red">Otro tipo de propiedad</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="11" class="label_l">@fields["ii_18"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 68, value = props["ii_18"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="79" class="b-y"></td>
+        </tr>
+
+        @*III. DATOS GENERALES DE LA UNIDAD PRODUCTIVA*@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="79" class="section">@fields["iii"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="11" class="label_l">@fields["iii_19"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 52, value = props["iii_19"] })
+            <td colspan="3" class="label">@fields["iii_20"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["iii_20"], number = true })
+            <td>-</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 1, value = props["iii_20_a"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="9" class="label_l">@fields["iii_21"].Name:</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_III_21, value = props["iii_21"] })
+            <td colspan="10" class="label">@fields["iii_22"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = date_III_22[0], title = "DD" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = date_III_22[1], title = "MM" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = date_III_22[2], title = "YYYY" })
+            <td colspan="10" class="label">@fields["iii_23"].Name:</td>
+            <td colspan="5" class="option">@fields["iii_23_a"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = props["iii_23_a"], title = "MMM" })
+            <td colspan="5" class="option">@fields["iii_23_b"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = props["iii_23_b"], title = "MMM" })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="13" class="label_l">@fields["iii_24"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = date_III_24[0], title = "DD" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = date_III_24[1], title = "MM" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = date_III_24[2], title = "YYYY" })
+            <td colspan="14" class="label">@fields["iii_25"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 42, value = DataHelpers.SelectToString(fields["iii_25"].Type, props["iii_25"], props["iii_25_a"]) })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="21" class="label_l">@fields["iii_26"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 22, value = props["iii_26"] })
+            <td colspan="11" class="label">@fields["iii_27"].Name:</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_III_27, value = props["iii_27"] })
+            <td colspan="9" class="label">@fields["iii_28"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 10, value = props["iii_28"], number = true })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="10" class="label_l">@fields["iii_29"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 10, value = props["iii_29"], number = true })
+            <td colspan="10" class="label">@fields["iii_30"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 10, value = props["iii_30"], number = true })
+            <td colspan="10" class="label">@fields["iii_31"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 29, value = props["iii_31"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="14" class="label_l">@fields["iii_32"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 27, value = props["iii_32"] })
+            <td colspan="6" class="label">@fields["iii_33"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 32, value = props["iii_33"], locations, extra = "_3" })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="9" class="label_l">@fields["iii_34"].Name:</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_III_34, value = props["iii_34"] })
+            <td colspan="12" class="label">@fields["iii_35"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 42, value = props["iii_35"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="19" class="label_l">@fields["iii_36"].Name:</td>
+            <td colspan="6" class="option">Permanentes:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = DataHelpers.StringNumberFormat(props["iii_36_a"]), title = "H" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = DataHelpers.StringNumberFormat(props["iii_36_b"]), title = "M" })
+            <td colspan="6" class="option">Eventuales:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = DataHelpers.StringNumberFormat(props["iii_36_c"]), title = "H" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = DataHelpers.StringNumberFormat(props["iii_36_d"]), title = "M" })
+
+            <td colspan="20" class="label">@fields["iii_37"].Name:</td>
+            <td colspan="6" class="option">Permanentes:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = DataHelpers.StringNumberFormat(props["iii_37_a"]), title = "H" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = DataHelpers.StringNumberFormat(props["iii_37_b"]), title = "M" })
+            <td colspan="6" class="option">Eventuales:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = DataHelpers.StringNumberFormat(props["iii_37_c"]), title = "H" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = DataHelpers.StringNumberFormat(props["iii_37_d"]), title = "M" })
+            <td class="b-left"></td>
+        </tr>
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="79" class="b-y"></td>
+        </tr>
+
+        @*IV. DATOS ACTIVIDAD DE LA UNIDAD PRODUCTIVA*@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="79" class="section">@fields["iv"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="20" class="label_l">@fields["iv_38"].Name:</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_IV_38, value = props["iv_38"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 18, value = props["iv_38_a"], title = "Otro tipo de ambiente" })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="10" class="label_l">@fields["iv_39"].Name:</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_IV_39, value = props["iv_39"], multiple = true })
+            <td colspan="13" class="label">@fields["iv_40"].Name:</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_IV_40, value = props["iv_40"], multiple = true })
+            <td class="b-left"></td>
+        </tr>
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="60" class="b-y"></td>
+            <td colspan="19" class="b-top"></td>
+        </tr>
+
+        @*V. CARACTERIZACIÓN DE LA FASE DE REPRODUCCIÓN*@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="60" class="section">@fields["v"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="60" class="label">FASE DE REPRODUCCIÓN </td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="17" rowspan="2" class="option">@fields["v_41"].Name</td>
+            <td colspan="3" rowspan="2" class="option">@fields["v_42"].Name</td>
+            <td colspan="26" class="option">INFRAESTRUCTURA DE PRODUCCIÓN ACTIVA</td>
+            <td colspan="8" class="option" height="32">NRO. DE REPRODUCTORES</td>
+            <td colspan="6" rowspan="2" class="option">@fields["v_48"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="17" class="option">@fields["v_43"].Name</td>
+            <td colspan="3" class="option" height="32">@fields["v_44"].Name</td>
+            <td colspan="6" class="option">@fields["v_45"].Name</td>
+            <td colspan="4" class="option">@fields["v_46"].Name</td>
+            <td colspan="4" class="option">@fields["v_47"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        @foreach (var pr_v in group_V)
+        {
+            <tr>
+                <td class="b-righ"></td>
+                @await Component.InvokeAsync("AqFieldText", new { columns = 17, value = DataHelpers.SelectToString(fields["v_41"].Type, pr_v["v_41"], pr_v["v_41_a"]) })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_v["v_42"] })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 17, value = DataHelpers.SelectToString(fields["v_43"].Type, pr_v["v_43"], pr_v["v_43_a"]) })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_v["v_44"] })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 6, value = pr_v["v_45"] })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = DataHelpers.StringNumberFormat(pr_v["v_46"]), title = "H" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = DataHelpers.StringNumberFormat(pr_v["v_47"]), title = "M" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 6, value = pr_v["v_48"] })
+                <td class="b-left"></td>
+            </tr>
+        }
+        @for (var g = 0; g < (8 - group_V.Count); g++)
+        {
+            <tr>
+                <td class="b-righ"></td>
+                <td colspan="17"></td>
+                <td colspan="3"></td>
+                <td colspan="17"></td>
+                <td colspan="3"></td>
+                <td colspan="6"></td>
+                <td colspan="4" class="titled">H</td>
+                <td colspan="4" class="titled">M</td>
+                <td colspan="6"></td>
+                <td class="b-left"></td>
+            </tr>
+        }
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="60" class="b-y"></td>
+            <td colspan="19" class="b-bottom"></td>
+        </tr>
+
+        @*VI. CARACTERIZACIÓN DE LAS FASES DE PRODUCCIÓN*@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="79" class="section">@fields["vi"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        @foreach (var group in group_VI)
+        {
+            <tr>
+                <td class="b-righ"></td>
+                <td colspan="79" class="label">@fields["vi_49"].Name: @fields["vi_49_" + group.Key].Name</td>
+                <td class="b-left"></td>
+            </tr>
+            <tr>
+                <td class="b-righ"></td>
+                <td colspan="14" rowspan="2" class="option">@fields["vi_a_50"].Name</td>
+                <td colspan="4" rowspan="2" class="option">@fields["vi_a_51"].Name</td>
+                <td colspan="24" class="option" height="32">INFRAESTRUCTURA DE PRODUCCIÓN ACTIVA</td>
+                <td colspan="16" rowspan="2" class="option">@fields["vi_a_55"].Name</td>
+                <td colspan="5" rowspan="2" class="option">@fields["vi_a_56"].Name</td>
+                <td colspan="5" rowspan="2" class="option">@fields["vi_a_57"].Name</td>
+                <td colspan="5" rowspan="2" class="option">@fields["vi_a_58"].Name</td>
+                <td colspan="6" rowspan="2" class="option">@fields["vi_a_59"].Name</td>
+                <td class="b-left"></td>
+            </tr>
+            <tr>
+                <td class="b-righ"></td>
+                <td colspan="15" class="option">@fields["vi_a_52"].Name</td>
+                <td colspan="4" class="option">@fields["vi_a_53"].Name</td>
+                <td colspan="5" class="option" height="32">@fields["vi_a_54"].Name</td>
+                <td class="b-left"></td>
+            </tr>
+            @foreach (var pr_vi in group.Value)
+            {
+                <tr>
+                    <td class="b-righ"></td>
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 14, value = DataHelpers.SelectToString(fields["vi_" + group.Key + "_50"].Type, pr_vi["vi_" + group.Key + "_50"]) })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = pr_vi["vi_" + group.Key + "_51"] })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 15, value = DataHelpers.SelectToString(fields["vi_" + group.Key + "_52"].Type, pr_vi["vi_" + group.Key + "_52"], pr_vi["vi_" + group.Key + "_52_a"]) })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = pr_vi["vi_" + group.Key + "_53"] })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_vi["vi_" + group.Key + "_54"] })
+                    @await Component.InvokeAsync("AqFieldSelect", new { options = dic_VI_55, value = pr_vi["vi_" + group.Key + "_55"], inner = true })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_vi["vi_" + group.Key + "_56"] })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_vi["vi_" + group.Key + "_57"] })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_vi["vi_" + group.Key + "_58"] })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 6, value = pr_vi["vi_" + group.Key + "_59"] })
+                    <td class="b-left"></td>
+                </tr>
+            }
+            for (var g = 0; g < (7 - group.Value.Count); g++)
+            {
+                <tr>
+                    <td class="b-righ"></td>
+                    <td colspan="14"></td>
+                    <td colspan="4"></td>
+                    <td colspan="15"></td>
+                    <td colspan="4"></td>
+                    <td colspan="5"></td>
+                    <td colspan="2" class="titled">S-EX</td>
+                    <td colspan="2" class="titled">S-SI</td>
+                    <td colspan="2" class="titled">JAU</td>
+                    <td colspan="2" class="titled">BFT</td>
+                    <td colspan="2" class="titled">RAS</td>
+                    <td colspan="2" class="titled">AP</td>
+                    <td colspan="2" class="titled">RW</td>
+                    <td colspan="2" class="titled">IPRS</td>
+                    <td colspan="5"></td>
+                    <td colspan="5"></td>
+                    <td colspan="5"></td>
+                    <td colspan="6"></td>
+                    <td class="b-left"></td>
+                </tr>
+            }
+        }
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="62" class="b-y"></td>
+            <td colspan="17" class="b-top"></td>
+        </tr>
+
+        @*VII. CARACTERIZACIÓN DE LA PRODUCCIÓN DE ORNAMENTALES*@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="62" class="section">@fields["vii"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="62" class="label">ORNAMENTALES</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="14" rowspan="2" class="option">@fields["vii_60"].Name</td>
+            <td colspan="4" rowspan="2" class="option">@fields["vii_61"].Name</td>
+            <td colspan="28" class="option" height="32">INFRAESTRUCTURA DE PRODUCCIÓN ACTIVA</td>
+            <td colspan="5" rowspan="2" class="option">@fields["vii_65"].Name</td>
+            <td colspan="5" rowspan="2" class="option">@fields["vii_66"].Name</td>
+            <td colspan="6" rowspan="2" class="option">@fields["vii_67"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="19" class="option">@fields["vii_62"].Name</td>
+            <td colspan="4" class="option">@fields["vii_63"].Name</td>
+            <td colspan="5" class="option" height="32">@fields["vii_64"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        @foreach (var pr_vii in group_VII)
+        {
+            <tr>
+                <td class="b-righ"></td>
+                @await Component.InvokeAsync("AqFieldText", new { columns = 14, value = DataHelpers.SelectToString(fields["vii_60"].Type, pr_vii["vii_60"]) })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = pr_vii["vii_61"] })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 19, value = DataHelpers.SelectToString(fields["vii_62"].Type, pr_vii["vii_62"]) })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = pr_vii["vii_63"] })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_vii["vii_64"] })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_vii["vii_65"] })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_vii["vii_66"] })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 6, value = pr_vii["vii_67"] })
+                <td class="b-left"></td>
+            </tr>
+        }
+        @for (var g = 0; g < (5 - group_VII.Count); g++)
+        {
+            <tr>
+                <td class="b-righ"></td>
+                <td colspan="14"></td>
+                <td colspan="4"></td>
+                <td colspan="19"></td>
+                <td colspan="4"></td>
+                <td colspan="5"></td>
+                <td colspan="5"></td>
+                <td colspan="5"></td>
+                <td colspan="6"></td>
+                <td class="b-left"></td>
+            </tr>
+        }
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="36" class="b-y"></td>
+            <td class="b-top"></td>
+            <td colspan="20" class="b-y"></td>
+            <td class="b-top"></td>
+            <td colspan="4" class="b-y"></td>
+            <td colspan="17" class="b-bottom"></td>
+        </tr>
+
+        @*
+        VIII. INFRAESTRUCTURAS DE PRODUCCIÓN INACTIVAS
+        IX. INFRAESTRUCTURAS COMPLEMENTARIAS
+        X. INVERSIÓN ANUAL POR RUBRO ECONÓMICO
+        *@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="36" class="section">@fields["viii"].Name</td>
+            <td class="b-x"></td>
+            <td colspan="20" class="section">@fields["ix"].Name</td>
+            <td class="b-x"></td>
+            <td colspan="21" class="section">@fields["x"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="17" class="label">@fields["viii_68"].Name</td>
+            <td colspan="10" class="label">@fields["viii_69"].Name</td>
+            <td colspan="3" class="label">@fields["viii_70"].Name</td>
+            <td colspan="6" class="label">@fields["viii_71"].Name</td>
+            <td class="b-x"></td>
+            <td colspan="12" class="label">@fields["ix_72"].Name</td>
+            <td colspan="3" class="label">@fields["ix_73_a"].Name</td>
+            <td colspan="5" class="label">@fields["ix_74_a"].Name</td>
+            <td class="b-x"></td>
+            <td colspan="13" class="label">@fields["x_75"].Name</td>
+            <td colspan="8" class="label">@fields["x_76_a"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        @for (var i = 0; i < length_VIII_IX_X; i++)
+        {
+            <tr>
+                @if (i < group_VIII.Count)
+                {
+                    var pr_viii = group_VIII[i];
+                    <td class="b-righ"></td>
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 17, value = DataHelpers.SelectToString(fields["viii_68"].Type, pr_viii["viii_68"], pr_viii["viii_68_a"]) })
+                    @await Component.InvokeAsync("AqFieldSelect", new { options = dic_VIII_69, value = pr_viii["viii_69"], multiple = true, inner = true })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_viii["viii_70"] })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 6, value = pr_viii["viii_71"] })
+                }
+                else
+                {
+                    <td class="b-righ"></td>
+                    <td colspan="17"></td>
+                    <td colspan="2" class="titled">Repr.</td>
+                    <td colspan="2" class="titled">Larv.</td>
+                    <td colspan="2" class="titled">Alev.</td>
+                    <td colspan="2" class="titled">Leva.</td>
+                    <td colspan="2" class="titled">Engo.</td>
+                    <td colspan="3"></td>
+                    <td colspan="6"></td>
+                }
+
+                @if (i < 10)
+                {
+                    var lt = list_AJ[i];
+                    <td class="b-x"></td>
+                    <td colspan="12" class="bold">@list_IX_72[i]</td>
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = props["ix_73_" + lt] })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = props["ix_74_" + lt] })
+                    <td class="b-x"></td>
+                    <td colspan="13" class="bold">@list_X_75[i]</td>
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 8, value = props["x_76_" + lt], css = "money" })
+                    <td class="b-left"></td>
+                }
+                else if (i == 10)
+                {
+                    <td class="b-left"></td>
+                    <td colspan="20" class="b-top"></td>
+                    <td class="b-0"></td>
+                    <td colspan="21" class="b-top"></td>
+                }
+                else
+                {
+                    <td class="b-left"></td>
+                }
+            </tr>
+        }
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="36" class="b-y"></td>
+            <td class="b-bottom"></td>
+            <td colspan="20" class="@(length_VIII_IX_X > 10 ? "b-bottom":"b-y")"></td>
+            <td class="b-bottom"></td>
+            <td colspan="21" class="@(length_VIII_IX_X > 10 ? "b-bottom":"b-y")"></td>
+        </tr>
+
+        @*XI. VOLÚMENES DE PRODUCCIÓN DEL AÑO ANTERIOR*@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="79" class="section">@fields["xi"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="22" class="label_l">@fields["xi_77"].Name:</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_XI_77, value = props["xi_77"] })
+            <td colspan="16" class="label">@fields["xi_78"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 29, value = props["xi_78"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="79" class="b-y"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="11" rowspan="2" class="label">@fields["xi_79"].Name</td>
+            <td colspan="6" rowspan="2" class="label">@fields["xi_80"].Name</td>
+            <td colspan="2" rowspan="2" class="label">@fields["xi_81"].Name</td>
+            <td colspan="60" class="label" height="32">@fields["xi_82_a"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="5" class="option">ENE</td>
+            <td colspan="5" class="option">FEB</td>
+            <td colspan="5" class="option">MAR</td>
+            <td colspan="5" class="option">ABR</td>
+            <td colspan="5" class="option">MAY</td>
+            <td colspan="5" class="option">JUN</td>
+            <td colspan="5" class="option">JUL</td>
+            <td colspan="5" class="option">AGO</td>
+            <td colspan="5" class="option">SEP</td>
+            <td colspan="5" class="option">OCT</td>
+            <td colspan="5" class="option">NOV</td>
+            <td colspan="5" class="option">DIC</td>
+            <td class="b-left"></td>
+        </tr>
+        @foreach (var pr_xi in group_XI)
+        {
+            <tr>
+                <td class="b-righ"></td>
+                @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = DataHelpers.SelectToString(fields["xi_79"].Type, pr_xi["xi_79"]) })
+                @await Component.InvokeAsync("AqFieldSelect", new { options = dic_XI_80, value = pr_xi["xi_80"], inner = true })
+                @await Component.InvokeAsync("AqFieldSelect", new { options = dic_XI_81, value = pr_xi["xi_81"], inner = true })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_a"], css = "right" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_b"], css = "right" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_c"], css = "right" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_d"], css = "right" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_e"], css = "right" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_f"], css = "right" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_g"], css = "right" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_h"], css = "right" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_i"], css = "right" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_j"], css = "right" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_k"], css = "right" })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_xi["xi_82_l"], css = "right" })
+
+
+                <td class="b-left"></td>
+            </tr>
+        }
+        @for (var g = 0; g < (5 - group_XI.Count); g++)
+        {
+            <tr>
+                <td class="b-righ"></td>
+                <td colspan="11"></td>
+                <td colspan="2" class="titled">Cría</td>
+                <td colspan="2" class="titled">Carne</td>
+                <td colspan="2" class="titled">Orna.</td>
+                <td colspan="1" class="titled">in</td>
+                <td colspan="1" class="titled">kg</td>
+                <td colspan="5" class="right"></td>
+                <td colspan="5" class="right"></td>
+                <td colspan="5" class="right"></td>
+                <td colspan="5" class="right"></td>
+                <td colspan="5" class="right"></td>
+                <td colspan="5" class="right"></td>
+                <td colspan="5" class="right"></td>
+                <td colspan="5" class="right"></td>
+                <td colspan="5" class="right"></td>
+                <td colspan="5" class="right"></td>
+                <td colspan="5" class="right"></td>
+                <td colspan="5" class="right"></td>
+                <td class="b-left"></td>
+            </tr>
+        }
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="31" class="b-y"></td>
+            <td colspan="2" class="b-top"></td>
+            <td colspan="46" class="b-y"></td>
+        </tr>
+
+        @*
+        XII. DISTRIBUCIÓN PORCENTUAL DEL ORIGEN DE LOS EJEMPLARES DE CRÍA
+        XIII. DISTRIBUCIÓN PORCENTUAL DE LA COMERCIALIZACIÓN DE LOS PRODUCTOS DE ENGORDE
+        *@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="31" class="section">@fields["xii"].Name</td>
+            <td colspan="2" class="b-x"></td>
+            <td colspan="46" class="section">@fields["xiii"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="12" rowspan="2" class="label">@fields["xii_83"].Name</td>
+            <td colspan="19" class="label">@fields["xii_84_a"].Name</td>
+            <td colspan="2" class="b-x"></td>
+            <td colspan="15" rowspan="2" class="label">@fields["xiii_85"].Name</td>
+            <td colspan="31" class="label">@fields["xiii_86_a"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="2" class="option">Ovas</td>
+            <td colspan="3" class="option">Nauplios</td>
+            <td colspan="3" class="option">Larvas</td>
+            <td colspan="2" class="option" height="32">Post-L</td>
+            <td colspan="3" class="option">Alevinos</td>
+            <td colspan="3" class="option">Juveniles</td>
+            <td colspan="3" class="option">Adultos</td>
+            <td colspan="2" class="b-x"></td>
+            <td colspan="2" class="option">Vivo</td>
+            <td colspan="3" class="option">E-CV</td>
+            <td colspan="3" class="option">E-SV</td>
+            <td colspan="3" class="option">E-SVE</td>
+            <td colspan="3" class="option">CHG-E</td>
+            <td colspan="3" class="option">Corte-HG</td>
+            <td colspan="3" class="option">Corte HGT</td>
+            <td colspan="2" class="option">Filete</td>
+            <td colspan="2" class="option">Posta</td>
+            <td colspan="3" class="option">Mariposa</td>
+            <td colspan="2" class="option">Pulpa</td>
+            <td colspan="2" class="option">Hueso</td>
+            <td class="b-left"></td>
+        </tr>
+        @for (var i = 0; i < length_XII_XIII; i++)
+        {
+            <tr>
+                @if (i < group_XII.Count)
+                {
+                    var pr_xii = group_XII[i];
+                    <td class="b-righ"></td>
+                    @if (pr_xii["xii_83_b"] != null)
+                    {
+                        @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = pr_xii["xii_83_b"], locations, extra = "_2" })
+                    }
+                    else
+                    {
+                        @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = DataHelpers.SelectToString(fields["xii_83"].Type, pr_xii["xii_83"], pr_xii["xii_83_a"]) })
+                    }
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = pr_xii["xii_84_a"], title = "Ovas", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xii["xii_84_b"], title = "Nauplios", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xii["xii_84_c"], title = "Larvas", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = pr_xii["xii_84_d"], title = "Post-L", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xii["xii_84_e"], title = "Alevinos", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xii["xii_84_f"], title = "Juveniles", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xii["xii_84_g"], title = "Adultos", css = "right" })
+                    <td class="b-left"></td>
+                }
+                else if (i < 4)
+                {
+                    <td class="b-righ"></td>
+                    <td colspan="12"></td>
+                    <td colspan="2" class="titled">Ovas</td>
+                    <td colspan="3" class="titled">Nauplios</td>
+                    <td colspan="3" class="titled">Larvas</td>
+                    <td colspan="2" class="titled">Post-L</td>
+                    <td colspan="3" class="titled">Alevinos</td>
+                    <td colspan="3" class="titled">Juveniles</td>
+                    <td colspan="3" class="titled">Adultos</td>
+                    <td class="b-left"></td>
+                }
+                else if (i == 4)
+                {
+                    <td class="b-0"></td>
+                    <td colspan="31" class="b-top"></td>
+                    <td class="b-0"></td>
+                }
+                else
+                {
+                    <td colspan="33" class="b-0"></td>
+                }
+
+                @if (i < group_XIII.Count)
+                {
+                    var pr_xiii = group_XIII[i];
+                    <td class="b-righ"></td>
+                    @if (pr_xiii["xiii_85_b"] != null)
+                    {
+                        @await Component.InvokeAsync("AqFieldText", new { columns = 15, value = pr_xiii["xiii_85_b"], locations, extra = "_2" })
+                    }
+                    else
+                    {
+                        @await Component.InvokeAsync("AqFieldText", new { columns = 15, value = DataHelpers.SelectToString(fields["xiii_85"].Type, pr_xiii["xiii_85"], pr_xiii["xiii_85_a"]) })
+                    }
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = pr_xiii["xiii_86_a"], title = "Vivo", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xiii["xiii_86_b"], title = "E-CV", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xiii["xiii_86_c"], title = "E-SV", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xiii["xiii_86_d"], title = "E-SVE", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xiii["xiii_86_e"], title = "CHG-E", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xiii["xiii_86_f"], title = "Corte-HG", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xiii["xiii_86_g"], title = "Corte HGT", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = pr_xiii["xiii_86_h"], title = "Filete", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = pr_xiii["xiii_86_i"], title = "Posta", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = pr_xiii["xiii_86_j"], title = "Mariposa", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = pr_xiii["xiii_86_k"], title = "Pulpa", css = "right" })
+                    @await Component.InvokeAsync("AqFieldText", new { columns = 2, value = pr_xiii["xiii_86_l"], title = "Hueso", css = "right" })
+                    <td class="b-left"></td>
+                }
+                else if (i < 4)
+                {
+                    <td class="b-righ"></td>
+                    <td colspan="15"></td>
+                    <td colspan="2" class="titled">Vivo</td>
+                    <td colspan="3" class="titled">E-CV</td>
+                    <td colspan="3" class="titled">E-SV</td>
+                    <td colspan="3" class="titled">E-SVE</td>
+                    <td colspan="3" class="titled">CHG-E</td>
+                    <td colspan="3" class="titled">Corte-HG</td>
+                    <td colspan="3" class="titled">Corte HGT</td>
+                    <td colspan="2" class="titled">Filete</td>
+                    <td colspan="2" class="titled">Posta</td>
+                    <td colspan="3" class="titled">Mariposa</td>
+                    <td colspan="2" class="titled">Pulpa</td>
+                    <td colspan="2" class="titled">Hueso</td>
+                    <td class="b-left"></td>
+                }
+                else if (i == 4)
+                {
+                    <td class="b-0"></td>
+                    <td colspan="46" class="b-top"></td>
+                }
+            </tr>
+        }
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="31" class="@(length_XII == length_XII_XIII ? "b-y" : "b-bottom")"></td>
+            <td colspan="2" class="b-bottom"></td>
+            <td colspan="46" class="@(length_XIII == length_XII_XIII? "b-y" : "b-bottom")"></td>
+        </tr>
+
+        @*XIV. ASPECTOS LEGALES DE LA UNIDAD PRODUCTIVA*@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="79" class="section">@fields["xiv"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="8" class="label" height="32">@fields["xiv_87"].Name</td>
+            <td colspan="11" class="option">CARNÉ ACUICULTOR</td>
+            <td colspan="12" class="option">CULTIVO</td>
+            <td colspan="12" class="option">COMERCIALIZACIÓN</td>
+            <td colspan="12" class="option">CONCESIÓN DE AGUAS</td>
+            <td colspan="12" class="option">OCUPACIÓN DE CAUSE</td>
+            <td colspan="12" class="option">VERTIMIENTO DE AGUAS</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="10" class="label">@fields["xiv_88_a"].Name</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_XIV_88_A, value = props["xiv_88_a"] })
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_XIV_88_A, value = props["xiv_88_b"] })
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_XIV_88_A, value = props["xiv_88_c"] })
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_XIV_88_B, value = props["xiv_88_d"] })
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_XIV_88_B, value = props["xiv_88_e"] })
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_XIV_88_B, value = props["xiv_88_f"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="10" class="label">@fields["xiv_89_a"].Name</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_89_a"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_89_b"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_89_c"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_89_d"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_89_e"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_89_f"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="10" class="label">@fields["xiv_90_a"].Name</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_90_a"], title = "Producción autorizada (kg/año)" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_90_b"], title = "Producción autorizada (kg/año)" })
+            <td colspan="11" class="titled">No aplica</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_90_d"], title = "Caudal autorizado (lpm)" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_90_e"], title = "Área autorizada (m2)" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_90_f"], title = "Caudal autorizado (lpm)" })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="10" class="label">@fields["xiv_91_a"].Name</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_91_a"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_91_b"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_91_c"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_91_d"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_91_e"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_91_f"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="10" class="label">@fields["xiv_92_a"].Name</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_92_a"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_92_b"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_92_c"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_92_d"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_92_e"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_92_f"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="10" class="label">@fields["xiv_93_a"].Name</td>
+            <td colspan="11" class="titled">No aplica</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_93_b"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 11, value = props["xiv_93_c"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_93_d"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_93_e"] })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 12, value = props["xiv_93_f"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="79" class="b-top"></td>
+        </tr>
+
+        @*XV. OBSERVACIONES*@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="79" class="section">@fields["xv"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        @for (var i = 0; i < 4; i++)
+        {
+            <tr>
+                <td class="b-righ"></td>
+                <td colspan="79"></td>
+                <td class="b-left"></td>
+            </tr>
+        }
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="79" class="b-top"></td>
+        </tr>
+
+        @*ESPACIO*@
         @for (var i = 0; i < 20; i++)
         {
             <tr></tr>
         }
     </table>
+
 </div>
 @section Styles{
     <link rel="stylesheet" href="~/css/acuicultura/index.css">

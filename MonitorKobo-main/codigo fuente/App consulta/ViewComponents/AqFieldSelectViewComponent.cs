@@ -20,10 +20,11 @@ namespace App_consulta.ViewComponents
             bool alert;
             if (multiple)
             {
-                var keys = value != null ? (List<string>)value : new List<string>();
+                var keys = value != null ? (List<object>)value : new List<object>();
                 var control = 0;
                 foreach (var item in options)
                 {
+                    item.Selected = false;
                     if (keys.Contains(item.Key))
                     {
                         item.Selected = true;
@@ -35,16 +36,17 @@ namespace App_consulta.ViewComponents
             else
             {
                 var key = value != null ? (String)value : "";
-                alert = true;
-                foreach(var item in options)
+                var control = 0;
+                foreach (var item in options)
                 {
-                    if(item.Key == key)
+                    item.Selected = false;
+                    if (item.Key == key)
                     {
                         item.Selected = true;
-                        alert = false;
-                        break;
+                        control++;
                     }
                 }
+                alert = control != 1;
             }
 
             ViewBag.Class = css +(alert ? " alerta" : "");

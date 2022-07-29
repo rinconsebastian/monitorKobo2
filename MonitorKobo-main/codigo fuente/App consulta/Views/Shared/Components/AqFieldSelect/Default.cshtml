@@ -1,13 +1,16 @@
 ﻿@model IEnumerable<App_consulta.Models.AqFieldSelectViewModel>
 @if (ViewBag.Inner == true)
 {
-
+    foreach (var item in Model)
+    {
+        <td class="@(item.Selected ? "diagonal" : "titled")" colspan="@(item.Columns > 0 ? item.Columns : "")">@item.Label</td>
+    }
 }
 else
 {
     foreach (var item in Model)
     {
         <td class="@ViewBag.Class" style="background-color: #e9edf7;font-weight:700;" colspan="@(item.Columns > 0 ? item.Columns : "")">@item.Label</td>
-        <td class="@ViewBag.Class">@(item.Selected ? "X":"")</td>
+        <td class="@ViewBag.Class">@(item.Selected ? "✓" : "")</td>
     }
 }
