@@ -91,7 +91,8 @@ namespace App_consulta.Helper
                     var arr = (List<Object>)data;
                     foreach(var item in arr)
                     {
-                        if ((String)item == "Otro") continue;
+                        if (other != null && (String)item == "Otro") 
+                            continue;
                         list.Add((String)item);
                     }
                 }

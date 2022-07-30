@@ -15,7 +15,7 @@ namespace App_consulta.ViewComponents
     {
         public AqFieldSelectViewComponent(){}
 
-        public IViewComponentResult Invoke(object value, List<AqFieldSelectViewModel> options, string css = "", bool multiple = false, bool inner = false)
+        public IViewComponentResult Invoke(object value, List<AqFieldSelectViewModel> options, string css = "", bool multiple = false, bool inner = false, bool ignoreOther = false)
         {
             bool alert;
             if (multiple)
@@ -31,7 +31,7 @@ namespace App_consulta.ViewComponents
                         control++;
                     }
                 }
-                alert = keys.Count != control;
+                alert = ignoreOther ? (keys.Count -1) != control :  keys.Count != control;
             }
             else
             {
@@ -46,7 +46,7 @@ namespace App_consulta.ViewComponents
                         control++;
                     }
                 }
-                alert = control != 1;
+                alert = ignoreOther ? control > 1 : control != 1;
             }
 
             ViewBag.Class = css +(alert ? " alerta" : "");

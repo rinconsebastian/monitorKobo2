@@ -456,8 +456,8 @@
         <tr>
             <td class="b-righ"></td>
             <td colspan="9" class="label_l">@fields["ii_17"].Name:</td>
-            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_II_17, value = props["ii_17"] })
-            <td colspan="22" class="@(props["ii_17"] != null && (String)props["ii_17"] == "Otro" ? "bold" : "titled")" style="color:red">Otro tipo de propiedad</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_II_17, value = props["ii_17"], ignoreOther = true })
+            <td colspan="22" class="@(props["ii_17"] != null && (String)props["ii_17"] == "Otro" ? "bold" : "titled")">Otro tipo de propiedad</td>
             <td class="b-left"></td>
         </tr>
         <tr>
@@ -581,7 +581,7 @@
         <tr>
             <td class="b-righ"></td>
             <td colspan="20" class="label_l">@fields["iv_38"].Name:</td>
-            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_IV_38, value = props["iv_38"] })
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_IV_38, value = props["iv_38"], ignoreOther = true })
             @await Component.InvokeAsync("AqFieldText", new { columns = 18, value = props["iv_38_a"], title = "Otro tipo de ambiente" })
             <td class="b-left"></td>
         </tr>
@@ -776,9 +776,9 @@
         {
             <tr>
                 <td class="b-righ"></td>
-                @await Component.InvokeAsync("AqFieldText", new { columns = 14, value = DataHelpers.SelectToString(fields["vii_60"].Type, pr_vii["vii_60"]) })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 14, value = pr_vii["vii_60"] })
                 @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = pr_vii["vii_61"] })
-                @await Component.InvokeAsync("AqFieldText", new { columns = 19, value = DataHelpers.SelectToString(fields["vii_62"].Type, pr_vii["vii_62"]) })
+                @await Component.InvokeAsync("AqFieldText", new { columns = 19, value = pr_vii["vii_62"] })
                 @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = pr_vii["vii_63"] })
                 @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_vii["vii_64"] })
                 @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = pr_vii["vii_65"] })
