@@ -197,6 +197,13 @@ namespace App_consulta.Controllers
             {
                 fields.Add("state");
             }
+            fields.Add("formato");
+            if (fields.Contains("tipo_acuicultor"))
+            {
+                fields.Add("ip_812");
+                fields.Add("ip_813");
+                fields.Add("ip_814");
+            }
 
             //Estados 
             var estados = await db.KoDataState.ToDictionaryAsync(n => n.Id, n => n.Label);
@@ -256,6 +263,15 @@ namespace App_consulta.Controllers
                         var userItem = (String)item["user"];
                         var nombreEncuestador = nombresEncuestadores.ContainsKey(userItem) ? nombresEncuestadores[userItem] : "";
                         item.Add("user_name", nombreEncuestador);
+                    }
+
+                    //Completa la información del tipo de acuicultor
+                    if (item.Contains("ip_812") && item.Contains("ip_813") && item.Contains("ip_814")
+                        && item["ip_812"] != BsonNull.Value && item["ip_813"] != BsonNull.Value && item["ip_814"] != BsonNull.Value)
+                    {
+                        var tipo = item.Contains("tipo_acuicultor") && item["tipo_acuicultor"] != BsonNull.Value ? (String)item["tipo_acuicultor"] : "";
+                        var asociado = (String)item["ip_812"] == "2" && (String)item["ip_813"] == "2" && (String)item["ip_814"] == "2";
+                        item["tipo_acuicultor"] = tipo == "" && asociado ? "Asociado" : tipo;
                     }
 
                     //Completa los municipios y departamentos

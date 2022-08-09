@@ -1,0 +1,191 @@
+﻿@using App_consulta.Helper;
+@model App_consulta.Models.KoGenericData
+@{
+    ViewData["Title"] = "Detalles encuestado";
+    ViewData["Subtitle"] = "No. " + Model.IdKobo;
+    ViewData["Fluid"] = true;
+
+    Dictionary<string, AquacultureField> fields = ViewBag.Fields;
+    var props = Model.DynamicProperties;
+
+    //Locations
+    Dictionary<string, string> locations = ViewBag.Locations;
+
+    //Geolocation
+    var geo = props["ii_geo_p"] != null ? ((String)props["ii_geo_p"]).Split(' ') : null;
+    var location = DataHelpers.DecimalToDMS(geo != null ? geo[0] : null, geo != null ? geo[1] : null);
+
+    //Datetime
+    var date_A_04 = DataHelpers.DatetimeToString(props["a_04"]);
+
+    //Date
+    var date_III_22 = DataHelpers.DateToString(props["iii_22"]);
+    var date_III_24 = DataHelpers.DateToString(props["iii_24"]);
+
+    //Dictionary
+    var dic_I_8 = new List<AqFieldSelectViewModel>()
+{
+        new(){Key = "Propietario/a", Label= "Propietario (a)", Columns= 6},
+        new(){Key = "Copropietario/a o Socio/a", Label= "Copropietario o Socio (a)", Columns= 9},
+        new(){Key = "Representante Legal", Label= "Representante legal", Columns= 8},
+        new(){Key = "Administrador/a", Label= "Administrador (a)", Columns= 6},
+        new(){Key = "Jefe de producción", Label= "Jefe de producción", Columns= 7},
+        new(){Key = "Técnico de Producción", Label= "Técnico de producción", Columns= 8},
+        new(){Key = "Operario de Producción", Label= "Operario de producción", Columns= 8},
+        new(){Key = "Trabajador Familiar", Label= "Trabajador familiar", Columns= 10},
+    };
+
+    var dic_II_17 = new List<AqFieldSelectViewModel>()
+{
+        new(){Key = "Privada", Label= "Privada", Columns= 7},
+        new(){Key = "Pública", Label= "Pública", Columns= 7},
+        new(){Key = "Comunal", Label= "Comunal", Columns= 7},
+        new(){Key = "Arrendada", Label= "Arrendada", Columns= 7},
+        new(){Key = "Comodato", Label= "Comodato", Columns= 7},
+        new(){Key = "Ocupación Pacífica", Label= "Ocupación Pacífica", Columns= 7},
+    };
+}
+<div class="row mt-4 d-print-none">
+    <div class="col-12 mx-auto">
+        <div class="card border-dark bg-light">
+            <div class="card-body p-3 align-middle">
+                <h4 class="text-uppercase d-inline-block mb-0 float-right">
+                    <small>Registro No. </small> @Model.IdKobo
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <table>
+        <colgroup>
+            @for (var i = 0; i < 80; i++)
+            {
+                <col width="16" />
+            }
+        </colgroup>
+        <tr></tr>
+        @*IDENTICACIÓN*@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="8" class="label_l">@fields["a_01"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 6, value = props["a_01"], number = true })
+            <td colspan="5" class="label">@fields["a_02"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 6, value = props["a_02"], number = true })
+            <td colspan="11" class="label">@fields["a_03"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 25, value = props["a_03"] })
+            <td colspan="8" class="label">@fields["a_04"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = date_A_04[0], title = "DD" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = date_A_04[1], title = "MM" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = date_A_04[2], title = "YYYY" })
+            <td class="b-left"></td>
+        </tr>
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="79" class="b-y"></td>
+        </tr>
+
+        @*I. DATOS DEL ENCUESTADO*@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="79" class="section">@fields["i"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="11" class="label_l">@fields["i_05"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 20, value = props["name"] })
+            <td colspan="9" class="label">@fields["i_06"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 10, value = props["numero_celular"] })
+            <td colspan="10" class="label">@fields["i_07"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 19, value = props["i_07"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="9" class="label_l">@fields["i_08"].Name:</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_I_8, value = props["propietario"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="79" class="b-y"></td>
+        </tr>
+
+        @*II. DATOS DE LA UBICACIÓN DE LA UNIDAD PRODUCTIVA*@
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="79" class="section">@fields["ii"].Name</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="7" class="label_l">@fields["ii_09"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 13, value = props["ii_09"], locations, extra = "_2" })
+            <td colspan="6" class="label">@fields["ii_10"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 13, value = props["ii_10"], locations, extra = "_3" })
+            <td colspan="8" class="label">@fields["ii_11"].Name:</td>
+            @if (props["ii_11_a"] != null)
+            {
+                @await Component.InvokeAsync("AqFieldText", new { columns = 14, value = props["ii_11_a"] })
+            }
+            else
+            {
+                @await Component.InvokeAsync("AqFieldText", new { columns = 14, value = props["ii_11"], locations, extra = "_4" })
+            }
+            <td colspan="5" class="label">@fields["ii_12"].Name:</td>
+            @if (props["ii_12_a"] != null)
+            {
+                @await Component.InvokeAsync("AqFieldText", new { columns = 13, value = props["ii_12_a"] })
+            }
+            else
+            {
+                @await Component.InvokeAsync("AqFieldText", new { columns = 13, value = props["ii_12"], locations, extra = "_5" })
+            }
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="9" class="label_l">@fields["ii_13"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 20, value = props["ii_13"] })
+            <td colspan="6" class="label">@fields["ii_14"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = location[0], title = "GG" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = location[1], title = "MM" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = location[2], title = "SS.SS" })
+            <td class="@(location[3] == "N"? "diagonal": "titled")">N</td>
+            <td class="@(location[3] == "S"? "diagonal": "titled")">S</td>
+            <td colspan="6" class="label">@fields["ii_15"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = location[4], title = "GG" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 3, value = location[5], title = "MM" })
+            @await Component.InvokeAsync("AqFieldText", new { columns = 4, value = location[6], title = "SS.SS" })
+            <td class="@(location[7] == "W"? "diagonal": "titled")">W</td>
+            <td class="@(location[7] == "E"? "diagonal": "titled")">E</td>
+            <td colspan="5" class="label">@fields["ii_16"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 5, value = geo != null ? DataHelpers.StringDoubleFormat(geo[2]) : "" })
+            <td colspan="4">m s. n. m.</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="9" class="label_l">@fields["ii_17"].Name:</td>
+            @await Component.InvokeAsync("AqFieldSelect", new { options = dic_II_17, value = props["ii_17"], ignoreOther = true })
+            <td colspan="22" class="@(props["ii_17"] !=null && (String)props["ii_17"] == "Otro"? "bold": "titled")">Otro tipo de propiedad</td>
+            <td class="b-left"></td>
+        </tr>
+        <tr>
+            <td class="b-righ"></td>
+            <td colspan="11" class="label_l">@fields["ii_18"].Name:</td>
+            @await Component.InvokeAsync("AqFieldText", new { columns = 68, value = props["ii_18"] })
+            <td class="b-left"></td>
+        </tr>
+        <tr class="separator">
+            <td class="b-0"></td>
+            <td colspan="79" class="b-top"></td>
+        </tr>
+    </table>
+</div>
+@section Styles{
+    <link rel="stylesheet" href="~/css/acuicultura/index.css">
+}
+
+

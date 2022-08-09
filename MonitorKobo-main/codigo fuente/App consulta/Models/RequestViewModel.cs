@@ -25,5 +25,7 @@ namespace App_consulta.Models
 
         public DateTime CreateDate { get; set; }
         public string ValidationDate { get; set; }
+
+        public string Message { get; set; }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -199,7 +200,8 @@ namespace App_consulta.Controllers
                     AdminName = n.AdminName,
                     RecordId = n.RecordId,
                     RecordProject = n.RecordProject,
-                    RecordNumber = n.RecordNumber
+                    RecordNumber = n.RecordNumber,
+                    Message = n.Message
                 }).ToListAsync();
 
             var idsUsuarios = solicitudes.Select(n => n.UserId).Distinct().ToList();
@@ -295,6 +297,66 @@ namespace App_consulta.Controllers
             ViewBag.registro = original.RecordNumber;
 
             return View(data);
+        }
+
+        [Authorize(Policy = "Solicitud.Administrar")]
+        [HttpPost]
+        public async Task<ActionResult> QuickResponse(int id)
+        {
+            RespuestaAccion r = new();
+
+            var solicitud = await db.RequestUser.FindAsync(id);
+            if (solicitud != null)
+            {
+                var projectObj = await db.KoProject.FindAsync(solicitud.RecordProject);
+                if (projectObj != null && projectObj.Validable)
+                {
+                    try
+                    {
+                        var item = await mdb.FindViewModel(projectObj.Collection, solicitud.RecordId);
+                        if (item != null)
+                        {
+                            if (item.State != KoGenericData.ESTADO_BORRADOR)
+                            {
+
+                                var user = await userManager.FindByNameAsync(User.Identity.Name);
+                                var update = Builders<KoExtendData>.Update.Set("edit_user", user.Id);
+                                var datetime = DateTime.Now;
+                                update = update.Set("edit_date", datetime);
+                                update = update.Set("state", KoGenericData.ESTADO_BORRADOR);
+
+                                var filter = Builders<KoExtendData>.Filter.Eq(n => n.Id, item.Id);
+                                var save = await mdb.Update(projectObj.Collection, update, filter);
+
+                                if (save)
+                                {
+                                    solicitud.Response = "FORMALIZACIÓN PASA A BORRADOR.";
+                                    solicitud.State = RequestUser.ESTADO_SOLUCIONADA;
+                                    solicitud.AdminName = user.Nombre + " " + user.Apellido;
+                                    solicitud.ValidationDate = DateTime.Now;
+                                    solicitud.AlertAdmin = false;
+                                    solicitud.AlertUser = true;
+
+                                    db.Entry(solicitud).State = EntityState.Modified;
+                                    await db.SaveChangesAsync();
+
+                                    r.Success = true;
+                                }
+                                else { r.Message = "Error: No fue posible cambiar el estado del registro."; }
+
+                            }
+                            else { r.Message = "ERROR: Formalización ya esta en estado borrador."; }
+                        }
+                        else { r.Message = "ERROR: Registro no encontrado."; }
+
+                    }
+                    catch (Exception e) { r.Message = "ERROR: " + e.Message; }
+                }
+                else { r.Message = "ERROR: Proyecto no encontrado."; }
+            }
+            else { r.Message = "ERROR: Solicitud no encontrada."; }
+
+            return Json(r);
         }
 
         [HttpGet]

@@ -16,7 +16,7 @@
 
     var permisoSolicitud = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Crear" && c.Value == "1"));
     var permisoCancelar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Cancelar" && c.Value == "1"));
-
+    var permisoSepec = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Imprimir" && c.Value == "1"));
 
     var btnEditar = permisoEditar ? "Editar" : "Validar";
 
@@ -52,12 +52,18 @@
                             @foreach (var field in fieldsFile)
                             {
                                 var valueItem = (String)Model.DynamicProperties[field.NameDB];
-                                if(valueItem != null) { 
-                                <a class="nav-link" id="@field.Id-tab" data-toggle="pill" href="#tab-@field.Id" role="tab" aria-controls="@field.NameDB" aria-selected="false">
-                                    @field.Name
-                                </a>
+                                if (valueItem != null)
+                                {
+                                    <a class="nav-link" id="@field.Id-tab" data-toggle="pill" href="#tab-@field.Id" role="tab" aria-controls="@field.NameDB" aria-selected="false">
+                                        @field.Name
+                                    </a>
                                 }
                             }
+                            @if (permisoSepec && Model.DynamicProperties.ContainsKey("formato"))
+                            {
+                                <a class="nav-link text-dark" asp-controller="Acuicultura" asp-action="Details" asp-route-id="@Model.Id" asp-route-project="@project.Id" target="_blank"><i class="fab fa-wpforms"></i> Formato SEPEC</a>
+                            }
+
                         </div>
                     </div>
                     <div class="col-12 col-md-9 pt-3">

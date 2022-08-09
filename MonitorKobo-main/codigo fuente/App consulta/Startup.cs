@@ -108,7 +108,9 @@ namespace App_consulta
                                 policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Listado", "1"));
                 options.AddPolicy("Registro.Imprimir", policy =>
                                 policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imprimir", "1"));
-                
+                options.AddPolicy("Registro.Borrar", policy =>
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Borrar", "1"));
+
                 options.AddPolicy("Registro.Cancelar", policy =>
                                 policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Cancelar", "1"));
 
@@ -126,9 +128,9 @@ namespace App_consulta
                                 policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Solicitud.Administrar", "1"));
 
                 options.AddPolicy("Acuicultura.Listado", policy =>
-                              policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Listado", "1"));
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Listado", "1"));
                 options.AddPolicy("Acuicultura.Imprimir", policy =>
-                              policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Imprimir", "1"));
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Imprimir", "1"));
 
             });
 

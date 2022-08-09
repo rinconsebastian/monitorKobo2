@@ -115,11 +115,26 @@ namespace App_consulta.Services
             return actionResult.IsAcknowledged && actionResult.ModifiedCount > 0;
         }
 
+        public async Task<bool> ReplaceGeneric(String collectionName, KoGenericData dataIn)
+        {
+            var collection = database.GetCollection<KoGenericData>(collectionName);
+            var actionResult = await collection.ReplaceOneAsync(n => n.Id == dataIn.Id, dataIn);
+            return actionResult.IsAcknowledged && actionResult.ModifiedCount > 0;
+        }
+
         public async Task<bool> Update(String collectionName, UpdateDefinition<KoExtendData> update, FilterDefinition<KoExtendData> filter)
         {
             var collection = database.GetCollection<KoExtendData>(collectionName);
             var actionResult = await collection.UpdateOneAsync(filter, update);
             return actionResult.IsAcknowledged && actionResult.ModifiedCount > 0;
+        }
+
+        public async Task<int> DeleteMany (String collectionName, string[] ids)
+        {
+            var idsFilter = Builders<KoGenericData>.Filter.In(d => d.Id, ids);
+            var collection = database.GetCollection<KoGenericData>(collectionName);
+            var actionResult = await collection.DeleteManyAsync(idsFilter);
+            return (int)actionResult.DeletedCount;
         }
 
     }

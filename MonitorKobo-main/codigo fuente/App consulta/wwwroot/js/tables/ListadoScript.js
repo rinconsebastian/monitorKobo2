@@ -6,8 +6,12 @@ var allowLoadValidate = false;
 var allowSeeValidate = false;
 
 var allowPrint = false;
+var allowDelete = false;
+var allowSeeSepec = false;
 var urlPrint = "";
 var projectPrint = 0;
+
+var dataGridInst;
 
 //*********************************** funcL ******************************************
 
@@ -23,11 +27,38 @@ var funcL = {
             DevExpress.ui.notify("No hay formalizaciones seleccionadas.", 'warning', 3000);
         }
     },
+    borrarMultiple: function (seleccion) {
+        if (seleccion.length > 0) {
+            var ids = $.map(seleccion, function (n, i) {
+                return n._id + "";
+            });
+            var fullurl = root + "Validation/Delete/";
+            var idsParam = ids.join();
+            $.post(fullurl, { ids: idsParam, project: projectPrint }).
+                done(function (data) {
+                    if (data != null) {
+                        if (data == 0) {
+                            funcGenerico.mostrarMensaje("Error no se encontró ningun registro.", "warning");
+                        } else {
+                            var mensaje = data == 1 ? "Se eliminó un registro." : "Se eliminaron " + data + " registros.";
+                            funcGenerico.mostrarMensaje(mensaje, "success");
+                            dataGridInst.refresh();
+                        }
+                    } else {
+                        funcGenerico.mostrarMensaje("Error en la respuesta del servidor.", "error");
+                    }
+                }).fail(function (data) {
+                    funcGenerico.mostrarMensaje("Error al solicitar la operación.", "error");
+                });
+        } else {
+            DevExpress.ui.notify("No hay elementos seleccionados.", 'warning', 3000);
+        }
+    },
     instanceDataGrid: function (gridName, reportName, columns, showUser, source) {
-        var dataGrid = $(gridName).dxDataGrid({
+        dataGridInst = $(gridName).dxDataGrid({
             dataSource: source,
             selection: {
-                mode: allowPrint ? "multiple" : "none",
+                mode: allowPrint || allowDelete ? "multiple" : "none",
                 showCheckBoxesMode: "always",
                 selectAllMode: "allPages"
             },
@@ -162,6 +193,19 @@ var funcL = {
                                 funcL.imprimirMultiple(seleccion);
                             }
                         }
+                    },
+                    {
+                        location: "after",
+                        widget: "dxButton",
+                        options: {
+                            icon: "trash",
+                            hint: "Borrar",
+                            visible: allowDelete,
+                            onClick: function () {
+                                var seleccion = dataGrid.option('selectedRowKeys');
+                                funcL.borrarMultiple(seleccion);
+                            }
+                        }
                     }
                 );
             },
@@ -252,14 +296,18 @@ var funcL = {
 
                     var state = options.data.state;
                     var itemID = options.data._id;
+                    var formato = options.data.formato;
 
-                    var contenido = "No";
+                    var contenido = "";
+                    if (allowSeeSepec && formato == 1) {
+                        contenido += '<a href="' + root + 'Acuicultura/Details/' + itemID + '?project=' + projectId + '" title="FT-IV-046" class="btn btn-outline-dark btn-xs ml-1" ><i class="fab fa-wpforms"></i></a>'
+                    }
                     if (state > 2) {
-                        contenido = '<a href="' + root + 'Validation/Details/' + itemID + '?project=' + projectId +  '" title="Detalles" class="btn btn-outline-info btn-xs ml-1" ><i class="fas fa-file-alt"></i></a>'
+                        contenido += '<a href="' + root + 'Validation/Details/' + itemID + '?project=' + projectId +  '" title="Detalles" class="btn btn-outline-info btn-xs ml-1" ><i class="fas fa-file-alt"></i></a>'
                     }
 
                     if (state == 2 && allowLoadValidate) {
-                        contenido = '<button class="btn btn-outline-success btn-xs ml-1 load-formlz" data-id="' + itemID + '" data-project="' + projectId + '" title="Cargar datos"><i class="fas fa-download"></i></button>';
+                        contenido += '<button class="btn btn-outline-success btn-xs ml-1 load-formlz" data-id="' + itemID + '" data-project="' + projectId + '" title="Cargar datos"><i class="fas fa-download"></i></button>';
                     } else if (state == 3 && allowLoadValidate) {
                         contenido += '<a href="' + root + 'Validation/Edit/' + itemID + '?project=' + projectId + '" title="Editar " class="btn btn-outline-warning btn-xs ml-1" ><i class="fas fa-edit"></i></a>'
                     }
@@ -286,6 +334,8 @@ var funcL = {
         allowSeeValidate = $('#allowSeeValidate').val() == 1;
         allowLoadValidate = $('#allowLoadValidate').val() == 1;
         allowPrint = $('#allowPrint').val() == 1;
+        allowDelete = $('#allowDelete').val() == 1;
+        allowSeeSepec = $('#allowSeeSepec').val() == 1;
         urlPrint = $('#urlPrint').val();
         projectPrint = $('#projectPrint').val();
 

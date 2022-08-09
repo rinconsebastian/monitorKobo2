@@ -78,17 +78,19 @@ namespace App_consulta.Models
     {
         public KoDataViewModel() { }
 
-        public KoDataViewModel(string Id, string IdKobo, int State, string User,
-            IDictionary<string, object> DynamicProperties, int IdResponsable)
+        public KoDataViewModel(string Id, string IdKobo, int State, string User, int IdResponsable, string IdLastEditByUser, DateTime LastEditDate)
         {
             this.Id = Id;
             this.IdKobo = IdKobo;
             this.State = State;
             this.User = User;
             this.IdResponsable = IdResponsable;
+            this.IdLastEditByUser = IdLastEditByUser;
+            this.LastEditDate = LastEditDate;
 
-            var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(DynamicProperties);
-            this.DynamicProperties = Newtonsoft.Json.JsonConvert.DeserializeObject<IDictionary<string, object>>(serialized);
+            // var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(DynamicProperties);
+            // Newtonsoft.Json.JsonConvert.DeserializeObject<IDictionary<string, object>>(serialized);
+            this.DynamicProperties = new Dictionary<string, object>(); 
         }
 
         [BsonElement("dependence")]

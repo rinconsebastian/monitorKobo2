@@ -6,12 +6,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var permisoExportar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado" && c.Value == "1"));
-    var permisoImprimir = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Imprimir" && c.Value == "1"));
+    var permisoSepec = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Imprimir" && c.Value == "1"));
 }
 
 @Html.Hidden("allowExport", (permisoExportar ? 1 : 0))
-@Html.Hidden("allowSee", (permisoImprimir ? 1 : 0))
-@Html.Hidden("allowPrint", (permisoImprimir ? 1 : 0))
+@Html.Hidden("allowSee", (permisoSepec ? 1 : 0))
+@Html.Hidden("allowPrint", (permisoSepec ? 1 : 0))
 
 @Html.Hidden("urlPrint", Url.Action("Print", "Acuicultura"))
 

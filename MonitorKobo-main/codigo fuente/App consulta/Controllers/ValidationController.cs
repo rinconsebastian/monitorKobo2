@@ -223,8 +223,8 @@ namespace App_consulta.Controllers
             //Agregar ubicación simple 
             await AddLocation(allFields, original.DynamicProperties);
 
-            var nuevo = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.DynamicProperties, original.IdResponsable);
-
+            var anterior = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.IdResponsable, original.IdLastEditByUser, original.LastEditDate);
+            var nuevo = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.IdResponsable, original.IdLastEditByUser, original.LastEditDate);
 
             var keysExists = original.DynamicProperties.Keys.ToList();
             var fieldsValids = allFields.Where(n => keysExists.Contains(n.NameDB)).ToList();
@@ -252,7 +252,8 @@ namespace App_consulta.Controllers
                     foreach (var uField in fieldsEditables)
                     {
                         update = update.Set(uField, item.Props[uField]);
-                        nuevo.DynamicProperties[uField] = item.Props[uField];
+                        nuevo.DynamicProperties.Add(uField, item.Props[uField]);
+                        anterior.DynamicProperties.Add(uField, original.DynamicProperties[uField]);
                     }
                 }
                 if (item.State > 0) { 
@@ -272,7 +273,7 @@ namespace App_consulta.Controllers
                 if (save)
                 {
                     var log = new Logger(db);
-                    var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "Edit", Modelo = projectObj.ValidationName, ValAnterior = original, ValNuevo = nuevo };
+                    var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "Edit", Modelo = projectObj.ValidationName, ValAnterior = anterior, ValNuevo = nuevo };
                     await log.RegistrarProps(registro, typeof(KoDataViewModel), Int32.Parse(original.IdKobo));
 
                     HttpContext.Session.SetComplex("error", "Los datos fueron actualizados correctamente.");
@@ -312,7 +313,8 @@ namespace App_consulta.Controllers
 
             try
             {
-                var item = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.DynamicProperties, original.IdResponsable);
+                var anterior = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.IdResponsable, original.IdLastEditByUser, original.LastEditDate);
+                var nuevo = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.IdResponsable, original.IdLastEditByUser, original.LastEditDate);
 
                 var user = await userManager.FindByNameAsync(User.Identity.Name);
                 var update = Builders<KoExtendData>.Update.Set("edit_user", user.Id);
@@ -321,19 +323,19 @@ namespace App_consulta.Controllers
                 update = update.Set("state", estado);
 
 
-                var filter = Builders<KoExtendData>.Filter.Eq(n => n.Id, item.Id);
+                var filter = Builders<KoExtendData>.Filter.Eq(n => n.Id, original.Id);
                 var save = await mdb.Update(projectObj.Collection, update, filter);
 
                 if (save)
                 {
-                    item.State = estado;
-                    item.LastEditDate = datetime;
-                    item.IdLastEditByUser = user.Id;
+                    nuevo.State = estado;
+                    nuevo.LastEditDate = datetime;
+                    nuevo.IdLastEditByUser = user.Id;
 
                     var log = new Logger(db);
                     var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "ChangeStatus",
-                        Modelo = projectObj.ValidationName, ValAnterior = original, ValNuevo = item };
-                    await log.RegistrarProps(registro, typeof(KoDataViewModel), Int32.Parse(item.IdKobo));
+                        Modelo = projectObj.ValidationName, ValAnterior = anterior, ValNuevo = nuevo };
+                    await log.RegistrarProps(registro, typeof(KoDataViewModel), Int32.Parse(original.IdKobo));
 
                     r.Success = true;
                 }
@@ -436,24 +438,25 @@ namespace App_consulta.Controllers
             update = update.Set("edit_date", datetime);
             update = update.Set("state", estado);
 
-            foreach (var anterior in items)
+            foreach (var original in items)
             {
                 try
                 {
-                    var item = new KoDataViewModel(anterior.Id, anterior.IdKobo, anterior.State, anterior.User, anterior.DynamicProperties, anterior.IdResponsable);
+                    var anterior = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.IdResponsable, original.IdLastEditByUser, original.LastEditDate);
+                    var nuevo = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.IdResponsable, original.IdLastEditByUser, original.LastEditDate);
 
-                    var filter = Builders<KoExtendData>.Filter.Eq(n => n.Id, item.Id);
+                    var filter = Builders<KoExtendData>.Filter.Eq(n => n.Id, original.Id);
                     var save = await mdb.Update(projectObj.Collection, update, filter);
 
                     if (save)
                     {
-                        item.State = estado;
-                        item.LastEditDate = datetime;
-                        item.IdLastEditByUser = user.Id;
+                        nuevo.State = estado;
+                        nuevo.LastEditDate = datetime;
+                        nuevo.IdLastEditByUser = user.Id;
 
                         var log = new Logger(db);
-                        var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "Print", Modelo = projectObj.ValidationName, ValAnterior = anterior, ValNuevo = item };
-                        await log.RegistrarProps(registro, typeof(KoDataViewModel), Int32.Parse(item.IdKobo));
+                        var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "Print", Modelo = projectObj.ValidationName, ValAnterior = anterior, ValNuevo = nuevo };
+                        await log.RegistrarProps(registro, typeof(KoDataViewModel), Int32.Parse(original.IdKobo));
 
                         success++;
                     }                   
@@ -634,5 +637,23 @@ namespace App_consulta.Controllers
             }
         }
 
+        [Authorize(Policy = "Registro.Borrar")]
+        [HttpPost]
+        public async Task<int> Delete(string ids, int project)
+        {
+            var success = 0;
+
+            var projectObj = await db.KoProject.FindAsync(project);
+            if (projectObj == null || !projectObj.Validable) { return success; }
+
+            if (ids == "") { return success; }
+            var idsList = ids.Split(',');
+            try
+            {
+                success = await mdb.DeleteMany(projectObj.Collection, idsList); ;
+            }
+            catch (Exception) { }
+            return success;
+        }
     }
 }

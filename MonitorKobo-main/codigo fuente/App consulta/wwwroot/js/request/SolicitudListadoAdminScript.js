@@ -90,8 +90,14 @@ var funcLE = {
                     cellTemplate: function (container, options) {
 
                         var id = options.data.id;
-                        var contenido = '<a href="' + root + 'Solicitud/Edit/' + id + '" title="Validar" class="btn btn-outline-success btn-xs ml-1" ><i class="fas fa-user-edit"></i></a>'
-                        
+                        var state = options.data.state;
+                        var formalization = options.data.recordNumber;
+
+                        var contenido = '<a href="' + root + 'Solicitud/Edit/' + id + '" title="Validar" class="btn btn-outline-success btn-xs ml-1" ><i class="fas fa-user-edit"></i></a>';
+
+                        if (formalization > 0 && state == 0) {
+                            contenido += '<button data-id="' + id + '" title="Respuesta rapida" class="btn btn-outline-danger btn-xs ml-1 btn-quick" ><i class="fas fa-meteor"></i></button>';
+                        }
                         $("<div class='preventSelection'>")
                             .append(contenido)
                             .appendTo(container);
@@ -137,7 +143,16 @@ var funcLE = {
                     caption: "Asunto",
                     alignment: "center",
                     width: 150,
-                    hidingPriority: 9
+                    hidingPriority: 9,
+                    cellTemplate: function (container, options) {
+
+                        var request = options.data.request;
+                        var message = options.data.message;
+                        var contenido = '<span style="text-decoration-line: underline;" title="' + message + '">' + request + '</span>';
+                        $("<div class='preventSelection'>")
+                            .append(contenido)
+                            .appendTo(container);
+                    }
                 },
                 {
                     dataField: "userName",
@@ -294,13 +309,45 @@ var funcLE = {
             }
         }).dxDataGrid('instance');
     },
+    loadQuickResponse: function () {
+        $('body').on('click', '.btn-quick', function (e) {
 
+            var button = $(this);
+
+            var id = $(this).data('id');
+
+            var fullurl = root + "Solicitud/QuickResponse/";
+
+            button.find('i').addClass('fa-cog fa-spin');
+            button.attr('disabled', 'disabled');
+
+            $.post(fullurl, { id: id }).
+                done(function (data) {
+                    button.find('i').removeClass('fa-cog fa-spin');
+                    if (data != null) {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            funcGenerico.mostrarMensaje(data.message, "error");
+                        }
+                    } else {
+                        funcGenerico.mostrarMensaje("Error en la respuesta del servidor.", "error");
+                    }
+
+                }).fail(function (data) {
+                    button.find('i').removeClass('fa-cog fa-spin');
+                    funcGenerico.mostrarMensaje("Error al solicitar la operación.", "error");
+                });
+
+        });
+    },
     init: function() {
         // Carga las variables de configuración.
         root = $('#Root').val();
         source = root + "Solicitud/ListAjaxAdmin/";
         
         funcLE.instanceDataGrid();
+        funcLE.loadQuickResponse();
     }
 };
 

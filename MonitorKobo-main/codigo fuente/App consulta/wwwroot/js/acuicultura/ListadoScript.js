@@ -189,13 +189,12 @@ var funcL = {
                     cellTemplate: function (container, options) {
                         var id = options.data._id;
                         var state = options.data.state;
+                        var formato = options.data.formato;
                         var contenido = '';
-                        if (allowSee) {
-                            contenido += '<a href="' + root + 'Acuicultura/Details/' + id + '" title="Detalles" class="btn btn-outline-info btn-xs ml-1" ><i class="fas fa-print"></i></a>'
-                            if (state == 3) {
-                                contenido += '<a href="' + root + 'Acuicultura/Edit/' + id + '" title="Editar" class="btn btn-outline-warning btn-xs ml-1" ><i class="fas fa-edit"></i></a>'
-                            }
-                        }
+                        contenido += '<a href="' + root + 'KoboData/Complete/' + id + '?project=2" title="Cargar" class="btn btn-outline-danger btn-xs ml-1" ><i class="fas fa-download"></i></a>'
+                        if (formato == 1) {
+                            contenido += '<a href="' + root + 'Acuicultura/Details/' + id + '?project=2" title="Detalles" class="btn btn-outline-info btn-xs ml-1" ><i class="fas fa-print"></i></a>'
+                        }     
                         $("<div class='preventSelection'>").append(contenido).appendTo(container);
                     }
                 }],

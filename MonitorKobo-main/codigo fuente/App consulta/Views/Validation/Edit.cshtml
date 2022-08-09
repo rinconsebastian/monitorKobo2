@@ -21,6 +21,7 @@
     var permisoCambiarAdjunto = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Cambiar" && c.Value == "1"));
     var permisoRestablecerAdjunto = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Imagen.Restablecer" && c.Value == "1"));
 
+    var permisoSepec = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Imprimir" && c.Value == "1"));
     //Info
 
     var title = permisoEditar ? "Editar" : "Validar";
@@ -82,7 +83,10 @@
                         </a>
                     }
                     <a class="nav-link" id="final-tab" data-toggle="pill" href="#tab-final" role="tab" aria-controls="tab_final" aria-selected="false">Finalizar</a>
-
+                    @if (permisoSepec && Model.DynamicProperties.ContainsKey("formato"))
+                    {
+                        <a class="nav-link text-dark" asp-controller="Acuicultura" asp-action="Details" asp-route-id="@Model.Id" asp-route-project="@project.Id" target="_blank"><i class="fab fa-wpforms"></i> Formato SEPEC</a>
+                    }
                 </div>
                 <hr class="border-dark" />
                 <button onclick="goBack()" class="btn btn btn-outline-dark btn-block mb-2">Volver</button>

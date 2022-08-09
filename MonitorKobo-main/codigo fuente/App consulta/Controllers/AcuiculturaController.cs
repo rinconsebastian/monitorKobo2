@@ -68,10 +68,10 @@ namespace App_consulta.Controllers
             var estados = await db.KoDataState.ToDictionaryAsync(n => n.Id, n => n.Label);
 
             //Consulta los campos y filtra
-            var fields = new List<string> { "kobo_id", "user", "state", "a_04", "i_05" };
+            var fields = new List<string> { "kobo_id", "user", "state", "a_04", "i_05" , "formato"};
             var filter = Builders<BsonDocument>.Filter.In("user", cedulasEncuestadores);
             filter = Builders<BsonDocument>.Filter.Ne("user", BsonNull.Value);
-            var dataFiltered = await mdb.GetWithFilter("aquaculture", fields, filter, false);
+            var dataFiltered = await mdb.GetWithFilter("acuiculturaunidades", fields, filter, false);
 
             if (dataFiltered.Count > 0)
             {
@@ -100,11 +100,16 @@ namespace App_consulta.Controllers
         }
 
         [Authorize(Policy = "Acuicultura.Imprimir")]
-        public async Task<ActionResult> Details(string id)
+        public async Task<ActionResult> Details(string id, int project)
         {
-            var item = await mdb.Find("aquaculture", id);
+            var projectObj = await db.KoProject.FindAsync(project);
+            if (projectObj == null || !projectObj.Validable) { return NotFound(); }
+
+            var item = await mdb.Find(projectObj.Collection, id);
             if (item == null) { return NotFound(); }
 
+            if (!item.DynamicProperties.ContainsKey("formato")) { return NotFound(); }
+            
             var fields = await db.AquacultureField.ToListAsync();
             ViewBag.Fields = fields.ToDictionary(n => n.NameDB, n => n);
 
@@ -155,7 +160,15 @@ namespace App_consulta.Controllers
             var locations   = locationsList.ToDictionary(n => n.codeTemp, n => n.name);
             ViewBag.Locations = locations;
 
-            return View(item);
+            //Tipo de vista detalles
+            var viewName =  "Details";
+            var props = item.DynamicProperties;
+            if (props.ContainsKey("ip_812") && props.ContainsKey("ip_813") && props.ContainsKey("ip_814"))
+            {
+                var asociado = (String)props["ip_812"] == "2" && (String)props["ip_813"] == "2" && (String)props["ip_814"] == "2";
+                viewName = asociado ? "Simple" : "Details";
+            }
+            return View(viewName,item);
 
 
         }
