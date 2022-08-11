@@ -116,14 +116,14 @@ namespace App_consulta.Controllers
             //Locations
             var codes = new List<string>();
 
-            var fieldsLocation = fields.Where(n => n.Type == 4 && n.IdParent == null).ToList();
+            var fieldsLocation = fields.Where(n => n.Type == AquacultureField.TYPE_LOCATION && n.IdParent == null).ToList();
             foreach (var f in fieldsLocation)
             {
                 if(item.DynamicProperties[f.NameDB] != null)
                     codes.Add((String)item.DynamicProperties[f.NameDB]);
             }
 
-            var groupLocationInner = fields.Where(n => n.Type == 4 && n.IdParent != null)
+            var groupLocationInner = fields.Where(n => n.Type == AquacultureField.TYPE_LOCATION && n.IdParent != null)
                 .GroupBy(n => (int)n.IdParent)
                 .ToDictionary(n => n.Key, n => n.Select(a => a.NameDB).ToList());
 

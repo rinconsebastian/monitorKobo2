@@ -12,6 +12,15 @@ namespace App_consulta.Models
      */
     public class AquacultureField
     {
+        public const int TYPE_TEXT = 1;
+        public const int TYPE_SELECT_ONE= 2;
+        public const int TYPE_SELECT_MULTIPLE = 3;
+        public const int TYPE_LOCATION = 4;
+        public const int TYPE_GEO = 5;
+        public const int TYPE_GROUP = 6;
+        public const int TYPE_ID= 7;
+        public const int TYPE_USER = 8;
+
         [Required]
         [Key]
         public int Id { get; set; }

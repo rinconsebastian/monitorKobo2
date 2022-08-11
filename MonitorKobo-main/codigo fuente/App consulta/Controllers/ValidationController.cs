@@ -70,11 +70,11 @@ namespace App_consulta.Controllers
             var respRelacionado = await encuestadorControl.GetResponsablesbyIdParent(user.IDDependencia, 1, 3);
 
             var projectObj = await db.KoProject.FindAsync(project);
-            if (projectObj == null || !projectObj.Validable) { return NotFound(); }
+            if (projectObj == null) { return NotFound(); }
             ViewBag.project = projectObj;
 
             var item = await mdb.FindExt(projectObj.Collection, id);
-            if(item == null || item.State < KoGenericData.ESTADO_BORRADOR || !respRelacionado.Contains(item.IdResponsable)) { return NotFound(); }
+            if(item == null || item.State < KoGenericData.ESTADO_BORRADOR || (item.IdResponsable != 0 && !respRelacionado.Contains(item.IdResponsable))) { return NotFound(); }
 
             string error = (string)HttpContext.Session.GetComplex<string>("error");
             if (error != "")

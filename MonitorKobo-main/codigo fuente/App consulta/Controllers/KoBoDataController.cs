@@ -544,10 +544,9 @@ namespace App_consulta.Controllers
         {
             var props = dataItem.DynamicProperties;
 
-            var state = KoGenericData.ESTADO_NUEVO;
+            var state = validationField != null ? KoGenericData.ESTADO_NUEVO : KoGenericData.ESTADO_SOLO_LECTURA;
             foreach (var param in fieldsKo)
             {
-                //if (result[param.NameKobo] == null) { continue; }
                 string valueTemp = (String)result[param.NameKobo];
 
                 var conditionalValue = validationValue != null ? validationValue == valueTemp : valueTemp != null;
@@ -556,18 +555,35 @@ namespace App_consulta.Controllers
                     state = KoGenericData.ESTADO_PENDIENTE;
                 }
 
-                switch (param.NameDB)
-                {
-                    case "kobo_id":
-                        dataItem.IdKobo = valueTemp;
-                        break;
-                    case "user":
-                        dataItem.User = valueTemp;
-                        break;
-                    default:
-                        props.Add(param.NameDB, MapValue(valueTemp, param.FormGroupSelect, allMapValues));
-                        break;
+                if (param.NameDB == "kobo_id") {
+                    dataItem.IdKobo = valueTemp;
                 }
+                else if (param.NameDB == "kobo_id") {
+                    dataItem.User = valueTemp;
+                }
+                else if(valueTemp != null) {
+                    switch (param.FormType)
+                    {
+                        case KoField.TYPE_SELECT_ONE:
+                            props.Add(param.NameDB, MapValue(valueTemp, param.FormGroupSelect, allMapValues));
+                            break;
+                        case KoField.TYPE_SELECT_MULTIPLE:
+                            var listAux = new List<string>();
+                            var splitList = ((String)result[param.NameKobo]).Split(' ');
+                            foreach (var a in splitList)
+                                listAux.Add(MapValue(a, param.FormGroupSelect, allMapValues));
+                            props.Add(param.NameDB, listAux);
+                            break;
+                        default:
+                            props.Add(param.NameDB, valueTemp);
+                            break;
+                    }
+                }
+                else
+                {
+                    props.Add(param.NameDB, null);
+                }
+                
             }
             dataItem.State = state;
         }
@@ -583,22 +599,22 @@ namespace App_consulta.Controllers
                 {
                     switch (param.Type)
                     {
-                        case 1:
-                        case 4:
-                        case 5:
+                        case AquacultureField.TYPE_TEXT:
+                        case AquacultureField.TYPE_LOCATION:
+                        case AquacultureField.TYPE_GEO:
                             props.Add(param.NameDB, (String)result[param.NameKobo]);
                             break;
-                        case 2:
+                        case AquacultureField.TYPE_SELECT_ONE:
                             props.Add(param.NameDB, MapValue((String)result[param.NameKobo], param.GroupMap, allMapValues));
                             break;
-                        case 3:
+                        case AquacultureField.TYPE_SELECT_MULTIPLE:
                             var listAux = new List<string>();
                             var splitList = ((String)result[param.NameKobo]).Split(' ');
                             foreach (var a in splitList)
                                 listAux.Add(MapValue(a, param.GroupMap, allMapValues));
                             props.Add(param.NameDB, listAux);
                             break;
-                        case 6:
+                        case AquacultureField.TYPE_GROUP:
                             var arrayGroup = new List<Dictionary<string, object>>();
                             foreach (var subresul in result[param.NameKobo])
                             {
@@ -610,14 +626,14 @@ namespace App_consulta.Controllers
                                         var valueAux = (String)subresul[subparam.NameKobo];
                                         switch (subparam.Type)
                                         {
-                                            case 1:
-                                            case 4:
+                                            case AquacultureField.TYPE_TEXT:
+                                            case AquacultureField.TYPE_LOCATION:
                                                 subProp.Add(subparam.NameDB, valueAux);
                                                 break;
-                                            case 2:
+                                            case AquacultureField.TYPE_SELECT_ONE:
                                                 subProp.Add(subparam.NameDB, MapValue(valueAux, subparam.GroupMap, allMapValues));
                                                 break;
-                                            case 3:
+                                            case AquacultureField.TYPE_SELECT_MULTIPLE:
                                                 var sublistAux = new List<string>();
                                                 var subSplitList = valueAux.Split(' ');
                                                 foreach (var b in subSplitList)
@@ -632,10 +648,10 @@ namespace App_consulta.Controllers
                             }
                             props.Add(param.NameDB, arrayGroup);
                             break;
-                        case 7:
+                        case AquacultureField.TYPE_ID:
                             //dataItem.IdKobo = (String)result[param.NameKobo];
                             break;
-                        case 8:
+                        case AquacultureField.TYPE_USER:
                             //dataItem.User = (String)result[param.NameKobo];
                             break;
                     }

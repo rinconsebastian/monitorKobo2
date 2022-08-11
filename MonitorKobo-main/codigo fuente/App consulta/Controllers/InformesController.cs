@@ -193,10 +193,7 @@ namespace App_consulta.Controllers
 
             //Configuración proyecto
 
-            if (project.Validable)
-            {
-                fields.Add("state");
-            }
+            fields.Add("state");
             fields.Add("formato");
             if (fields.Contains("tipo_acuicultor"))
             {
@@ -217,9 +214,7 @@ namespace App_consulta.Controllers
             if (isValidable)
                 filter &= Builders<BsonDocument>.Filter.Gte("state", KoGenericData.ESTADO_BORRADOR);
 
-            
-
-            var dataFiltered = await mdb.GetWithFilter(project.Collection, fields, filter, !project.Validable);
+            var dataFiltered = await mdb.GetWithFilter(project.Collection, fields, filter, false); //!project.Validable
 
             if (dataFiltered.Count > 0)
             {
