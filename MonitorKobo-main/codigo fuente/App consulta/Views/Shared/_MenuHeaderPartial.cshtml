@@ -43,8 +43,18 @@
         }
         @if (User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Listado" && c.Value == "1")))
         {
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Gestion
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" asp-controller="Informes" asp-action="ListadoGestion" asp-route-id="1">Asociación</a>
+                    <a class="dropdown-item" asp-controller="Informes" asp-action="ListadoGestion" asp-route-id="2">Acuicultores</a>
+
+                </div>
+            </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Acuicultura" asp-action="Index">Gestión</a>
+                
             </li>
         }
         @{

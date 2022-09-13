@@ -413,6 +413,8 @@ namespace App_consulta.Controllers
                         result.DynamicProperties.Add(prop.Key, prop.Value);
                     }
                 }
+                if (result.DynamicProperties.ContainsKey("user"))
+                    result.DynamicProperties.Remove("user");
             }
             catch (Exception e) { r.Message = e.Message; return r; }
 
@@ -435,6 +437,35 @@ namespace App_consulta.Controllers
 
             return r;
         }
+
+
+        //Ocultar/mostrar registro
+        [Authorize(Policy = "Acuicultura.Listado")]
+        public async Task<RespuestaAccion> Toggle(string id, int project)
+        {
+            var r = new RespuestaAccion();
+
+            var projectObj = await db.KoProject.FindAsync(project);
+            if (projectObj == null) { return r; }
+
+            //valida los que el item exista y que no este en borrador
+            var previo = await mdb.Find(projectObj.Collection, id);
+            if (previo == null) { r.Message = "ERROR: registro no encontrado"; return r; }
+
+            var state = true;
+            if (previo.DynamicProperties.ContainsKey("hidden"))
+            {
+                state = !((Boolean)previo.DynamicProperties["hidden"]);
+            }
+            var update = Builders<KoExtendData>.Update.Set("hidden", state);
+            var filter = Builders<KoExtendData>.Filter.Eq(n => n.Id, previo.Id);
+            var save = await mdb.Update(projectObj.Collection, update, filter);
+
+            if (save) { r.Success = true;}
+            else { r.Message = "Error: No fue posible cambiar el estado del registro."; }
+            return r;
+        }
+
 
         // EXTRA
         private async Task<string> LoadDataFromKobo(KoProject project)

@@ -100,7 +100,7 @@ namespace App_consulta.Services
 
             foreach (var oProperty in props)
             {
-                if (oProperty.Name == "Props") { continue;  }
+                if (oProperty.Name == "Props" || oProperty.Name == "Multiple") { continue;  }
 
                 var oOldValue = oProperty.GetValue(registro.ValAnterior, null);
                 var oNewValue = oProperty.GetValue(registro.ValNuevo, null);
@@ -128,6 +128,25 @@ namespace App_consulta.Services
             {
                 var oOldValue = dicAnterior.ContainsKey(key) ? dicAnterior[key] :null ;
                 var oNewValue = dicNuevo.ContainsKey(key) ? dicNuevo[key] : null;
+
+                if(oOldValue != null)
+                {
+                    var typeOld = oOldValue.GetType().Name;
+                    if (typeOld == "String[]" || typeOld.StartsWith("List"))
+                    {
+                        oOldValue = JsonConvert.SerializeObject(oOldValue);
+                    }
+                }
+
+                if (oNewValue != null)
+                {
+                    var typeNew = oNewValue.GetType().Name;
+                    if (typeNew == "String[]" || typeNew.StartsWith("List")) {
+                        oNewValue = JsonConvert.SerializeObject(oNewValue);
+                    }
+                }
+
+             
 
                 if (!object.Equals(oOldValue, oNewValue))
                 {

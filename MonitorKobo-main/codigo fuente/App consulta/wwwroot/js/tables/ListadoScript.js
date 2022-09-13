@@ -8,6 +8,7 @@ var allowSeeValidate = false;
 var allowPrint = false;
 var allowDelete = false;
 var allowSeeSepec = false;
+var allowEditSepec = false;
 var urlPrint = "";
 var projectPrint = 0;
 
@@ -297,10 +298,14 @@ var funcL = {
                     var state = options.data.state;
                     var itemID = options.data._id;
                     var formato = options.data.formato;
+                    var tipo_acuicultor = options.data.tipo_acuicultor;
 
                     var contenido = "";
-                    if (allowSeeSepec && formato == 1) {
+                    if (allowSeeSepec && formato == 1 && tipo_acuicultor != "Asociado" ) {
                         contenido += '<a href="' + root + 'Acuicultura/Details/' + itemID + '?project=' + projectId + '" title="FT-IV-046" class="btn btn-outline-dark btn-xs ml-1" ><i class="fab fa-wpforms"></i></a>'
+                    }
+                    if (allowEditSepec && formato == 1 && tipo_acuicultor != "Asociado") {
+                        contenido += '<a href="' + root + 'Acuicultura/Edit/' + itemID + '?project=' + projectId + '" title="Editar FT-IV-046" class="btn btn-outline-danger btn-xs ml-1" ><i class="fas fa-pen-square"></i></a>'
                     }
                     if (state > 2) {
                         contenido += '<a href="' + root + 'Validation/Details/' + itemID + '?project=' + projectId +  '" title="Detalles" class="btn btn-outline-info btn-xs ml-1" ><i class="fas fa-file-alt"></i></a>'
@@ -336,6 +341,7 @@ var funcL = {
         allowPrint = $('#allowPrint').val() == 1;
         allowDelete = $('#allowDelete').val() == 1;
         allowSeeSepec = $('#allowSeeSepec').val() == 1;
+        allowEditSepec = $('#allowEditSepec').val() == 1;
         urlPrint = $('#urlPrint').val();
         projectPrint = $('#projectPrint').val();
 

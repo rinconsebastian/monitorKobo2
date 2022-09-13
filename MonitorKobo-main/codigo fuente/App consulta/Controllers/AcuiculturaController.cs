@@ -35,70 +35,6 @@ namespace App_consulta.Controllers
             _env = env;
         }
 
-        [Authorize(Policy = "Acuicultura.Listado")]
-        public async Task<ActionResult> Index()
-        {
-            var project = await db.KoProject.FindAsync(2);
-            ViewBag.LastUpdate = project.LastUpdate;
-            return View();
-        }
-
-        [Authorize(Policy = "Acuicultura.Listado")]
-        public async Task<ActionResult> Ajax()
-        {
-            var resp = new List<Object>();
-
-            //dependencia del usuario actual
-            var user = await userManager.FindByNameAsync(User.Identity.Name);
-            var encuestadorControl = new EncuestadorController(db, userManager, _env, mdb);
-            var responsables = await encuestadorControl.GetResponsablesbyIdParent(user.IDDependencia, 1, 3);
-
-            //Encuestadores relacionados a la dependencia actual
-            var encuestadores = await db.Pollster.Where(n => responsables.Contains(n.IdResponsable))
-                .Select(n => new
-                {
-                    cedula = n.DNI.ToString(),
-                    nombre = n.Name
-                }).ToListAsync();
-
-            var nombresEncuestadores = encuestadores.ToDictionary(n => n.cedula, n => n.nombre);
-            var cedulasEncuestadores = encuestadores.Select(n => n.cedula).ToList();
-
-            //Estados 
-            var estados = await db.KoDataState.ToDictionaryAsync(n => n.Id, n => n.Label);
-
-            //Consulta los campos y filtra
-            var fields = new List<string> { "kobo_id", "user", "state", "a_04", "i_05" , "formato"};
-            var filter = Builders<BsonDocument>.Filter.In("user", cedulasEncuestadores);
-            filter = Builders<BsonDocument>.Filter.Ne("user", BsonNull.Value);
-            var dataFiltered = await mdb.GetWithFilter("acuiculturaunidades", fields, filter, false);
-
-            if (dataFiltered.Count > 0)
-            {
-                //Consulta ubicaciones si es requerido
-                Dictionary<String, LocationViewModel> locations = new();
-
-                //Consulta dependencias
-                var dependencias = await db.Responsable.ToDictionaryAsync(n => n.Id, n => n.Nombre);
-
-                foreach (var item in dataFiltered)
-                {
-                    item["_id"] = ((ObjectId)item["_id"]).ToString();
-
-                    var userItem = (String)item["user"];
-                    var nombreEncuestador = nombresEncuestadores.ContainsKey(userItem) ? nombresEncuestadores[userItem] : "";
-                    item.Add("user_name", nombreEncuestador);
-
-                    var estado = item.Contains("state") && item["state"].BsonType != BsonType.Null ? (int)item["state"] : 0;
-                    item.Add("state_name", estados.ContainsKey(estado) ? estados[estado] : "No definido");
-                }
-            }
-
-            resp = dataFiltered.ConvertAll(BsonTypeMapper.MapToDotNetValue);
-            
-            return Json(resp);
-        }
-
         [Authorize(Policy = "Acuicultura.Imprimir")]
         public async Task<ActionResult> Details(string id, int project)
         {
@@ -172,5 +108,130 @@ namespace App_consulta.Controllers
 
 
         }
+
+        [Authorize(Policy = "Acuicultura.Editar")]
+        public async Task<ActionResult> Edit(string id, int project)
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var encuestadorControl = new EncuestadorController(db, userManager, _env, mdb);
+            var respRelacionado = await encuestadorControl.GetResponsablesbyIdParent(user.IDDependencia, 1, 3);
+
+            var projectObj = await db.KoProject.FindAsync(project);
+            if (projectObj == null || !projectObj.Validable) { return NotFound(); }
+            ViewBag.project = projectObj;
+
+            var item = await mdb.FindViewModel(projectObj.Collection, id);
+            if (item == null ) { return NotFound(); }
+
+            string error = (string)HttpContext.Session.GetComplex<string>("error");
+            if (error != "")
+            {
+                ViewBag.error = error;
+                HttpContext.Session.Remove("error");
+            }
+
+            var validTypes = new int[] { 1, 2, 3 };
+            var ignoreFields = new int[] { 3,4,16,18 };
+            var allFields = await db.AquacultureField.Where(n => n.NameKobo != null && n.IdParent == null 
+            && validTypes.Contains(n.Type) && !ignoreFields.Contains(n.Id) && n.Id < 143 ).ToListAsync();
+
+            var keysExists = item.DynamicProperties.Keys.ToList();
+            var fieldsValids = allFields.Where(n => keysExists.Contains(n.NameDB)).ToList();
+            ViewBag.fieldsValids = fieldsValids;
+
+            var variables = await db.AquacultureVariable.ToListAsync();
+            ViewBag.Variables = variables.GroupBy(n => n.Group).ToDictionary(n => n.Key, n => n.ToList());
+
+            return View(item);
+        }
+
+        [Authorize(Policy = "Acuicultura.Editar")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(KoDataViewModel item, int project)
+        {
+            var projectObj = await db.KoProject.FindAsync(project);
+            if (projectObj == null || !projectObj.Validable) { return NotFound(); }
+            ViewBag.project = projectObj;
+
+            //Registros para log
+            var original = await mdb.FindViewModel(projectObj.Collection, item.Id);
+
+            var anterior = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.IdResponsable, original.IdLastEditByUser, original.LastEditDate);
+            var nuevo = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.IdResponsable, original.IdLastEditByUser, original.LastEditDate);
+
+            var validTypes = new int[] { 1, 2, 3 };
+            var ignoreFields = new int[] { 3, 4, 16, 18 };
+            var allFields = await db.AquacultureField.Where(n => n.NameKobo != null && n.IdParent == null
+            && validTypes.Contains(n.Type) && !ignoreFields.Contains(n.Id) && n.Id < 143).ToListAsync();
+
+            var keysExists = original.DynamicProperties.Keys.ToList();
+            var fieldsValids = allFields.Where(n => keysExists.Contains(n.NameDB)).ToList();
+            ViewBag.fieldsValids = fieldsValids;
+
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByNameAsync(User.Identity.Name);
+                var update = Builders<KoExtendData>.Update.Set("edit_user", user.Id);
+                nuevo.IdLastEditByUser = user.Id;
+
+                foreach (var aField in fieldsValids)
+                {
+                    var uField = aField.NameDB;
+                    var IsValid = true;
+                    if (aField.Type == 3)
+                    {
+                        IsValid = item.Multiple.ContainsKey(uField);
+                        if (IsValid)
+                        {
+                            string[] aValue = item.Multiple[uField];
+                            update = update.Set(uField, aValue);
+                            nuevo.DynamicProperties.Add(uField, aValue);
+                        }
+                    }
+                    else
+                    {
+                        IsValid = item.Props.ContainsKey(uField);
+                        if (IsValid)
+                        {
+                            string uValue = item.Props[uField];
+                            update = update.Set(uField, uValue);
+                            nuevo.DynamicProperties.Add(uField, uValue);
+                        }
+                    }
+                    anterior.DynamicProperties.Add(uField, original.DynamicProperties[uField]);
+
+                    if (!IsValid)
+                    {
+                        update = update.Set(uField, MongoDB.Bson.BsonNull.Value);
+                        nuevo.DynamicProperties.Add(uField, null);
+                    }
+                }
+
+                var now = DateTime.Now;
+                update = update.Set("edit_date", now);
+                nuevo.LastEditDate = now;
+
+                var filter = Builders<KoExtendData>.Filter.Eq(n => n.Id, item.Id);
+                var save = await mdb.Update(projectObj.Collection, update, filter);
+                if (save)
+                {
+                    var log = new Logger(db);
+                    var registro = new RegistroLog { Usuario = User.Identity.Name, Accion = "Edit", Modelo = projectObj.ValidationName, ValAnterior = anterior, ValNuevo = nuevo };
+                    await log.RegistrarProps(registro, typeof(KoDataViewModel), Int32.Parse(original.IdKobo));
+
+                    HttpContext.Session.SetComplex("error", "Los datos fueron actualizados correctamente.");
+                    return RedirectToAction("Edit", new { id = item.Id, project });
+                }
+                else { HttpContext.Session.SetComplex("error", "No fue posible actualizar el registro."); }
+            }
+
+            var variables = await db.AquacultureVariable.ToListAsync();
+            ViewBag.Variables = variables.GroupBy(n => n.Group).ToDictionary(n => n.Key, n => n.ToList());
+
+            return View(item);
+        }
+
+
     }
 }

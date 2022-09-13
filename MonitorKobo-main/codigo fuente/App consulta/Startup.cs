@@ -131,6 +131,8 @@ namespace App_consulta
                                 policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Listado", "1"));
                 options.AddPolicy("Acuicultura.Imprimir", policy =>
                                 policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Imprimir", "1"));
+                options.AddPolicy("Acuicultura.Editar", policy =>
+                                policy.RequireClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Editar", "1"));
 
             });
 

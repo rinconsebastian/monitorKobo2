@@ -100,6 +100,7 @@ namespace App_consulta.Models
         public int IdResponsable { get; set; }
 
         public Dictionary<string, string> Props { get; set; }
+        public Dictionary<string, string[]> Multiple { get; set; }
 
 
         [BsonElement("edit_user")]

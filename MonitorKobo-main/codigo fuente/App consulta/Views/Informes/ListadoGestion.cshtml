@@ -1,31 +1,29 @@
 ﻿
 @{
-    ViewData["Title"] = "Informe Acuicultura FT-IV-046";
+    KoProject project = ViewBag.project;
+
+    var nombreInforme = project.Name;
+    ViewData["Title"] = "Listado gestión " + nombreInforme;
     ViewData["Subtitle"] = "";
     ViewData["Fluid"] = true;
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var permisoExportar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado" && c.Value == "1"));
-    var permisoSepec = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Imprimir" && c.Value == "1"));
 }
 
 @Html.Hidden("allowExport", (permisoExportar ? 1 : 0))
-@Html.Hidden("allowSee", (permisoSepec ? 1 : 0))
-@Html.Hidden("allowPrint", (permisoSepec ? 1 : 0))
-
-@Html.Hidden("urlPrint", Url.Action("Print", "Acuicultura"))
 
 <div class="row mt-4">
     <div class="col-12 ">
         <div class="card">
             <div class="card-body">
-                <h3 class="text-center text-uppercase">Informe Acuicultura FT-IV-046</h3>
-                <div id="grid-ac-046" class="row-lm aux-selection">
+                <h3 class="text-center text-uppercase">Informe @nombreInforme</h3>
+                <div id="@ViewBag.gridId" class="row-lm aux-selection">
                 </div>
             </div>
             <div class="card-footer text-center">
                 <p class="font-weight-light mb-0 small">
-                    Actualizado el <i>@ViewBag.LastUpdate</i>
+                    Actualizado el <i>@project.LastUpdate</i>
                 </p>
             </div>
         </div>
@@ -34,6 +32,9 @@
 
 @section Scripts {
     <script type="text/javascript" src="~/lib/jquery/moment.js"></script>
+    <script>
+            var myConfig = JSON.parse('@Html.Raw(ViewBag.config)');
+    </script>
     <script type="text/javascript" src="~/js/tables/AlertScript.js"></script>
-    <script type="text/javascript" src="~/js/acuicultura/ListadoScript.js?v=1.0"></script>
+    <script type="text/javascript" src="~/js/gestion/ListadoScript.js?v=1.0"></script>
 }

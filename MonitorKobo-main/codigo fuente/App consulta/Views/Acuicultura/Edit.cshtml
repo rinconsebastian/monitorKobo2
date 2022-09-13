@@ -1,0 +1,138 @@
+﻿@model App_consulta.Models.KoDataViewModel
+@{
+    KoProject project = ViewBag.project;
+
+    ViewData["Title"] = "Panel de control";
+    ViewData["Subtitle"] = "Editar formulario SEPEC";
+    ViewData["Fluid"] = true;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<AquacultureField> fieldsValids = ViewBag.fieldsValids;
+
+    var grupoNames = new Dictionary<string, string>();
+    grupoNames["a"] = "INFORMACIÓN DEL AGENTE";
+    grupoNames["i"] = "I. DATOS DEL ENCUESTADO";
+    grupoNames["ii"] = "II. DATOS DE LA UBICACIÓN DE LA UNIDAD PRODUCTIVA";
+    grupoNames["iii"] = "III. DATOS GENERALES DE LA UNIDAD PRODUCTIVA";
+    grupoNames["iv"] = "IV. DATOS ACTIVIDAD DE LA UNIDAD PRODUCTIVA";
+
+    var currentSection = "";
+
+
+    Dictionary<string, List<AquacultureVariable>> variables = ViewBag.Variables;
+}
+
+<div class="card mt-4 mx-auto d-print-none" style="max-width:90%">
+    <div class="card-body">
+        <h4 class="my-2 text-uppercase">
+            Editar formulario SEPEC @Model.IdKobo
+        </h4>
+        @if (ViewBag.error != null)
+        {
+            <hr />
+            <div class="alert alert-warning" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                @ViewBag.error
+            </div>
+
+        }
+
+        <hr class="mb-0" />
+        <div class="row">
+            <div class="col-12">
+                <form asp-action="Edit" asp-route-project="@project.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <div asp-validation-summary="All" class="small text-danger"></div>
+
+                    <div class="row">
+                        @foreach (var input in fieldsValids)
+                        {
+                            var valor = Model.DynamicProperties[input.NameDB];
+                            var isRequired = valor != null;
+                            var section = input.NameDB.Split("_")[0];
+
+                            if (currentSection != section)
+                            {
+                                currentSection = section;
+                                <div class="w-100">
+                                    <p class="mb-0 mt-2"><strong>@grupoNames[section]</strong></p>
+                                    <hr class="mt-0 border-dark" />
+                                </div>
+                            }
+                           
+                            @switch (input.Type)
+                            {
+                                case 2:
+                                    var listaItems = new SelectList(variables[input.GroupMap], "Value", "Value", valor);
+                                    <div class="col-12 col-md-6 mb-0">
+                                        <div class="form-group row mb-1">
+                                            <label for="f_@input.NameDB" class="col-5 col-form-label col-form-label-sm">
+                                                @input.Name @(isRequired ? "*" : "")
+                                            </label>
+                                            <div class="col-7">
+                                                <select id="f_@input.NameDB" name="Props.@input.NameDB" asp-items="@listaItems" class="form-control form-control-sm" required="@(isRequired)">
+                                                    <option value="">Seleccione una opción</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <hr class="mt-0 mb-1" />
+                                    </div>
+                                    break;
+                                case 3:
+                                    var auxValor = valor != null ? (List<object>)valor : new List<object>();
+                                    <div class="col-12">
+                                        <div class="form-group row mb-1">
+                                            <label for="f_@input.NameDB" class="col-3 col-form-label col-form-label-sm">
+                                                @input.Name @(isRequired ? "*" : "")
+                                            </label>
+                                            <div class="col-9">
+                                                <div class="row">
+                                                    @foreach (var option in variables[input.GroupMap])
+                                                    {
+                                                        <div class="col-12 col-md-4">
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" @(auxValor.Contains(option.Value) ? "checked" : "") class="custom-control-input" id="p_@option.Id" name="Multiple.@input.NameDB" value="@option.Value">
+                                                                <label for="p_@option.Id" class="custom-control-label small"> @option.Value</label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr class="mt-0 mb-1" />
+                                    </div>
+                                    break;
+                                default:
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group row mb-1">
+                                            <label for="f_@input.NameDB" class="col-5 col-form-label col-form-label-sm">
+                                                @input.Name @(isRequired ? "*" : "")
+                                            </label>
+                                            <div class="col-7">
+                                                <input id="f_@input.NameDB" name="Props.@input.NameDB" value="@valor" class="form-control form-control-sm" @(isRequired ? "required" : "") />
+                                            </div>
+                                        </div>
+                                        <hr class="mt-0 mb-1" />
+                                    </div>
+                                    break;
+                            }
+                        }
+                    </div>
+                    <hr />
+                    <div class="form-group row mb-0">
+                        <div class="col-sm-4 offset-lg-2">
+                            <input type="submit" value="Guardar" class="btn btn-outline-primary btn-block" />
+                        </div>
+                        <div class="col-sm-4 ">
+                            <button onclick="goBack()" class="btn btn btn-outline-dark btn-block mb-2">Volver</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+

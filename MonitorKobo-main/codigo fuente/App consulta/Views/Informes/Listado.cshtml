@@ -13,7 +13,8 @@
     var permisoExportar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Exportar.Listado" && c.Value == "1"));
     var permisoBorrar = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Registro.Borrar" && c.Value == "1"));
 
-    var permisoSepec = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Imprimir" && c.Value == "1"));
+    var permisoVerSepec = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Imprimir" && c.Value == "1"));
+    var permisoEditarSepec = User.HasClaim(c => (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Acuicultura.Editar" && c.Value == "1"));
 }
 
 @Html.Hidden("allowExport", (permisoExportar ? 1 : 0))
@@ -21,7 +22,8 @@
 @Html.Hidden("allowSeeValidate", (permisoVer ? 1 : 0))
 @Html.Hidden("allowDelete", (permisoBorrar ? 1 : 0))
 @Html.Hidden("projectPrint", project.Id)
-@Html.Hidden("allowSeeSepec", (permisoSepec ? 1 : 0))
+@Html.Hidden("allowSeeSepec", (permisoVerSepec ? 1 : 0))
+@Html.Hidden("allowEditSepec", (permisoEditarSepec ? 1 : 0))
 
 <div class="row mt-4">
     <div class="col-12 ">
