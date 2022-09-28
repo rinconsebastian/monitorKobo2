@@ -290,6 +290,17 @@ var funcL = {
                 item.visible = showUser;
             } else if (f.type == "show_valid") {
                 item.visible = allowSeeValidate;
+            } else if (f.type == "state") {
+                item.cellTemplate = function (container, options) {
+
+                    var state = options.data.state_name;
+                    var stateClass = options.data.state_class;
+
+                    var contenido = "<span class='badge   " + stateClass + "'>" + state+"</span>";
+                    $("<div class='preventSelection'>")
+                        .append(contenido)
+                        .appendTo(container);
+                };
             } else if (f.type == "options") {
                 item.visible = allowSeeValidate;
                 item.allowHeaderFiltering = false;

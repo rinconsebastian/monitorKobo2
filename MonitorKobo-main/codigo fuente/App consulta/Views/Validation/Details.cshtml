@@ -135,7 +135,8 @@
                                 <a asp-action="Edit" asp-route-id="@Model.Id" asp-route-project="@project.Id" class="btn btn-outline-primary btn-block">@btnEditar</a>
                             </div>
                         }
-                        @if (permisoImprimir && (Model.State == KoGenericData.ESTADO_COMPLETO || Model.State == KoGenericData.ESTADO_IMPRESO))
+                        @if (permisoImprimir && (Model.State == KoGenericData.ESTADO_COMPLETO || Model.State == KoGenericData.ESTADO_IMPRESO
+                            || Model.State == KoGenericData.ESTADO_ENTREGADO))
                         {
                             <div class="col-md text-center mb-2">
                                 <button data-link="@Url.Action("Print","Validation", new { ids = Model.Id, project = project.Id })" class="btn btn-outline-warning btn-block btn-print-formlz">Imprimir</button>

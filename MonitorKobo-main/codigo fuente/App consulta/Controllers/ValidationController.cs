@@ -431,12 +431,11 @@ namespace App_consulta.Controllers
             var items = await mdb.FindManyViewModel(projectObj.Collection, idsList);
            
             var user = await userManager.FindByNameAsync(User.Identity.Name);
-            var estado = 6;
             var datetime = DateTime.Now;
 
             var update = Builders<KoExtendData>.Update.Set("edit_user", user.Id);
             update = update.Set("edit_date", datetime);
-            update = update.Set("state", estado);
+       
 
             foreach (var original in items)
             {
@@ -444,6 +443,9 @@ namespace App_consulta.Controllers
                 {
                     var anterior = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.IdResponsable, original.IdLastEditByUser, original.LastEditDate);
                     var nuevo = new KoDataViewModel(original.Id, original.IdKobo, original.State, original.User, original.IdResponsable, original.IdLastEditByUser, original.LastEditDate);
+
+                    var estado = original.State == 10 ? 10: 6; //Si estado entregado mantiene estado, si no impreso.
+                    update = update.Set("state", estado);
 
                     var filter = Builders<KoExtendData>.Filter.Eq(n => n.Id, original.Id);
                     var save = await mdb.Update(projectObj.Collection, update, filter);

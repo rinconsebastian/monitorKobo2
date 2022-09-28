@@ -204,6 +204,7 @@ namespace App_consulta.Controllers
 
             //Estados 
             var estados = await db.KoDataState.ToDictionaryAsync(n => n.Id, n => n.Label);
+            var estadosEstilo = await db.KoDataState.ToDictionaryAsync(n => n.Id, n => n.Class);
 
             //Consulta los datos filtrados
 
@@ -297,6 +298,7 @@ namespace App_consulta.Controllers
                     {
                         var estado = item.Contains("state") && item["state"].BsonType != BsonType.Null ? (int)item["state"] : 0;
                         item.Add("state_name", estados.ContainsKey(estado) ? estados[estado] : "No definido");
+                        item.Add("state_class", estadosEstilo.ContainsKey(estado) ? estadosEstilo[estado] : "");
                     }
                 }
             }

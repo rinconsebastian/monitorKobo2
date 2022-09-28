@@ -19,6 +19,7 @@ namespace App_consulta.Models
         public const int ESTADO_CARNET_VIGENTE = 7;
         public const int ESTADO_DUPLICADO = 8;
         public const int ESTADO_SOLO_LECTURA = 9;
+        public const int ESTADO_ENTREGADO = 10;
 
         [BsonId]
         [JsonIgnore]
